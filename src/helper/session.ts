@@ -46,6 +46,8 @@ export async function createSession(payload: SessionPayload) {
     sameSite: "lax",
     path: "/",
   });
+
+  redirect("/");
 }
 
 export async function verifySession() {

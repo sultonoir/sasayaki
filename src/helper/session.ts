@@ -54,7 +54,7 @@ export async function verifySession() {
   const cookie = cookies().get("session")?.value;
   const session = await decrypt(cookie);
 
-  if (!session?.userId) {
+  if (!session) {
     return null;
   }
 
@@ -63,6 +63,7 @@ export async function verifySession() {
     username: session.username as string,
     name: session.name as string,
     image: session.image as string,
+    expiresAt: session.expiresAt as Date,
   };
 }
 

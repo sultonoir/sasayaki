@@ -11,6 +11,7 @@ export const threadRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
+      const userId = ctx.user?.id;
       const limit = input.limit ?? 50;
       const { cursor } = input;
       const threads = await ctx.db.thread.findMany({
@@ -19,6 +20,7 @@ export const threadRouter = createTRPCRouter({
           comment: true,
           repost: true,
           media: true,
+          bookmark: true,
           user: {
             select: {
               name: true,
@@ -38,6 +40,19 @@ export const threadRouter = createTRPCRouter({
         return {
           ...thread,
           comment: thread.comment.length,
+          isBookmarked: thread.bookmark.some(
+            (bookmark) => bookmark.userId === userId,
+          ),
+          like: {
+            count: thread.like.length,
+            isUserLike: thread.like.some((like) => like.userId === userId),
+          },
+          repost: {
+            count: thread.repost.length,
+            isUserRepost: thread.repost.some(
+              (repost) => repost.userId === userId,
+            ),
+          },
         };
       });
 

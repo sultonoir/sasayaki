@@ -38,3 +38,10 @@ export type ThreadPage = {
   posts: Post[];
   nextCursor: string | null;
 };
+
+export type ThreadWs = {
+  id: string;
+  like: number;
+  comment: number;
+  repost: number;
+};

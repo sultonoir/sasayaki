@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { io as ClientIO, type Socket } from "socket.io-client";
+import { useSession } from "./session-provider";
 
 type SocketContextType = {
   socket: Socket | null;
@@ -26,6 +27,7 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
+  const { user } = useSession();
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -38,6 +40,8 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       setIsConnected(true);
     });
 
+    socketInstance.emit("user", user?.id);
+
     socketInstance.on("disconnect", () => {
       setIsConnected(false);
     });
@@ -47,7 +51,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       socketInstance.disconnect();
     };
-  }, []);
+  }, [user]);
 
   return (
     <SocketContext.Provider value={{ socket, isConnected }}>

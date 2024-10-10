@@ -14,7 +14,7 @@ export default function ThreadForYouFeed() {
     isFetching,
     isFetchingNextPage,
     status,
-  } = api.thread.thread.useInfiniteQuery(
+  } = api.thread.getAllThreads.useInfiniteQuery(
     {
       limit: 10,
     },

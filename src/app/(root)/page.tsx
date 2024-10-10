@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ThreadForYouFeed from "@/components/templates/thread/thread-for-you";
-import { FormThread } from "@/components/templates/form/thread/form-thread";
 import { type Metadata } from "next";
+import { FormThread } from "@/components/templates/form/thread/form-thread";
 
 export const metadata: Metadata = {
   title: "Home",

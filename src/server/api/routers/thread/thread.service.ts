@@ -47,7 +47,7 @@ const threadIncludes = {
 
 export const createThread = async (
   ctx: ProtectedTRPCContext,
-  { content, Media }: input.CreateThreadInput,
+  { content, media }: input.CreateThreadInput,
 ) => {
   const userId = ctx.user.id;
   const thread = await db.thread.create({
@@ -59,8 +59,8 @@ export const createThread = async (
     include: threadIncludes,
   });
 
-  if (Media.length > 0) {
-    await createThreadMedia({ id: thread.id, media: Media, userId });
+  if (media.length > 0) {
+    await createThreadMedia({ id: thread.id, media, userId });
   }
 
   return formatThreadResponse({ thread, userId });

@@ -4,15 +4,9 @@ import { useSession } from "@/provider/session-provider";
 import { type Thread } from "@/types";
 import UserAvatar from "../user/user-avatar";
 import Linkify from "@/components/ui/linkify";
-import ThreadMenuButton from "./thread-menu-button";
 import { formatRelativeDate } from "@/lib/format-relative-date";
-import { ThreadLikeButton } from "./thread-like-button";
-import { ThreadRepostButton } from "./thread-repost-button";
-import ThreadComment from "./thread-comment-button";
-import { UserHoverCard } from "../user/user-hover-card";
 import ThreadImageGallery from "./thread-image-gallery";
 import Link from "next/link";
-import { ThreadBookmarButton } from "./thread-bookmar-button";
 
 interface PostProps {
   post: Thread;
@@ -21,6 +15,9 @@ interface PostProps {
 
 export function ThreadCard({ post, type }: PostProps) {
   const { user } = useSession();
+
+  const username = `@${post.user.username}`;
+
   return (
     <article className="group/post relative space-y-3 p-5 shadow-sm">
       <div className="relative flex gap-3">
@@ -32,19 +29,14 @@ export function ThreadCard({ post, type }: PostProps) {
         >
           <span className="sr-only">View post {post.id}</span>
         </Link>
-        <UserHoverCard username={post.user.username}>
-          <div className="relative z-10 h-fit flex-shrink-0">
-            <UserAvatar avatarUrl={post.user.image} size={40} />
-          </div>
-        </UserHoverCard>
-        <div className="flex flex-grow flex-col space-y-3">
+        <div className="relative z-10 h-fit flex-shrink-0">
+          <UserAvatar avatarUrl={post.user.image} size={40} />
+        </div>
+        <div className="relative z-10 flex flex-grow flex-col space-y-3">
           <div className="flex gap-2 text-[15px] leading-5">
-            <UserHoverCard username={post.user.username}>
-              <p className="relative z-10 block font-bold capitalize text-foreground hover:underline">
-                {post.user.name}
-              </p>
-            </UserHoverCard>
-            <p className="text-muted-foreground">@{post.user.username}</p>
+            <Linkify>{post.user.name}</Linkify>
+            <Linkify>{username}</Linkify>
+
             <p className="text-muted-foreground">•</p>
             <p
               className="block text-sm text-muted-foreground hover:underline"
@@ -59,7 +51,7 @@ export function ThreadCard({ post, type }: PostProps) {
             </div>
           </Linkify>
           {!!post.media.length && <ThreadImageGallery images={post.media} />}
-          {type === "card" && (
+          {/* {type === "card" && (
             <div className="flex justify-between gap-5">
               <ThreadComment initialData={post} />
               <ThreadLikeButton initialdata={post.like} threadId={post.id} />
@@ -72,18 +64,18 @@ export function ThreadCard({ post, type }: PostProps) {
                 threadId={post.id}
               />
             </div>
-          )}
+          )} */}
         </div>
-        {post.user.username === user?.username ? (
+        {/* {post.user.username === user?.username ? (
           <ThreadMenuButton
             post={post}
             className="relative z-10 flex-shrink-0 opacity-0 transition-opacity group-hover/post:opacity-100"
           />
         ) : (
           <div className="w-9" />
-        )}
+        )} */}
       </div>
-      {type === "page" && (
+      {/* {type === "page" && (
         <div className="flex justify-between gap-5 border-y py-1">
           <ThreadComment initialData={post} />
           <ThreadLikeButton initialdata={post.like} threadId={post.id} />
@@ -93,7 +85,7 @@ export function ThreadCard({ post, type }: PostProps) {
             threadId={post.id}
           />
         </div>
-      )}
+      )} */}
     </article>
   );
 }

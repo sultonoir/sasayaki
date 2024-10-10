@@ -24,12 +24,12 @@ function LinkifyUrl({ children }: LinkifyProps) {
 function LinkifyUsername({ children }: LinkifyProps) {
   return (
     <LinkIt
-      regex={/(@[a-zA-Z0-9_-]+)/}
+      regex={/(@\S+)/} // Mencocokkan username yang dimulai dengan @ diikuti karakter non-spasi
       component={(match, key) => (
         <Link
           key={key}
-          href={`/profile/${match.slice(1)}`}
-          className="text-primary hover:underline"
+          href={`/profile/${match.slice(1)}`} // Menghapus '@' saat digunakan di URL
+          className="text-muted-foreground hover:underline"
         >
           {match}
         </Link>

@@ -4,6 +4,7 @@ import { type Server as NetServer } from "http";
 import { Server as ServerIO, type Socket } from "socket.io";
 import { type NextApiRequest } from "next";
 import { type NextApiResponseServerIo } from "@/types";
+import { type Todos } from "@prisma/client";
 
 export const config = {
   api: {
@@ -19,15 +20,26 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
       path,
       addTrailingSlash: false,
     });
+
     io.on("connection", (socket: Socket) => {
       console.log("A user connected:", socket.id);
 
-      // Menerima pesan dari client
-      socket.on("chat message", (msg: string) => {
-        console.log("Message received:", msg);
+      socket.on("user", (fileId: string) => {
+        console.log(`User joined room: ${fileId}`);
+        void socket.join(fileId); // Join room with fileId
+      });
 
-        // Broadcast pesan kembali ke semua client
-        io.emit("chat message", msg);
+      // Menerima pesan dari client dan broadcast ke room yang sesuai
+      socket.on(
+        "chat message",
+        ({ id, message }: { id: string; message: string }) => {
+          console.log(`Message from ${id}: ${message}`);
+          io.to(id).emit("chat message", message); // Broadcast ke semua user di room
+        },
+      );
+
+      socket.on("todo", (todo: Todos) => {
+        io.emit("todo", todo);
       });
 
       socket.on("disconnect", () => {

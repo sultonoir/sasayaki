@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useDeletePostMutation } from "@/server/thread/thread.mutation";
-import { Thread } from "@/types";
+import { type Thread } from "@/types";
 import { ButtonLoading } from "../button/button-loading";
 
 interface DeletePostDialogProps {
@@ -31,9 +31,7 @@ export default function DeleteThreadDialog({
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete post?</DialogTitle>
@@ -46,13 +44,15 @@ export default function DeleteThreadDialog({
           <ButtonLoading
             variant="destructive"
             onClick={async () => mutation.mutate({ id: post.id })}
-            loading={mutation.isPending}>
+            loading={mutation.isPending}
+          >
             Delete
           </ButtonLoading>
           <Button
             variant="outline"
             onClick={onClose}
-            disabled={mutation.isPending}>
+            disabled={mutation.isPending}
+          >
             Cancel
           </Button>
         </DialogFooter>

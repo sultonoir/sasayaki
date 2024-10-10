@@ -30,7 +30,7 @@ export type FormatResult = Thread & {
 
 export const CreateThreadInput = z.object({
   content: z.string().min(1).max(140),
-  Media: z.array(z.string()).min(1).max(4),
+  media: z.array(z.string()).max(4),
 });
 
 export type CreateThreadInput = z.infer<typeof CreateThreadInput>;
@@ -52,3 +52,10 @@ export const DeleteThreadInput = z.object({
 });
 
 export type DeleteThreadInput = z.infer<typeof DeleteThreadInput>;
+
+export const CreateThreadForm = z.object({
+  content: z.string(),
+  media: z.array(z.instanceof(File)),
+});
+
+export type CreateThreadForm = z.infer<typeof CreateThreadForm>;

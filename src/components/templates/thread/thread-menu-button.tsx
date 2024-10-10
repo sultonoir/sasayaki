@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Thread } from "@/types";
+import { type Thread } from "@/types";
 import DeleteThreadDialog from "./thread-delete-dialog";
 
 interface PostMoreButtonProps
@@ -25,10 +25,7 @@ export default function ThreadMenuButton({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            size="icon"
-            variant="ghost"
-            className={className}>
+          <Button size="icon" variant="ghost" className={className}>
             <MoreHorizontal className="size-5 text-muted-foreground" />
           </Button>
         </DropdownMenuTrigger>

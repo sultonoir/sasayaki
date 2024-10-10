@@ -17,4 +17,9 @@ export const threadRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       return await service.createThread(ctx, input);
     }),
+  deleteThread: protectedProcedure
+    .input(input.DeleteThreadInput)
+    .mutation(async ({ input, ctx }) => {
+      return await service.deleteThread(ctx, input);
+    }),
 });

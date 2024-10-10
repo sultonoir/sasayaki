@@ -33,14 +33,30 @@ export function FormThread() {
 
   const utils = api.useUtils();
   const { mutateAsync, isPending } = api.thread.createThread.useMutation({
-    onSuccess: () => {
+    onSuccess: async (newThread) => {
+      await utils.thread.getAllThreads.cancel();
+      utils.thread.getAllThreads.setInfiniteData({ limit: 10 }, (oldData) => {
+        const firstPage = oldData?.pages[0];
+
+        if (firstPage) {
+          return {
+            pageParams: oldData.pageParams,
+            pages: [
+              {
+                posts: [newThread, ...firstPage.posts],
+                nextCursor: firstPage.nextCursor,
+              },
+              ...oldData.pages.slice(1),
+            ],
+          };
+        }
+
+        return oldData;
+      });
       form.reset();
     },
     onError: (error) => {
       toast.error(error.message);
-    },
-    onSettled: async () => {
-      await utils.thread.invalidate();
     },
   });
 

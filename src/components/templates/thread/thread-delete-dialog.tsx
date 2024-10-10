@@ -7,9 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useDeletePostMutation } from "@/server/thread/thread.mutation";
 import { type Thread } from "@/types";
 import { ButtonLoading } from "../button/button-loading";
+import { api } from "@/trpc/react";
 
 interface DeletePostDialogProps {
   post: Thread;
@@ -22,7 +22,33 @@ export default function DeleteThreadDialog({
   open,
   onClose,
 }: DeletePostDialogProps) {
-  const mutation = useDeletePostMutation();
+  const utils = api.useUtils();
+  const mutation = api.thread.deleteThread.useMutation({
+    onSuccess: async (newThread) => {
+      await utils.thread.getAllThreads.cancel();
+      utils.thread.getAllThreads.setInfiniteData({ limit: 10 }, (oldData) => {
+        const firstPage = oldData?.pages[0];
+
+        if (firstPage) {
+          return {
+            pageParams: oldData.pageParams,
+            pages: [
+              {
+                posts: firstPage.posts.filter(
+                  (post) => post.id !== newThread.id,
+                ),
+                nextCursor: firstPage.nextCursor,
+              },
+              ...oldData.pages.slice(1),
+            ],
+          };
+        }
+
+        return oldData;
+      });
+      onClose();
+    },
+  });
 
   function handleOpenChange(open: boolean) {
     if (!open || !mutation.isPending) {
@@ -36,7 +62,7 @@ export default function DeleteThreadDialog({
         <DialogHeader>
           <DialogTitle>Delete post?</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this post? This action cannot be
+            Are you sure you want to delete this thread ? This action cannot be
             undone.
           </DialogDescription>
         </DialogHeader>

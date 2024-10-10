@@ -7,6 +7,7 @@ import Linkify from "@/components/ui/linkify";
 import { formatRelativeDate } from "@/lib/format-relative-date";
 import ThreadImageGallery from "./thread-image-gallery";
 import Link from "next/link";
+import ThreadMenuButton from "./thread-menu-button";
 
 interface PostProps {
   post: Thread;
@@ -66,14 +67,14 @@ export function ThreadCard({ post, type }: PostProps) {
             </div>
           )} */}
         </div>
-        {/* {post.user.username === user?.username ? (
+        {post.user.username === user?.username ? (
           <ThreadMenuButton
             post={post}
             className="relative z-10 flex-shrink-0 opacity-0 transition-opacity group-hover/post:opacity-100"
           />
         ) : (
           <div className="w-9" />
-        )} */}
+        )}
       </div>
       {/* {type === "page" && (
         <div className="flex justify-between gap-5 border-y py-1">

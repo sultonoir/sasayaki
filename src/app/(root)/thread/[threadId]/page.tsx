@@ -1,3 +1,4 @@
+import ButtonBack from "@/components/templates/button/button-back";
 import { CommentLayout } from "@/components/templates/comment/comment-layout";
 import { FormComment } from "@/components/templates/form/comment/form-comment";
 import { ThreadCard } from "@/components/templates/thread/thread-card";
@@ -21,6 +22,7 @@ const Page = async ({ params }: Props) => {
   }
   return (
     <div className="flex min-h-screen w-full flex-col space-y-2 border-x-2">
+      <ButtonBack/>
       <ThreadCard post={post} type="page" />
       <FormComment
         threadId={post.id}

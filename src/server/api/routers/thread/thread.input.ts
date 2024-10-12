@@ -29,7 +29,7 @@ export type FormatResult = Thread & {
 };
 
 export const CreateThreadInput = z.object({
-  content: z.string().min(1).max(140),
+  content: z.string(),
   media: z.array(z.string()).max(4),
 });
 

@@ -17,7 +17,7 @@ import ImageField from "./image-field";
 import { uploadFiles } from "@/lib/uploadthing";
 import { ButtonLoading } from "../../button/button-loading";
 import UserAvatar from "@/components/templates/user/user-avatar";
-import { CreateThreadForm } from "@/server/api/routers/thread/thread,input";
+import { CreateThreadForm } from "@/server/api/routers/thread/thread.input";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 

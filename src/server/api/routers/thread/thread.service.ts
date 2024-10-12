@@ -1,5 +1,5 @@
 import { createId } from "@/helper/createId";
-import type * as input from "./thread,input";
+import type * as input from "./thread.input";
 import { db } from "@/server/db";
 import { type ProtectedTRPCContext, type PublicTRPCContext } from "../../trpc";
 

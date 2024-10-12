@@ -1,4 +1,4 @@
-import * as input from "./thread,input";
+import * as input from "./thread.input";
 import * as service from "./thread.service";
 import {
   createTRPCRouter,

@@ -1,6 +1,7 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import { threadRouter } from "./routers/thread/thread.route";
 import { todoRouter } from "./routers/todo/todo.route";
+import { commentRouter } from "./routers/comment/comment.route";
 
 /**
  * This is the primary router for your server.
@@ -10,6 +11,7 @@ import { todoRouter } from "./routers/todo/todo.route";
 export const appRouter = createTRPCRouter({
   thread: threadRouter,
   todo: todoRouter,
+  comment: commentRouter,
 });
 
 // export type definition of API

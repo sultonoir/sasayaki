@@ -14,6 +14,7 @@ import {
   CredenzaTitle,
 } from "@/components/ui/credenza";
 import { FormComment } from "../form/comment/form-comment";
+import { Button } from "@/components/ui/button";
 
 export const CommentDialog = () => {
   const { setIsOpen, isOpen, thread } = useCommentDialog();
@@ -59,7 +60,9 @@ export const CommentDialog = () => {
         </CredenzaBody>
         <CredenzaFooter>
           <CredenzaClose asChild>
-            <button>Close</button>
+            <Button variant="outline" className="w-full lg:hidden">
+              Close
+            </Button>
           </CredenzaClose>
         </CredenzaFooter>
       </CredenzaContent>

@@ -1,11 +1,9 @@
-import { CommentWithUser } from "@/types";
+import { type CommentWithUser } from "@/types";
 import React from "react";
-import { UserHoverCard } from "../user/user-hover-card";
 import UserAvatar from "../user/user-avatar";
 import { formatRelativeDate } from "@/lib/format-relative-date";
 import Linkify from "@/components/ui/linkify";
 import { useSession } from "@/provider/session-provider";
-import { CommentDeleteDialog } from "./comment-delete-dialog";
 
 type Props = {
   comment: CommentWithUser;
@@ -17,27 +15,21 @@ export const CommentCard = ({ comment, ownerId }: Props) => {
   const isHaveAccess = user?.id === ownerId || comment.userId === user?.id;
 
   return (
-    <section className="group/post flex gap-3 py-3 p-5">
-      <UserHoverCard username={comment.user.username}>
-        <div className="h-fit flex-shrink-0 relative z-10">
-          <UserAvatar
-            avatarUrl={comment.user.image}
-            size={40}
-          />
-        </div>
-      </UserHoverCard>
-      <div className="flex flex-col flex-grow">
+    <section className="group/post flex gap-3 p-5 py-3">
+      <div className="relative z-10 h-fit flex-shrink-0">
+        <UserAvatar avatarUrl={comment.user.image} size={40} />
+      </div>
+      <div className="flex flex-grow flex-col">
         <div className="flex gap-2 text-[15px] leading-5">
-          <UserHoverCard username={comment.user.username}>
-            <p className="block hover:underline text-foreground font-bold capitalize relative z-10">
-              {comment.user.name}
-            </p>
-          </UserHoverCard>
+          <p className="relative z-10 block font-bold capitalize text-foreground hover:underline">
+            {comment.user.name}
+          </p>
           <p className="text-muted-foreground">@{comment.user.username}</p>
           <p className="text-muted-foreground">•</p>
           <p
             className="block text-sm text-muted-foreground hover:underline"
-            suppressHydrationWarning>
+            suppressHydrationWarning
+          >
             {formatRelativeDate(new Date(comment.createdAt))}
           </p>
         </div>
@@ -47,16 +39,16 @@ export const CommentCard = ({ comment, ownerId }: Props) => {
           </div>
         </Linkify>
       </div>
-      {isHaveAccess ? (
+      {/* {isHaveAccess ? (
         <CommentDeleteDialog
           threadId={comment.threadId}
           ownerId={ownerId}
           commentId={comment.id}
-          className="opacity-0 transition-opacity group-hover/post:opacity-100 flex-shrink-0 relative z-10"
+          className="relative z-10 flex-shrink-0 opacity-0 transition-opacity group-hover/post:opacity-100"
         />
       ) : (
         <div className="w-9" />
-      )}
+      )} */}
     </section>
   );
 };

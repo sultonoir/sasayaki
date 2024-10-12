@@ -14,12 +14,12 @@ import {
 import { Trash2Icon } from "lucide-react";
 import { useSession } from "@/provider/session-provider";
 import {
-  InfiniteData,
-  QueryKey,
+  type InfiniteData,
+  type QueryKey,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { CommentsPage, CommentWithUser } from "@/types";
+import { type CommentsPage, type CommentWithUser } from "@/types";
 import { toast } from "sonner";
 import ky from "ky";
 import { ButtonLoading } from "../button/button-loading";
@@ -71,12 +71,12 @@ export const CommentDeleteDialog = ({
               pages: oldData.pages.map((page) => ({
                 nextCursor: page.nextCursor,
                 comments: page.comments.filter(
-                  (p) => p.id !== deletedComment.id
+                  (p) => p.id !== deletedComment.id,
                 ),
               })),
             };
           }
-        }
+        },
       );
 
       toast.success("Comment deleted");
@@ -97,10 +97,7 @@ export const CommentDeleteDialog = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <ButtonLoading
-          size="icon"
-          variant="ghost"
-          className={className}>
+        <ButtonLoading size="icon" variant="ghost" className={className}>
           <Trash2Icon className="size-5 text-red-700" />
         </ButtonLoading>
       </AlertDialogTrigger>
@@ -116,7 +113,8 @@ export const CommentDeleteDialog = ({
           <AlertDialogAction
             className="bg-red-700 hover:bg-red-700/90"
             onClick={handleDelete}
-            disabled={mutation.isPending}>
+            disabled={mutation.isPending}
+          >
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

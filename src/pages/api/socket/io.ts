@@ -3,7 +3,11 @@
 import { type Server as NetServer } from "http";
 import { Server as ServerIO, type Socket } from "socket.io";
 import { type NextApiRequest } from "next";
-import { type NextApiResponseServerIo } from "@/types";
+import {
+  type ThreadWs,
+  type NextApiResponseServerIo,
+  type NotificationCount,
+} from "@/types";
 import { type Todos } from "@prisma/client";
 
 export const config = {
@@ -38,8 +42,20 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
         },
       );
 
+      socket.on("comment", (data) => {
+        io.emit("comment", data);
+      });
+
       socket.on("todo", (todo: Todos) => {
         io.emit("todo", todo);
+      });
+
+      socket.on("thread-update", (thread: ThreadWs) => {
+        io.emit("thread-update", thread);
+      });
+
+      socket.on("notification-count", (data: NotificationCount) => {
+        io.to(data.recipientId).emit("notification-count", data);
       });
 
       socket.on("disconnect", () => {

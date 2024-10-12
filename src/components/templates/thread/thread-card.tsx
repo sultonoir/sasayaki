@@ -8,6 +8,7 @@ import { formatRelativeDate } from "@/lib/format-relative-date";
 import ThreadImageGallery from "./thread-image-gallery";
 import Link from "next/link";
 import ThreadMenuButton from "./thread-menu-button";
+import ThreadComment from "./thread-comment-button";
 
 interface PostProps {
   post: Thread;
@@ -52,10 +53,10 @@ export function ThreadCard({ post, type }: PostProps) {
             </div>
           </Linkify>
           {!!post.media.length && <ThreadImageGallery images={post.media} />}
-          {/* {type === "card" && (
+          {type === "card" && (
             <div className="flex justify-between gap-5">
               <ThreadComment initialData={post} />
-              <ThreadLikeButton initialdata={post.like} threadId={post.id} />
+              {/* <ThreadLikeButton initialdata={post.like} threadId={post.id} />
               <ThreadRepostButton
                 initialdata={post.repost}
                 threadId={post.id}
@@ -63,9 +64,9 @@ export function ThreadCard({ post, type }: PostProps) {
               <ThreadBookmarButton
                 initialData={post.isBookmarked}
                 threadId={post.id}
-              />
+              /> */}
             </div>
-          )} */}
+          )}
         </div>
         {post.user.username === user?.username ? (
           <ThreadMenuButton

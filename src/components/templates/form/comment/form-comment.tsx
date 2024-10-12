@@ -6,6 +6,8 @@ import { ButtonLoading } from "../../button/button-loading";
 import { toast } from "sonner";
 import useCommentDialog from "@/hooks/useCommentDialog";
 import { cn } from "@/lib/utils";
+import { api } from "@/trpc/react";
+import { useSocket } from "@/provider/socket-provider";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   threadId: string;
@@ -13,6 +15,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function FormComment({ threadId, type, className }: Props) {
+  const { socket, isConnected } = useSocket();
   const { setIsOpen } = useCommentDialog();
   const { user } = useSession();
   const [value, setValue] = React.useState("");
@@ -25,8 +28,32 @@ export function FormComment({ threadId, type, className }: Props) {
     }
   };
 
+  const utils = api.useUtils();
+
+  const { mutateAsync, isPending } = api.comment.createComment.useMutation({
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSuccess: async (data) => {
+      await utils.comment.getComment.cancel();
+      if (socket && isConnected) {
+        socket.emit("comment", data.comment);
+        socket.emit("notification-count", data.notification);
+        socket.emit("thread-update", {
+          threadId: data.comment.id,
+          comment: data.comment.count,
+        });
+      }
+      setIsOpen(false);
+      setValue("");
+    },
+  });
+
   const handleSubmit = async () => {
-    console.log("hallo");
+    await mutateAsync({
+      value,
+      threadId,
+    });
   };
 
   return (
@@ -45,7 +72,7 @@ export function FormComment({ threadId, type, className }: Props) {
         {type === "field" && (
           <ButtonLoading
             onClick={handleSubmit}
-            // loading={isPending}
+            loading={isPending}
             disabled={value.trim() === ""}
           >
             Reply
@@ -55,7 +82,7 @@ export function FormComment({ threadId, type, className }: Props) {
       {type === "dialog" && (
         <ButtonLoading
           onClick={handleSubmit}
-          // loading={isPending}
+          loading={isPending}
           disabled={value.trim() === ""}
         >
           Reply

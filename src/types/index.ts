@@ -1,7 +1,7 @@
 import { type Socket, type Server as NetServer } from "net";
 import { type Server as SocketIOServer } from "socket.io";
 import { type NextApiResponse } from "next";
-import { type Media, type Thread as Post, type User } from "@prisma/client";
+import { type Media, type Thread as Post, type Comment } from "@prisma/client";
 
 export type NextApiResponseServerIo = NextApiResponse & {
   socket: Socket & {
@@ -44,4 +44,18 @@ export type ThreadWs = {
   like: number;
   comment: number;
   repost: number;
+};
+
+export type CommentWithUser = Comment & {
+  user: {
+    username: string;
+    name: string;
+    image: string | null;
+    isVerified: boolean;
+  };
+};
+
+export type NotificationCount = {
+  count: number;
+  recipientId: string;
 };

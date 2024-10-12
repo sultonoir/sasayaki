@@ -46,22 +46,22 @@ export const SignoutButton = () => {
           <span className="hidden lg:inline">Signout</span>
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="max-w-xs">
+      <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center">
             Sign out from {APP_TITLE}?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            You will be redirected to the home page.
+            You will be redirected to the signin page.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-center">
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
           <ButtonLoading loading={isLoading} onClick={handleSignout}>
             Continue
           </ButtonLoading>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
         </div>
       </AlertDialogContent>
     </AlertDialog>

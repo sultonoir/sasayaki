@@ -38,7 +38,7 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
         "chat message",
         ({ id, message }: { id: string; message: string }) => {
           console.log(`Message from ${id}: ${message}`);
-          io.to(id).emit("chat message", message); // Broadcast ke semua user di room
+          // io.to(id).emit("chat message", message); // Broadcast ke semua user di room
         },
       );
 
@@ -50,7 +50,12 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
         io.emit("todo", todo);
       });
 
+      socket.on("deleteTodo", (todo: Todos) => {
+        io.emit("deleteTodo", todo);
+      });
+
       socket.on("thread-update", (thread: ThreadWs) => {
+        console.log("Received thread update:", thread);
         io.emit("thread-update", thread);
       });
 

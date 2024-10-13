@@ -9,6 +9,7 @@ import ThreadImageGallery from "./thread-image-gallery";
 import Link from "next/link";
 import ThreadMenuButton from "./thread-menu-button";
 import ThreadComment from "./thread-comment-button";
+import { ThreadLikeButton } from "./thread-like-button";
 
 interface PostProps {
   post: Thread;
@@ -34,11 +35,10 @@ export function ThreadCard({ post, type }: PostProps) {
         <div className="relative z-10 h-fit flex-shrink-0">
           <UserAvatar avatarUrl={post.user.image} size={40} />
         </div>
-        <div className="relative z-10 flex flex-grow flex-col space-y-3">
-          <div className="flex gap-2 text-[15px] leading-5">
+        <div className="flex flex-grow flex-col space-y-3">
+          <div className="relative z-10 flex gap-2 text-[15px] leading-5">
             <Linkify>{post.user.name}</Linkify>
             <Linkify>{username}</Linkify>
-
             <p className="text-muted-foreground">•</p>
             <p
               className="block text-sm text-muted-foreground hover:underline"
@@ -56,7 +56,8 @@ export function ThreadCard({ post, type }: PostProps) {
           {type === "card" && (
             <div className="flex justify-between gap-5">
               <ThreadComment initialData={post} />
-              {/* <ThreadLikeButton initialdata={post.like} threadId={post.id} />
+              <ThreadLikeButton initialdata={post.like} threadId={post.id} />
+              {/* 
               <ThreadRepostButton
                 initialdata={post.repost}
                 threadId={post.id}
@@ -77,17 +78,17 @@ export function ThreadCard({ post, type }: PostProps) {
           <div className="w-9" />
         )}
       </div>
-      {/* {type === "page" && (
+      {type === "page" && (
         <div className="flex justify-between gap-5 border-y py-1">
           <ThreadComment initialData={post} />
           <ThreadLikeButton initialdata={post.like} threadId={post.id} />
-          <ThreadRepostButton initialdata={post.repost} threadId={post.id} />
+          {/* <ThreadRepostButton initialdata={post.repost} threadId={post.id} />
           <ThreadBookmarButton
             initialData={post.isBookmarked}
             threadId={post.id}
-          />
+          /> */}
         </div>
-      )} */}
+      )}
     </article>
   );
 }

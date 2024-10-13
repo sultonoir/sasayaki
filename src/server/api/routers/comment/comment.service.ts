@@ -3,25 +3,7 @@ import type * as input from "./comment.input";
 import { db } from "@/server/db";
 import { createId } from "@/helper/createId";
 import { type ProtectedTRPCContext } from "../../trpc";
-
-const createNotification = async (
-  notificationData: input.CreateNotification,
-) => {
-  const notification = await db.notification.create({
-    data: {
-      id: createId(10),
-      ...notificationData,
-    },
-  });
-
-  if (!notification) {
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "通知の作成に失敗しました",
-    });
-  }
-  return notification;
-};
+import { createNotification } from "../notifi/notifi.service";
 
 const getNotificationCount = async (recipientId: string) => {
   const count = await db.notification.count({

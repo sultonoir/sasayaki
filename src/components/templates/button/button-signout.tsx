@@ -48,14 +48,12 @@ export const SignoutButton = () => {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-center">
-            Sign out from {APP_TITLE}?
-          </AlertDialogTitle>
+          <AlertDialogTitle>Sign out from {APP_TITLE}?</AlertDialogTitle>
           <AlertDialogDescription>
             You will be redirected to the signin page.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-center">
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <ButtonLoading loading={isLoading} onClick={handleSignout}>
             Continue
           </ButtonLoading>

@@ -56,7 +56,7 @@ export const CommentDialog = () => {
           </div>
         </CredenzaHeader>
         <CredenzaBody>
-          <FormComment threadId={thread?.id ?? ""} type="dialog" />
+          <FormComment threadId={thread?.id ?? ""} type="field" />
         </CredenzaBody>
         <CredenzaFooter>
           <CredenzaClose asChild>

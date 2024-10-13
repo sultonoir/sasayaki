@@ -11,18 +11,17 @@ import {
 import { io as ClientIO, type Socket } from "socket.io-client";
 import { useSession } from "./session-provider";
 import { api } from "@/trpc/react";
-import { type ThreadWs, type CommentWithUser } from "@/types";
+import { type CommentWithUser } from "@/types";
+import { type Todos } from "@prisma/client";
 
 type SocketContextType = {
   socket: Socket | null;
   isConnected: boolean;
-  threads: ThreadWs[];
 };
 
 const SocketContext = createContext<SocketContextType>({
   socket: null,
   isConnected: false,
-  threads: [],
 });
 
 export const useSocket = () => {
@@ -34,7 +33,6 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const { user } = useSession();
   const [isConnected, setIsConnected] = useState(false);
-  const [threads, setThreads] = useState<ThreadWs[]>([]);
 
   useEffect(() => {
     const socketInstance: Socket = ClientIO(env.NEXT_PUBLIC_APP_URL, {
@@ -47,47 +45,51 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     });
 
     socketInstance.emit("user", user?.id);
-    socketInstance.on("comment", async (data: CommentWithUser) => {
+    socketInstance.on("comment", async (newComment: CommentWithUser) => {
       await utils.comment.getComment.cancel();
       utils.comment.getComment.setInfiniteData(
-        { id: data.threadId },
-        (oldData) => {
-          const firstPage = oldData?.pages[0];
-
-          if (firstPage) {
+        {
+          id: newComment.id,
+        },
+        (data) => {
+          if (!data) {
             return {
-              pageParams: oldData.pageParams,
-              pages: [
-                {
-                  comments: [...firstPage.comments, data],
-                  nextCursor: firstPage.nextCursor,
-                },
-                ...oldData.pages.slice(1),
-              ],
+              pages: [],
+              pageParams: [],
             };
           }
-
-          return oldData;
+          return {
+            ...data,
+            pages: data.pages.map((page) => ({
+              ...page,
+              comments: [...page.comments, newComment],
+            })),
+          };
         },
       );
     });
 
-    socketInstance.on("thread-update", (newThread: ThreadWs) => {
-      setThreads((prev) => {
-        const updatedThreads = prev.map((thread) =>
-          thread.id === newThread.id
-            ? {
-                ...thread, // Tetap menggunakan data thread yang ada
-                like: newThread.like ?? thread.like, // Update `like` jika ada
-                comment: newThread.comment ?? thread.comment, // Update `comment` jika ada
-                repost: newThread.repost ?? thread.repost, // Update `repost` jika ada
-              }
-            : thread,
-        );
+    socketInstance.on("todo", (todo: Todos) => {
+      utils.todo.getAllTodo.setData(undefined, (oldData) => {
+        if (!oldData) {
+          return [todo];
+        }
+        const isExisting = oldData.some((item) => item.id === todo.id);
+        const updateTodo = isExisting
+          ? oldData.map((item) => (item.id === todo.id ? todo : item))
+          : [...oldData, todo];
+        return updateTodo;
+      });
+    });
 
-        const isExisting = prev.some((thread) => thread.id === newThread.id);
-
-        return isExisting ? updatedThreads : [...prev, newThread];
+    socketInstance.on("deleteTodo", (todo: Todos) => {
+      utils.todo.getAllTodo.setData(undefined, (oldData) => {
+        if (!oldData) {
+          return oldData; // If there are no existing todos, return an empty array
+        }
+        // Filter out the deleted todo based on the provided id
+        const updatedTodos = oldData.filter((item) => item.id !== todo.id);
+        return updatedTodos; // Return the updated list of todos
       });
     });
 
@@ -100,10 +102,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       socketInstance.disconnect();
     };
-  }, [user, utils.comment.getComment]);
+  }, [user, utils.comment.getComment, utils.todo.getAllTodo]);
 
   return (
-    <SocketContext.Provider value={{ socket, isConnected, threads }}>
+    <SocketContext.Provider value={{ socket, isConnected }}>
       {children}
     </SocketContext.Provider>
   );

@@ -28,19 +28,16 @@ export function FormComment({ threadId, type, className }: Props) {
     }
   };
 
-  const utils = api.useUtils();
-
   const { mutateAsync, isPending } = api.comment.createComment.useMutation({
     onError: (error) => {
       toast.error(error.message);
     },
     onSuccess: async (data) => {
-      await utils.comment.getComment.cancel();
       if (socket && isConnected) {
         socket.emit("comment", data.comment);
         socket.emit("notification-count", data.notification);
         socket.emit("thread-update", {
-          threadId: data.comment.id,
+          id: data.comment.threadId,
           comment: data.comment.count,
         });
       }

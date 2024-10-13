@@ -3,10 +3,10 @@ import { getRedirect } from "@/helper/getRedirect";
 import { counter } from "@/lib/format-number";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/provider/session-provider";
+import { useSocket } from "@/provider/socket-provider";
 import { useThreads } from "@/provider/thread-provider";
-import { LikeInitialData } from "@/types";
-import { useMutation } from "@tanstack/react-query";
-import ky from "ky";
+import { api } from "@/trpc/react";
+import { type LikeInitialData } from "@/types";
 import { Heart } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -17,17 +17,32 @@ type Props = {
 };
 
 export const ThreadLikeButton = ({ initialdata, threadId }: Props) => {
+  const { socket, isConnected } = useSocket();
   const { threads } = useThreads();
   const { user } = useSession();
   const [isLiked, setIsLiked] = useState(initialdata.isUserLike);
   const newThread = threads.find((thread) => thread.id === threadId);
   const likeCount = newThread?.like ?? initialdata.count;
 
-  const { mutate, isPending } = useMutation({
-    mutationKey: ["create-like", threadId],
-    mutationFn: () => ky.post(`/v1/thread/like/${threadId}`).json<boolean>(),
+  const likeThread = api.like.createLikeThread.useMutation({
+    onSuccess: async (data) => {
+      setIsLiked(data.like.isUserLike);
+      if (socket && isConnected) {
+        socket.emit("thread-update", { id: threadId, like: data.like.count });
+        socket.emit("notification-count", data.notification);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const unlikeThread = api.like.deleteLikeThread.useMutation({
     onSuccess: (data) => {
-      setIsLiked(data);
+      setIsLiked(data.isUserLike);
+      if (socket && isConnected) {
+        socket.emit("thread-update", { id: threadId, like: data.count });
+      }
     },
     onError: (error) => {
       toast.error(error.message);
@@ -38,21 +53,36 @@ export const ThreadLikeButton = ({ initialdata, threadId }: Props) => {
     if (!user) {
       return getRedirect("/signin");
     }
-    mutate();
+
+    if (isLiked) {
+      unlikeThread.mutate({ threadId });
+    } else {
+      likeThread.mutate({ threadId });
+    }
   };
+
+  const isDisabled = React.useMemo(() => {
+    let isdisabled = false;
+    if (likeThread.isPending || unlikeThread.isPending) {
+      isdisabled = true;
+    }
+
+    return isdisabled;
+  }, [likeThread.isPending, unlikeThread.isPending]);
 
   return (
     <Button
       variant="ghost"
       size="icon"
       onClick={handleclick}
-      disabled={isPending}
-      className="hover:bg-transparent gap-1 group text-muted-foreground items-center text-[14px] leading-5">
+      disabled={isDisabled}
+      className="group items-center gap-1 text-[14px] leading-5 text-muted-foreground hover:bg-transparent"
+    >
       <div className="relative group-hover:text-danger">
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 size-10 rounded-full bg-danger/20 opacity-0 group-hover:opacity-100 z-0 transition-all"></div>
+        <div className="absolute left-1/2 top-1/2 z-0 size-10 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-danger/20 opacity-0 transition-all group-hover:opacity-100"></div>
         <Heart
           size={18}
-          className={cn("z-10 relative group-hover:stroke-danger", {
+          className={cn("relative z-10 group-hover:stroke-danger", {
             "fill-rose-500 stroke-danger": isLiked,
           })}
         />
@@ -61,8 +91,9 @@ export const ThreadLikeButton = ({ initialdata, threadId }: Props) => {
         <span
           className={cn("group-hover:text-danger", {
             "text-danger": isLiked,
-          })}>
-          {counter(likeCount + 1000000)}
+          })}
+        >
+          {counter(likeCount)}
         </span>
       )}
     </Button>

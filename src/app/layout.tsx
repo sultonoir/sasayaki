@@ -1,6 +1,8 @@
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import { Provider } from "@/provider/provider";
 
 const interSans = Inter({
   subsets: ["latin"],
@@ -17,10 +19,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning>
-      <body className={`${interSans.className} antialiased`}>{children}</body>
-    </html>
+    <ConvexAuthNextjsServerProvider>
+      <html
+        lang="en"
+        suppressHydrationWarning>
+        <body className={`${interSans.className} antialiased`}>
+          <Provider>{children}</Provider>
+        </body>
+      </html>
+    </ConvexAuthNextjsServerProvider>
   );
 }

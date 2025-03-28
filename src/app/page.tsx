@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 const Page = () => {
   return (
     <div className="max-w-lg mx-auto">
+      <h1 className="text-center font-bold text-xl">Todo</h1>
       <TodoClient />
     </div>
   );

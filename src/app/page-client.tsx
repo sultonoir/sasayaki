@@ -15,7 +15,7 @@ const TodoClient = () => {
     return <p>Error</p>;
   }
   return (
-    <div className="container min-h-screen max-w-screen-sm space-y-5 py-5">
+    <div className="container max-w-screen-sm space-y-5 py-5">
       <div className="flex flex-wrap gap-2">
         {data.map((item) => (
           <div

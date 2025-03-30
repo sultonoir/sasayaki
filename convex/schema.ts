@@ -12,17 +12,9 @@ const schema = defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.float64()),
     isAnonymous: v.optional(v.boolean()),
-
-    /*
-     * must be optional because OAuth providers don't return a role
-     */
-    role: v.optional(
-      v.union(v.literal("read"), v.literal("write"), v.literal("admin"))
-    ),
   })
     .index("email", ["email"])
-    .index("phone", ["phone"])
-    .index("by_role", ["role"]),
+    .index("phone", ["phone"]),
   todo,
 });
 

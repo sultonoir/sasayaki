@@ -17,6 +17,7 @@ import type * as auth from "../auth.js";
 import type * as http from "../http.js";
 import type * as todo_todo_model from "../todo/todo_model.js";
 import type * as todo_todo_service from "../todo/todo_service.js";
+import type * as user_user_service from "../user/user_service.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -31,6 +32,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "todo/todo_model": typeof todo_todo_model;
   "todo/todo_service": typeof todo_todo_service;
+  "user/user_service": typeof user_user_service;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

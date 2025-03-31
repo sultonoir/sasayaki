@@ -1,9 +1,13 @@
 import { Doc } from "@/convex/_generated/dataModel";
 import { create } from "zustand";
 
+type Session = Doc<"users"> & {
+  presence: Doc<"presence">;
+};
+
 interface SessionStore {
-  user: Doc<"users"> | null;
-  setSession: (session: Doc<"users"> | null | undefined) => void;
+  user: Session | null;
+  setSession: (session: Session | null | undefined) => void;
 }
 
 export const useSession = create<SessionStore>((set) => ({

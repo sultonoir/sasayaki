@@ -21,3 +21,22 @@ export const getMe = query({
     return await ctx.db.get(userId);
   },
 });
+
+export const getSession = query({
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    const user = await ctx.db.get(userId);
+    if (!user) return null;
+    const presence = await ctx.db
+      .query("presence")
+      .withIndex("by_user")
+      .unique();
+    if (!presence) return null;
+    return {
+      ...user,
+      presence,
+    };
+  },
+});

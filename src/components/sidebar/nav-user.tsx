@@ -3,9 +3,9 @@
 import {
   BadgeCheck,
   Bell,
-  ChevronsUpDown,
   CreditCard,
   LogOut,
+  MoreVertical,
   Sparkles,
 } from "lucide-react";
 
@@ -26,10 +26,52 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useSession } from "@/hooks/use-session";
+import { Doc } from "@/convex/_generated/dataModel";
+import { useQuery } from "convex-helpers/react";
+import { api } from "@/convex/_generated/api";
+import { Skeleton } from "../ui/skeleton";
+import { useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 export function NavUser() {
+  const { data, isPending, isError } = useQuery(
+    api.user.user_service.getSession
+  );
+  if (isPending) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <div className="flex items-center space-x-4">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
+
+  if (isError || !data) return null;
+  return <Content user={data} />;
+}
+
+function Content({
+  user,
+}: {
+  user: Doc<"users"> & {
+    presence: Doc<"presence">;
+  };
+}) {
   const { isMobile } = useSidebar();
-  const { user } = useSession();
+
+  const { setSession } = useSession();
+
+  useEffect(() => {
+    setSession(user);
+  }, [setSession, user]);
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -38,18 +80,31 @@ export function NavUser() {
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-0">
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage
-                  src={user?.image}
-                  alt={user?.name}
-                />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-              </Avatar>
+              <div className="relative isolate">
+                <Avatar className="size-8 rounded-full">
+                  <AvatarImage
+                    src={user?.image}
+                    alt={user?.name}
+                  />
+                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                </Avatar>
+                <span
+                  className={cn(
+                    "border-background absolute -end-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-emerald-500",
+                    {
+                      "bg-muted": user.presence.isOnline === false,
+                    }
+                  )}>
+                  <span className="sr-only">Online</span>
+                </span>
+              </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user?.name}</span>
-                <span className="truncate text-xs">{user?.email}</span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {user?.presence.isOnline ? "online" : "offline"}
+                </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <MoreVertical className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

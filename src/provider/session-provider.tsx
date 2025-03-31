@@ -1,15 +1,16 @@
-import React, { useEffect } from "react";
-import { useQuery } from "convex-helpers/react";
-import { api } from "@/convex/_generated/api";
-import { useSession } from "@/hooks/use-session";
+"use client";
+import React from "react";
+import { useOnline } from "@/hooks/use-online";
 
 const SessionProvider = () => {
-  const { data } = useQuery(api.user.user_service.getMe);
-  const { setSession } = useSession();
-  useEffect(() => {
-    setSession(data);
-  }, [data, setSession]);
-  return <div className="sr-only">Sasayaki.</div>;
+  useOnline();
+  return (
+    <div
+      className="sr-only"
+      tabIndex={0}>
+      Sasayaki.
+    </div>
+  );
 };
 
 export default SessionProvider;

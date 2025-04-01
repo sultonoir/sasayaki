@@ -1,7 +1,6 @@
 import React from "react";
 import {
   SidebarGroup,
-  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -16,21 +15,21 @@ import Link from "next/link";
 
 const ChatLists = () => {
   return (
-    <SidebarGroup className="px-0">
-      <SidebarGroupContent>
-        <Content />
-      </SidebarGroupContent>
+    <SidebarGroup>
+      <Content />
     </SidebarGroup>
   );
 };
 
 function Content() {
-  const { data, isPending, isError } = useQuery(api.chatlist.listChats);
+  const { data, isPending, isError } = useQuery(
+    api.chat.chat_service.chatlists,
+  );
   if (isPending) {
     return <Loader />;
   }
 
-  if (isError || !data) {
+  if (isError || data.length === 0) {
     return (
       <div className="flex h-[700px] items-center justify-center">
         <div className="flex flex-col items-center gap-2">
@@ -48,10 +47,10 @@ function Content() {
       {data.map((item) => (
         <SidebarMenuItem key={item._id}>
           <SidebarMenuButton className="flex h-fit w-full" asChild>
-            <Link href={`/${item.type}/${item._id}`} prefetch={true}>
+            <Link href={`/${item._id}`} prefetch={true}>
               <Image
                 className="flex-none rounded-full object-cover"
-                src={item.avatarUrlId}
+                src={item.image}
                 alt={item.name}
                 layout="constrained"
                 width={40}
@@ -61,37 +60,12 @@ function Content() {
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-semibold capitalize">{item.name}</span>
                   <span className="text-muted-foreground text-xs">
-                    {fromNow(new Date(1743468668602))}
+                    {fromNow(new Date(item.lastMessageTime))}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="line-clamp-1 text-xs">
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Tempore inventore ab doloribus dolor accusantium
-                    repellendus, nisi, deleniti provident commodi voluptate amet
-                    iure delectus sit praesentium rem ipsam nihil ut dolorem
-                    magnam debitis officiis similique? Enim, officia aliquid!
-                    Totam ab, quaerat ipsum consequuntur neque ex aliquam, vitae
-                    doloremque magni velit ullam dolorum facere. Ipsum
-                    laudantium maxime quibusdam adipisci deserunt. Aliquam
-                    deleniti quae doloribus, cum explicabo saepe, ratione in
-                    optio consequuntur, odit exercitationem provident? Quisquam
-                    enim quaerat, nesciunt, quasi assumenda eligendi esse eius
-                    fugit quis cumque dolorum, tempore non in quam. Officia qui
-                    quibusdam placeat itaque culpa accusantium rerum omnis sequi
-                    laborum alias. Iure accusantium dolorum recusandae
-                    perferendis at ullam harum incidunt doloribus distinctio,
-                    quisquam, tempora repudiandae. Nobis voluptas natus, amet
-                    voluptatum, ab maiores adipisci consequatur doloremque iusto
-                    eveniet et officiis aperiam asperiores incidunt nihil!
-                    Blanditiis dolor repellat libero est harum beatae nisi,
-                    iusto corporis inventore accusamus quis, tenetur odio eius,
-                    modi iste obcaecati vitae saepe ut temporibus pariatur cum
-                    ratione illum quos exercitationem? Nostrum inventore, sit
-                    totam neque id cum est. Deserunt quisquam iure minima at
-                    placeat a labore, itaque alias rem natus sunt possimus
-                    aperiam cupiditate maxime vitae ullam eos, dolorum nobis aut
-                    quae fuga soluta? Ea rerum iusto expedita.
+                    {item.lastMessage}
                   </span>
                 </div>
               </div>

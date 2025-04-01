@@ -2,11 +2,11 @@ import { defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export const member = defineTable({
-  groupId: v.id("group"),
+  chatId: v.id("chat"),
   userId: v.id("users"),
   joinedAt: v.number(),
   role: v.string(), // "admin", "member", etc.
 })
-  .index("by_group", ["groupId"])
-  .index("by_user", ["userId"])
-  .index("by_user_group", ["userId", "groupId"]);
+  .index("by_member_chatid", ["chatId"])
+  .index("by_member_userid", ["userId"])
+  .index("by_user_member", ["userId", "chatId"]);

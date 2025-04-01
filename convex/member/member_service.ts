@@ -5,7 +5,7 @@ export const createMember = internalMutation({
   args: {
     members: v.array(
       v.object({
-        groupId: v.id("group"),
+        chatId: v.id("chat"),
         userId: v.id("users"),
         role: v.string(),
       }),
@@ -15,7 +15,7 @@ export const createMember = internalMutation({
     for (const member of members) {
       await ctx.db.insert("member", {
         userId: member.userId,
-        groupId: member.groupId,
+        chatId: member.chatId,
         joinedAt: Date.now(),
         role: member.role,
       });

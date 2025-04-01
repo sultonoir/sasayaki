@@ -52,7 +52,7 @@ export function FormCreatGroup() {
     },
   });
 
-  const mutate = useMutation(api.group.group_service.createGroup);
+  const mutate = useMutation(api.chat.chat_service.createGroup);
 
   async function onSubmit(value: z.infer<typeof FormSchema>) {
     const images: UploadedFile[] = [];

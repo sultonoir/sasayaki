@@ -17,7 +17,7 @@ import ChatLists from "./chat-lists";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar variant="inset" {...props}>
+    <Sidebar className="border-r-0" {...props}>
       <SidebarHeader className="gap-3.5 border-b p-4">
         <div className="flex w-full items-center justify-between">
           <div className="text-foreground text-base font-medium">Sasayaki</div>

@@ -10,8 +10,8 @@ const interSans = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s • Meseji",
-    default: "Meseji",
+    template: "%s • Sasayaki",
+    default: "Sasayaki",
   },
   description: "Quickly send and receive messages directly from your computer.",
   icons: [{ rel: "icon", url: "/logo.png" }],
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: {
-      template: "%s • Meseji",
-      default: "Meseji",
+      template: "%s • Sasayaki",
+      default: "Sasayaki",
     },
     description:
       "Quickly send and receive messages directly from your computer.",
@@ -50,8 +50,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     title: {
-      template: "%s • Meseji",
-      default: "Meseji",
+      template: "%s • Sasayaki",
+      default: "Sasayaki",
     },
     site: "https://meseji.vercel.app/",
     description:
@@ -79,9 +79,7 @@ export default function RootLayout({
 }>) {
   return (
     <ConvexAuthNextjsServerProvider>
-      <html
-        lang="en"
-        suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning>
         <body className={`${interSans.className} antialiased`}>
           <Provider>{children}</Provider>
         </body>

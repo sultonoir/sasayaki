@@ -24,10 +24,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {
             "--sidebar-width": "350px",
           } as React.CSSProperties
-        }>
+        }
+      >
         <AppSidebar />
         <SidebarInset>
-          <header className="bg-background sticky top-0 flex shrink-0 items-center gap-2 border-b p-4 rounded-t-lg">
+          <header className="bg-background sticky top-0 flex shrink-0 items-center gap-2 rounded-t-lg border-b p-4">
             <SidebarTrigger className="-ml-1" />
             <Separator
               orientation="vertical"

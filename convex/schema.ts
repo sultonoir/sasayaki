@@ -3,6 +3,12 @@ import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { todo } from "./todo/todo_model";
 import { presence, presence_heartbeats } from "./presence/presence_model";
+import { group } from "./group/group_model";
+import { groupMessage, groupAttachment } from "./group/group_messages_model";
+import { directMessage, directAttachment } from "./direct/direct_message_model";
+import { directChat } from "./direct/direct_chat_model";
+import { groupRead } from "./group/group_read_model";
+import { member } from "./member/member_model";
 
 const schema = defineSchema({
   ...authTables,
@@ -21,6 +27,14 @@ const schema = defineSchema({
   todo,
   presence,
   presence_heartbeats,
+  group,
+  groupMessage,
+  groupAttachment,
+  directChat,
+  directMessage,
+  directAttachment,
+  member,
+  groupRead,
 });
 
 export default schema;

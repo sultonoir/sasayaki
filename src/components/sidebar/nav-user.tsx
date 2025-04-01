@@ -31,11 +31,11 @@ import { useQuery } from "convex-helpers/react";
 import { api } from "@/convex/_generated/api";
 import { Skeleton } from "../ui/skeleton";
 import { useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { UserAvatar } from "../user/user-avatar";
 
 export function NavUser() {
   const { data, isPending, isError } = useQuery(
-    api.user.user_service.getSession
+    api.user.user_service.getSession,
   );
   if (isPending) {
     return (
@@ -79,28 +79,16 @@ function Content({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-0">
-              <div className="relative isolate">
-                <Avatar className="size-8 rounded-full">
-                  <AvatarImage
-                    src={user?.image}
-                    alt={user?.name}
-                  />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <span
-                  className={cn(
-                    "border-background absolute -end-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-emerald-500",
-                    {
-                      "bg-muted": user.presence.isOnline === false,
-                    }
-                  )}>
-                  <span className="sr-only">Online</span>
-                </span>
-              </div>
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-0"
+            >
+              <UserAvatar
+                name={user.name}
+                src={user.image}
+                online={user.presence.isOnline}
+              />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user?.name}</span>
-                <span className="truncate text-xs text-muted-foreground">
+                <span className="text-muted-foreground truncate text-xs">
                   {user?.presence.isOnline ? "online" : "offline"}
                 </span>
               </div>
@@ -111,14 +99,12 @@ function Content({
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
-            sideOffset={4}>
+            sideOffset={4}
+          >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={user?.image}
-                    alt={user?.name}
-                  />
+                  <AvatarImage src={user?.image} alt={user?.name} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">

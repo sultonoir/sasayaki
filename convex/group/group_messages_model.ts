@@ -10,7 +10,8 @@ export const groupMessage = defineTable({
 }).index("by_chat_time", ["chatId", "sentAt"]);
 
 export const groupAttachment = defineTable({
-  type: v.string(),
+  format: v.string(),
+  fileId: v.string(),
   url: v.string(),
   blur: v.string(),
   groupMessageId: v.id("groupMessage"),

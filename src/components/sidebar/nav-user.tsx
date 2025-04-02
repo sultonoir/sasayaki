@@ -4,19 +4,28 @@ import {
   BadgeCheck,
   Bell,
   CreditCard,
+  LaptopMinimal,
   LogOut,
+  Moon,
   MoreVertical,
+  Palette,
   Sparkles,
+  Sun,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -32,6 +41,7 @@ import { api } from "@/convex/_generated/api";
 import { Skeleton } from "../ui/skeleton";
 import { useEffect } from "react";
 import { UserAvatar } from "../user/user-avatar";
+import { useTheme } from "next-themes";
 
 export function NavUser() {
   const { data, isPending, isError } = useQuery(
@@ -64,6 +74,7 @@ function Content({
     presence: Doc<"presence">;
   };
 }) {
+  const { setTheme, theme } = useTheme();
   const { isMobile } = useSidebar();
 
   const { setSession } = useSession();
@@ -134,6 +145,40 @@ function Content({
                 <Bell />
                 Notifications
               </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="gap-2">
+                  <Palette size={16} className="text-muted-foreground" />
+                  Change theme
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuCheckboxItem
+                      checked={theme === "light"}
+                      onCheckedChange={() => setTheme("light")}
+                      className="flex items-center gap-2"
+                    >
+                      <Sun className="size-4" />
+                      Light
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={theme === "dark"}
+                      onCheckedChange={() => setTheme("dark")}
+                      className="flex items-center gap-2"
+                    >
+                      <Moon className="size-4" />
+                      Dark
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={theme === "system"}
+                      onCheckedChange={() => setTheme("system")}
+                      className="flex items-center gap-2"
+                    >
+                      <LaptopMinimal className="size-4" />
+                      System
+                    </DropdownMenuCheckboxItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

@@ -1,38 +1,36 @@
 "use client";
 import React from "react";
 import ChatHeader from "./chat-header";
-import ChatInput from "./chat-input";
 import { useDialogGroup } from "@/hooks/use-dialog-group";
-import { Preloaded } from "convex/react";
+import { Preloaded, usePreloadedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { notFound } from "next/navigation";
+import MemberLayout from "../member/member-layout";
+import ChatBody from "./chat-body";
 
 interface Props {
-  preload: Preloaded<typeof api.group.group_service.getGroupMetadata>;
-  type: string;
+  preload: Preloaded<typeof api.chat.chat_service.getChatByIdWithMembers>;
 }
 
 const ChatLayout = ({ preload }: Props) => {
   const { open } = useDialogGroup();
 
-  console.log(preload);
+  const data = usePreloadedQuery(preload);
+
+  if (!data) return notFound();
+
   return (
     <>
-      <ChatHeader />
-      <div className="relative isolate size-full overflow-x-hidden">
+      <ChatHeader {...data} />
+      <div className="relative isolate flex size-full overflow-x-hidden">
         {/* Chat body */}
         <div
           data-state={open ? "open" : "close"}
-          className="flex h-full flex-col"
+          className="bg-card flex size-full flex-col transition-all duration-300 ease-in-out will-change-transform data-[state=open]:lg:mr-[300px]"
         >
-          <div className="flex h-96 grow flex-col gap-1 overflow-y-auto p-4">
-            {Array.from({ length: 100 }).map((_, index) => (
-              <div key={index} className="bg-accent w-full rounded-lg p-4">
-                {index}
-              </div>
-            ))}
-          </div>
-          <ChatInput />
+          <ChatBody chatId={data._id} />
         </div>
+        <MemberLayout members={data.members} />
       </div>
     </>
   );

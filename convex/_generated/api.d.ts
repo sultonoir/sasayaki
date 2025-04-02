@@ -9,6 +9,7 @@
  */
 
 import type * as attachment_attachment_model from "../attachment/attachment_model.js";
+import type * as attachment_attachment_service from "../attachment/attachment_service.js";
 import type * as auth from "../auth.js";
 import type * as chat_chat_model from "../chat/chat_model.js";
 import type * as chat_chat_service from "../chat/chat_service.js";
@@ -44,6 +45,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   "attachment/attachment_model": typeof attachment_attachment_model;
+  "attachment/attachment_service": typeof attachment_attachment_service;
   auth: typeof auth;
   "chat/chat_model": typeof chat_chat_model;
   "chat/chat_service": typeof chat_chat_service;

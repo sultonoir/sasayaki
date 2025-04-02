@@ -1,10 +1,11 @@
 import { v } from "convex/values";
-import { mutation, query } from "../_generated/server";
+import { mutation, query, QueryCtx } from "../_generated/server";
 import { mustGetCurrentUser } from "../user/user_service";
-import { getManyFrom } from "convex-helpers/server/relationships";
+import { getManyFrom, getOneFrom } from "convex-helpers/server/relationships";
 import { asyncMap } from "convex-helpers";
 import { getLastMessage } from "../message/message_service";
 import { messageAggregate } from "../message/message_aggregate";
+import { Id } from "../_generated/dataModel";
 
 export const createGroup = mutation({
   args: { name: v.string(), image: v.string() },
@@ -13,9 +14,9 @@ export const createGroup = mutation({
     const chatId = await ctx.db.insert("chat", {
       name,
       image,
-      createdAt: 0,
+      createdAt: Date.now(),
       code: Date.now().toString(),
-      isGroup: false,
+      isGroup: true,
     });
 
     await ctx.db.insert("member", {
@@ -27,6 +28,12 @@ export const createGroup = mutation({
     return { success: true };
   },
 });
+
+/**
+ * get chat list from current user
+ * @private
+ * u need login to get this
+ */
 
 export const chatlists = query({
   handler: async (ctx) => {
@@ -90,7 +97,9 @@ export const chatlists = query({
         return {
           _id: member.chatId,
           name: otherMember?.username || "unknown name",
-          image: otherMember?.image || "/avatar.png",
+          image:
+            otherMember?.image ||
+            "https://res.cloudinary.com/dv6cln4gs/image/upload/v1743506282/group/ri6jpgw5ayrk4aajjxfc.png",
           lastMessage,
           lastMessageTime:
             lastMessageTime === 0 ? member._creationTime : lastMessageTime,
@@ -101,7 +110,9 @@ export const chatlists = query({
       return {
         _id: member.chatId,
         name: chat?.name || "unknown name",
-        image: chat?.image || "/avatar.png",
+        image:
+          chat?.image ||
+          "https://res.cloudinary.com/dv6cln4gs/image/upload/v1743506282/group/ri6jpgw5ayrk4aajjxfc.png",
         lastMessage,
         lastMessageTime:
           lastMessageTime === 0 ? member._creationTime : lastMessageTime,
@@ -110,5 +121,110 @@ export const chatlists = query({
     });
 
     return results;
+  },
+});
+
+/**
+ * helper for get chat
+ * @param
+ * id : Id<"chat">
+ */
+
+export const getChatMetadata = async ({
+  ctx,
+  id,
+}: {
+  ctx: QueryCtx;
+  id: Id<"chat">;
+}) => {
+  const user = await mustGetCurrentUser(ctx);
+  const chat = await getOneFrom(ctx.db, "chat", "by_id", id, "_id");
+
+  if (!chat) {
+    return null;
+  }
+
+  const member = await ctx.db
+    .query("member")
+    .withIndex("by_member_chatid", (q) => q.eq("chatId", chat._id))
+    .filter((q) => q.not(q.eq(q.field("userId"), user._id)))
+    .first();
+
+  if (member && chat.isGroup === false) {
+    const userOther = await ctx.db.get(member.userId);
+    const presence = await ctx.db
+      .query("presence")
+      .withIndex("by_user", (q) => q.eq("userId", member.userId))
+      .first();
+    return {
+      ...chat,
+      name: userOther?.username || "unknown user",
+      image:
+        userOther?.image ||
+        "https://res.cloudinary.com/dv6cln4gs/image/upload/v1743506282/group/ri6jpgw5ayrk4aajjxfc.png",
+      online: presence?.isOnline || false,
+      lastSeen: presence?.lastSeen || 0,
+    };
+  }
+  return {
+    ...chat,
+    online: false,
+    lastSeen: 0,
+  };
+};
+
+/**
+ * get chat with member
+ */
+
+export const getChatByIdWithMembers = query({
+  args: { id: v.id("chat") },
+  handler: async (ctx, { id }) => {
+    const chat = await getChatMetadata({ ctx, id });
+
+    if (!chat) {
+      return null;
+    }
+    const members = await getManyFrom(
+      ctx.db,
+      "member",
+      "by_member_chatid",
+      id,
+      "chatId",
+    );
+
+    const newMembers = await asyncMap(members, async (member) => {
+      const presence = await ctx.db
+        .query("presence")
+        .withIndex("by_user", (q) => q.eq("userId", member.userId))
+        .first();
+
+      const user = await ctx.db.get(member.userId);
+
+      return {
+        ...member,
+        online: presence?.isOnline || false,
+        username: user?.username || "unknown name",
+        image:
+          user?.image ||
+          "https://res.cloudinary.com/dv6cln4gs/image/upload/v1743506282/group/ri6jpgw5ayrk4aajjxfc.png",
+      };
+    });
+
+    return {
+      ...chat,
+      members: newMembers,
+    };
+  },
+});
+
+/**
+ * get chat metada nextjs
+ */
+
+export const getChatById = query({
+  args: { id: v.id("chat") },
+  handler: async (ctx, { id }) => {
+    return await getChatMetadata({ ctx, id });
   },
 });

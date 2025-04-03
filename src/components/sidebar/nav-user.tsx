@@ -42,6 +42,7 @@ import { Skeleton } from "../ui/skeleton";
 import { useEffect } from "react";
 import { UserAvatar } from "../user/user-avatar";
 import { useTheme } from "next-themes";
+import { useAuthActions } from "@convex-dev/auth/react";
 
 export function NavUser() {
   const { data, isPending, isError } = useQuery(
@@ -74,6 +75,7 @@ function Content({
     presence: Doc<"presence">;
   };
 }) {
+  const { signOut } = useAuthActions();
   const { setTheme, theme } = useTheme();
   const { isMobile } = useSidebar();
 
@@ -181,7 +183,7 @@ function Content({
               </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => signOut()}>
               <LogOut />
               Log out
             </DropdownMenuItem>

@@ -56,7 +56,7 @@ const ChatAttachment: React.FC<Props> = ({ attachments }) => {
   if (len === 5 || len === 8) {
     return (
       <div className="flex size-full w-full max-w-[448px] flex-col gap-2">
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {attachments.slice(0, 2).map((item) => renderImage(item, 220, 220))}
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -76,7 +76,7 @@ const ChatAttachment: React.FC<Props> = ({ attachments }) => {
 
   return (
     <div className="flex size-full w-full max-w-[448px] flex-col gap-2">
-      <div className="flex items-center gap-2">
+      <div className="grid size-full items-center gap-2">
         {attachments.slice(0, 1).map((item) => renderImage(item, 448, 220))}
       </div>
       <div className="grid grid-cols-3 gap-2">

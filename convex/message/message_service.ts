@@ -195,3 +195,43 @@ export const sendMessage = mutation({
     }
   },
 });
+
+export const removeMessage = mutation({
+  args: { id: v.id("message") },
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id);
+  },
+});
+
+export const getAttachment = query({
+  handler: async (ctx) => {
+    const messages = await ctx.db.query("message").order("desc").collect();
+
+    const messageImage = await asyncMap(messages, async (message) => {
+      const user = await ctx.db.get(message.userId);
+
+      if (!user) {
+        throw new ConvexError("user not found");
+      }
+
+      const child = await getChildMessage({ ctx, parentId: message.parentId });
+
+      const attachment = await getManyFrom(
+        ctx.db,
+        "attachment",
+        "by_attachment_messageid",
+        message._id,
+        "messageId",
+      );
+
+      return {
+        ...message,
+        user,
+        child,
+        attachment,
+      };
+    });
+
+    return messageImage;
+  },
+});

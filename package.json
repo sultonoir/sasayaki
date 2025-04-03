@@ -46,6 +46,7 @@
     "convex": "^1.21.0",
     "convex-helpers": "^0.1.76",
     "date-fns": "^3.6.0",
+    "emoji-picker-react": "^4.12.2",
     "lucide-react": "^0.485.0",
     "motion": "^12.6.2",
     "nanoid": "^5.1.5",

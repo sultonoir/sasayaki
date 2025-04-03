@@ -1,28 +1,22 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {
-  CSSProperties,
-  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
-  useState,
 } from "react";
 import { VList, VListHandle } from "virtua";
-import { faker } from "@faker-js/faker";
 import { usePaginatedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { Image } from "@unpic/react/nextjs";
-import { fromNow } from "@/lib/from-now";
 import ChatInput from "./chat-input";
-import ChatAttachment from "./chat-attachment";
+import ChatLoader from "./chat-loader";
+import ChatContent from "./chat-content";
 
 interface Props {
   chatId: Id<"chat">;
 }
 
 const ChatBody = React.memo(({ chatId }: Props) => {
-  const { loadMore, results } = usePaginatedQuery(
+  const { loadMore, results, status } = usePaginatedQuery(
     api.message.message_service.getMessages,
     { chatId },
     { initialNumItems: 14 },
@@ -71,41 +65,15 @@ const ChatBody = React.memo(({ chatId }: Props) => {
         shift={isPrependRef.current}
         onScroll={handleScroll}
       >
+        {status === "LoadingFirstPage" && (
+          <div className="grid grid-cols-1 gap-1 px-4">
+            <ChatLoader length={20} />
+          </div>
+        )}
         {results
-          .map((result) => (
-            <div
-              key={result._id}
-              className="hover:bg-accent mx-4 flex flex-row gap-4 rounded-lg p-2 first:mt-2 last:mb-2"
-            >
-              <Image
-                src={result.user.image!}
-                alt={result.user.name!}
-                width={40}
-                height={40}
-                layout="fixed"
-                priority={true}
-                loading="eager"
-                className="rounded-full object-cover"
-              />
-              <div className="flex max-w-md grow flex-col">
-                <p className="">
-                  <span className="font-semibold capitalize">
-                    {result.user.username}
-                  </span>
-                  <span className="text-muted-foreground ml-2 text-xs">
-                    {fromNow(new Date(result._creationTime))}
-                  </span>
-                </p>
-                <p className="text-sm">{result.body}</p>
-                {result.attachment.length > 0 && (
-                  <ChatAttachment attachments={result.attachment} />
-                )}
-              </div>
-            </div>
-          ))
+          .map((result) => <ChatContent message={result} key={result._id} />)
           .reverse()}
       </VList>
-
       <ChatInput chatId={chatId} goingTobotom={handleSubmit} />
     </div>
   );

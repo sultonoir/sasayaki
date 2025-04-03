@@ -15,6 +15,7 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { UploadedFile } from "@/types";
+import { EmojiPicker } from "../ui/emoji-picker";
 
 interface Props {
   chatId: Id<"chat">;
@@ -173,7 +174,12 @@ export default function ChatInput({ chatId, goingTobotom }: Props) {
               <Paperclip className="h-4 w-4 text-black/40 transition-colors hover:text-black dark:text-white/40 dark:hover:text-white" />
             </div>
           </div>
-          <div className="absolute right-3 bottom-3">
+          <div className="absolute right-3 bottom-3 flex items-center gap-2">
+            <EmojiPicker
+              onChange={(v) => {
+                setValue(value + v);
+              }}
+            />
             <button
               type="button"
               disabled={isPending}

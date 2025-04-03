@@ -13,3 +13,14 @@ export type Member = Doc<"member"> & {
   online: boolean;
   image: string;
 };
+
+export type Reply = Doc<"message"> & {
+  user: Doc<"users">;
+  attachment: Doc<"attachment">[];
+};
+
+export type Messages = Doc<"message"> & {
+  user: Doc<"users">;
+  attachment: Doc<"attachment">[];
+  child: Reply | null;
+};

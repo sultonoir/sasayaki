@@ -5,13 +5,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
-import { Skeleton } from "../ui/skeleton";
 import { useQuery } from "convex-helpers/react";
 import { api } from "@/convex/_generated/api";
 import { MessageSquare } from "lucide-react";
 import { Image } from "@unpic/react/nextjs";
 import { fromNow } from "@/lib/from-now";
 import Link from "next/link";
+import ChatLoader from "../chat/chat-loader";
 
 const ChatLists = () => {
   return (
@@ -26,7 +26,7 @@ function Content() {
     api.chat.chat_service.chatlists,
   );
   if (isPending) {
-    return <Loader />;
+    return <ChatLoader />;
   }
 
   if (isError || data.length === 0) {
@@ -74,22 +74,6 @@ function Content() {
         </SidebarMenuItem>
       ))}
     </SidebarMenu>
-  );
-}
-
-function Loader() {
-  return (
-    <div className="grid grid-cols-1 gap-2">
-      {Array.from({ length: 14 }).map((_, index) => (
-        <div className="flex items-center space-x-4" key={index}>
-          <Skeleton className="h-12 w-12 flex-none rounded-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
-          </div>
-        </div>
-      ))}
-    </div>
   );
 }
 

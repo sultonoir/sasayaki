@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Image } from "@unpic/react/nextjs";
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
   src?: string;
@@ -9,16 +9,27 @@ interface Props extends React.HTMLAttributes<HTMLElement> {
   online?: boolean;
 }
 
-export const UserAvatar = ({ src, name, online, className }: Props) => {
+export const UserAvatar = ({
+  src = "/avatar.png",
+  name,
+  online,
+  className,
+}: Props) => {
   return (
     <div className={cn("relative isolate flex-none flex-shrink-0", className)}>
-      <Avatar className="size-8 rounded-full">
-        <AvatarImage src={src || "/avatar.png"} alt={name} />
-        <AvatarFallback className="rounded-lg">{name?.at(0)}</AvatarFallback>
-      </Avatar>
+      <Image
+        src={src}
+        alt={name}
+        width={38}
+        height={38}
+        layout="fixed"
+        priority={true}
+        loading="eager"
+        className="rounded-full object-cover"
+      />
       <span
         className={cn(
-          "border-secondary absolute -end-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-emerald-500",
+          "border-card absolute -end-0.5 bottom-0.5 size-3 rounded-full border-2 bg-emerald-500",
           {
             "bg-muted": online === false,
           },

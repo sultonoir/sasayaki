@@ -183,7 +183,7 @@ function Content({
               </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => signOut()}>
+            <DropdownMenuItem onSelect={async() => signOut()}>
               <LogOut />
               Log out
             </DropdownMenuItem>

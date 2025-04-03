@@ -1,4 +1,4 @@
-import { formatDate, formatDistanceToNowStrict } from "date-fns";
+import { formatDate } from "date-fns";
 
 export function fromNow(from: Date) {
   if (!(from instanceof Date)) {
@@ -7,7 +7,8 @@ export function fromNow(from: Date) {
 
   const currentDate = new Date();
   if (currentDate.getTime() - from.getTime() < 24 * 60 * 60 * 1000) {
-    return formatDistanceToNowStrict(from, { addSuffix: true });
+    // For times less than 24 hours ago, show hours and minutes
+    return formatDate(from, "h:mm a");
   } else {
     if (currentDate.getFullYear() === from.getFullYear()) {
       return formatDate(from, "MMM d");

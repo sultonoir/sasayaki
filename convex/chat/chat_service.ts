@@ -64,6 +64,7 @@ export const chatlists = query({
         .query("chat")
         .withIndex("by_id", (q) => q.eq("_id", member.chatId))
         .first();
+
       const { lastMessage, lastMessageTime } = await getLastMessage({
         ctx,
         chatId: member.chatId,

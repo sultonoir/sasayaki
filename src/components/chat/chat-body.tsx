@@ -15,50 +15,61 @@ import { Id } from "@/convex/_generated/dataModel";
 import { Image } from "@unpic/react/nextjs";
 import { fromNow } from "@/lib/from-now";
 import ChatInput from "./chat-input";
+import ChatAttachment from "./chat-attachment";
 
 interface Props {
   chatId: Id<"chat">;
 }
 
 const ChatBody = React.memo(({ chatId }: Props) => {
-  const { status, loadMore, results } = usePaginatedQuery(
+  const { loadMore, results } = usePaginatedQuery(
     api.message.message_service.getMessages,
     { chatId },
     { initialNumItems: 14 },
   );
-  const ref = useRef<VListHandle>(null);
-  const isPrepend = useRef(false);
-  const shouldStickToBottom = useRef(true);
+
+  const listRef = useRef<VListHandle>(null);
+  const isPrependRef = useRef(false);
+  const shouldStickToBottomRef = useRef(true);
 
   useLayoutEffect(() => {
-    isPrepend.current = false;
-  }, []);
+    isPrependRef.current = false;
+  });
 
+  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    if (!ref.current || !shouldStickToBottom.current) return;
-    ref.current.scrollToIndex(results.length - 1, { align: "end" });
+    if (!listRef.current) return;
+    if (!shouldStickToBottomRef.current) return;
+
+    listRef.current.scrollToIndex(results.length - 1, { align: "end" });
   }, [results.length]);
 
-  const goingTobotom = useCallback(() => {
-    shouldStickToBottom.current = true;
-  }, []);
+  const handleSubmit = () => {
+    shouldStickToBottomRef.current = true;
+  };
+
+  const handleScroll = (offset: number) => {
+    if (!listRef.current) return;
+
+    shouldStickToBottomRef.current =
+      offset - listRef.current.scrollSize + listRef.current.viewportSize >=
+      // FIXME: The sum may not be 0 because of sub-pixel value when browser's window.devicePixelRatio has decimal value
+      -1.5;
+
+    if (offset < 100) {
+      isPrependRef.current = true;
+      loadMore(10);
+    }
+  };
+
   return (
     <div className="flex size-full flex-col">
       <VList
-        ref={ref}
+        ref={listRef}
+        style={{ flex: 1 }}
         reverse
-        className="grow"
-        shift={isPrepend.current}
-        onScroll={(offset) => {
-          if (!ref.current) return;
-          shouldStickToBottom.current =
-            offset - ref.current.scrollSize + ref.current.viewportSize >= -1.5;
-
-          if (offset < 100 && status === "CanLoadMore") {
-            isPrepend.current = true;
-            loadMore(5);
-          }
-        }}
+        shift={isPrependRef.current}
+        onScroll={handleScroll}
       >
         {results
           .map((result) => (
@@ -76,7 +87,7 @@ const ChatBody = React.memo(({ chatId }: Props) => {
                 loading="eager"
                 className="rounded-full object-cover"
               />
-              <div className="flex max-w-md flex-col">
+              <div className="flex max-w-md grow flex-col">
                 <p className="">
                   <span className="font-semibold capitalize">
                     {result.user.username}
@@ -86,12 +97,16 @@ const ChatBody = React.memo(({ chatId }: Props) => {
                   </span>
                 </p>
                 <p className="text-sm">{result.body}</p>
+                {result.attachment.length > 0 && (
+                  <ChatAttachment attachments={result.attachment} />
+                )}
               </div>
             </div>
           ))
           .reverse()}
       </VList>
-      <ChatInput chatId={chatId} goingTobotom={goingTobotom} />
+
+      <ChatInput chatId={chatId} goingTobotom={handleSubmit} />
     </div>
   );
 });

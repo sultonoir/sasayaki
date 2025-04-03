@@ -24,7 +24,7 @@ export const getLastMessage = async ({
     .order("desc")
     .first();
 
-  if (!message?.body) {
+  if (!message) {
     return {
       lastMessage: "Group created",
       lastMessageTime: 0,

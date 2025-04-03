@@ -9,6 +9,7 @@ import { message } from "./message/message_model";
 import { attachment } from "./attachment/attachment_model";
 import { read } from "./read/read_model";
 import { junk } from "./junk/junk_model";
+import { typing } from "./typing/typing_model";
 
 const schema = defineSchema({
   ...authTables,
@@ -33,6 +34,7 @@ const schema = defineSchema({
   attachment,
   read,
   junk,
+  typing,
 });
 
 export default schema;

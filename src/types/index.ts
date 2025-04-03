@@ -5,6 +5,7 @@ export interface UploadedFile {
   fileId: string;
   name: string;
   blur: string;
+  format: string;
 }
 
 export type Member = Doc<"member"> & {

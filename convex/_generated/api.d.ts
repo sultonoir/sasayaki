@@ -27,6 +27,7 @@ import type * as read_read_model from "../read/read_model.js";
 import type * as todo_todo_model from "../todo/todo_model.js";
 import type * as todo_todo_service from "../todo/todo_service.js";
 import type * as typing_typing_model from "../typing/typing_model.js";
+import type * as typing_typing_service from "../typing/typing_service.js";
 import type * as user_user_service from "../user/user_service.js";
 
 import type {
@@ -63,6 +64,7 @@ declare const fullApi: ApiFromModules<{
   "todo/todo_model": typeof todo_todo_model;
   "todo/todo_service": typeof todo_todo_service;
   "typing/typing_model": typeof typing_typing_model;
+  "typing/typing_service": typeof typing_typing_service;
   "user/user_service": typeof user_user_service;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

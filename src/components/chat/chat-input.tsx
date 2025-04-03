@@ -1,9 +1,8 @@
 "use client";
 
-import { Globe, Paperclip, Send } from "lucide-react";
-import { useState } from "react";
+import { FileIcon, Loader2, Paperclip, Send, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
 import { useMutation } from "convex/react";
@@ -12,6 +11,10 @@ import { Id } from "@/convex/_generated/dataModel";
 import { ConvexError } from "convex/values";
 import { toast } from "sonner";
 import ErrorToast from "../ui/error-toast";
+import { useDropzone } from "react-dropzone";
+import Image from "next/image";
+import { Button } from "../ui/button";
+import { UploadedFile } from "@/types";
 
 interface Props {
   chatId: Id<"chat">;
@@ -19,37 +22,116 @@ interface Props {
 }
 
 export default function ChatInput({ chatId, goingTobotom }: Props) {
+  const [isPending, setisPending] = useState(false);
+  const [images, setImages] = useState<File[]>([]);
   const mutate = useMutation(api.message.message_service.sendMessage);
   const [value, setValue] = useState("");
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 52,
     maxHeight: 200,
   });
-  const [showSearch, setShowSearch] = useState(true);
 
   const handleSubmit = async () => {
+    setisPending(true);
+
     try {
-      await mutate({ chatId, body: value });
+      const uploadImage: UploadedFile[] = [];
+      if (images.length > 0) {
+        const formData = new FormData();
+        images.forEach((file) => {
+          formData.append("files", file);
+        });
+        formData.append("folder", chatId);
+
+        const result = await fetch("/api/image", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!result.ok) {
+          toast.error("Failed to upload files");
+          return;
+        }
+
+        const data = await result.json<{
+          success: boolean;
+          results: UploadedFile[];
+        }>();
+
+        uploadImage.push(...data.results);
+        if (!data.success || !data.results) {
+          toast.error("Failed to upload files");
+          return;
+        }
+      }
+      // Submit the message with attachments (uploaded images)
+      await mutate({ chatId, body: value, attachments: uploadImage });
     } catch (error) {
-      let message = "";
+      let message = "Error sending message";
       if (error instanceof ConvexError) {
-        message = error.data;
+        message = error.data || message;
       }
       if (error instanceof Error) {
-        message = error.message;
-      } else {
-        message = "Error send message";
+        message = error.message || message;
       }
-
+      setisPending(false);
       return toast.custom((t) => <ErrorToast name={message} t={t} />);
     }
-    setValue("");
+
+    setisPending(false);
+    setImages([]); // Clear images after submission
+    setValue(""); // Clear text input
     goingTobotom();
     adjustHeight(true);
   };
 
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      // Filter file yang belum ada di daftar images
+      const newImages = acceptedFiles.filter(
+        (item) => !images.some((a) => a.name === item.name),
+      );
+
+      // Hitung total setelah ditambahkan
+      const totalImages = images.length + newImages.length;
+
+      // Jika jumlah total lebih dari 10, batasi dan beri peringatan
+      if (totalImages > 10) {
+        toast.error("Too many uploads! You can only upload up to 10 files.");
+        return;
+      }
+
+      // Update state dengan gambar baru yang lolos filter
+      setImages([...images, ...newImages]);
+    },
+    [images],
+  );
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [".png", ".jpg", ".jpeg", ".gif"],
+    },
+  });
+
+  const removeImage = useCallback((name: string) => {
+    setImages((prev) => prev.filter((i) => i.name !== name));
+  }, []);
+
   return (
-    <div className="relative mx-auto w-full">
+    <div className="relative mx-auto w-full flex-none shrink-0 border-t">
+      {isPending && images.length > 0 && (
+        <div className="flex items-center gap-4 p-3">
+          <FileIcon size={30} className="fill-primary/30 stroke-primary" />
+          <div className="flex flex-col gap-1">
+            <p>Progress...</p>
+            <div className="bg-muted after:bg-primary relative h-2 w-[200px] overflow-hidden rounded-lg after:absolute after:h-full after:w-1/2" />
+          </div>
+        </div>
+      )}
+      {!isPending && images.length > 0 && (
+        <ImageGallery images={images} removeImage={removeImage} />
+      )}
       <div className="relative flex flex-col">
         <div className="max-h-[200px] overflow-y-auto">
           <Textarea
@@ -78,72 +160,23 @@ export default function ChatInput({ chatId, goingTobotom }: Props) {
         </div>
         <div className="h-12 bg-black/5 dark:bg-white/5">
           <div className="absolute bottom-3 left-3 flex items-center gap-2">
-            <label className="cursor-pointer rounded-lg bg-black/5 p-2 dark:bg-white/5">
-              <input type="file" className="hidden" />
-              <Paperclip className="h-4 w-4 text-black/40 transition-colors hover:text-black dark:text-white/40 dark:hover:text-white" />
-            </label>
-            <button
-              type="button"
-              onClick={() => {
-                setShowSearch(!showSearch);
-              }}
-              className={cn(
-                "flex h-8 cursor-pointer items-center gap-2 rounded-full border px-1.5 py-1 transition-all",
-                showSearch
-                  ? "border-sky-400 bg-sky-500/15 text-sky-500"
-                  : "border-transparent bg-black/5 text-black/40 hover:text-black dark:bg-white/5 dark:text-white/40 dark:hover:text-white",
-              )}
+            <div
+              {...getRootProps()}
+              className="cursor-pointer rounded-lg bg-black/5 p-2 dark:bg-white/5"
             >
-              <div className="flex h-4 w-4 shrink-0 items-center justify-center">
-                <motion.div
-                  animate={{
-                    rotate: showSearch ? 180 : 0,
-                    scale: showSearch ? 1.1 : 1,
-                  }}
-                  whileHover={{
-                    rotate: showSearch ? 180 : 15,
-                    scale: 1.1,
-                    transition: {
-                      type: "spring",
-                      stiffness: 300,
-                      damping: 10,
-                    },
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 260,
-                    damping: 25,
-                  }}
-                >
-                  <Globe
-                    className={cn(
-                      "h-4 w-4",
-                      showSearch ? "text-sky-500" : "text-inherit",
-                    )}
-                  />
-                </motion.div>
-              </div>
-              <AnimatePresence>
-                {showSearch && (
-                  <motion.span
-                    initial={{ width: 0, opacity: 0 }}
-                    animate={{
-                      width: "auto",
-                      opacity: 1,
-                    }}
-                    exit={{ width: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="shrink-0 overflow-hidden text-sm whitespace-nowrap text-sky-500"
-                  >
-                    Search
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </button>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                {...getInputProps()}
+              />
+              <Paperclip className="h-4 w-4 text-black/40 transition-colors hover:text-black dark:text-white/40 dark:hover:text-white" />
+            </div>
           </div>
           <div className="absolute right-3 bottom-3">
             <button
               type="button"
+              disabled={isPending}
               onClick={handleSubmit}
               className={cn(
                 "rounded-lg p-2 transition-colors",
@@ -152,7 +185,11 @@ export default function ChatInput({ chatId, goingTobotom }: Props) {
                   : "cursor-pointer bg-black/5 text-black/40 hover:text-black dark:bg-white/5 dark:text-white/40 dark:hover:text-white",
               )}
             >
-              <Send className="h-4 w-4" />
+              {isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Send className="size-4" />
+              )}
             </button>
           </div>
         </div>
@@ -160,3 +197,46 @@ export default function ChatInput({ chatId, goingTobotom }: Props) {
     </div>
   );
 }
+
+const ImageGallery = ({
+  images,
+  removeImage,
+}: {
+  images: File[];
+  removeImage: (name: string) => void;
+}) => {
+  const [imageURLs, setImageURLs] = useState<{ name: string; url: string }[]>(
+    [],
+  );
+
+  useEffect(() => {
+    const newImageURLs = images.map((image) => {
+      return new Promise<{ name: string; url: string }>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () =>
+          resolve({ name: image.name, url: reader.result as string });
+        reader.readAsDataURL(image);
+      });
+    });
+
+    Promise.all(newImageURLs).then(setImageURLs);
+  }, [images]);
+
+  return (
+    <div className="relative flex max-w-[calc(100svw-360px)] items-center gap-4 overflow-x-auto p-3">
+      {imageURLs.map(({ name, url }) => (
+        <div className="relative min-w-[200px]" key={name}>
+          <Button
+            size="icon"
+            variant="destructive"
+            className="absolute top-1 right-1 size-7"
+            onClick={() => removeImage(name)}
+          >
+            <Trash2 />
+          </Button>
+          <Image width={200} height={230} alt={name} src={url} />
+        </div>
+      ))}
+    </div>
+  );
+};

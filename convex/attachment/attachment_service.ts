@@ -8,7 +8,7 @@ export const attachmentSchema = v.array(
     fileId: v.string(),
     url: v.string(),
     blur: v.string(),
-    caption: v.optional(v.string()),
+    name: v.string(),
   }),
 );
 

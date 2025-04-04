@@ -11,6 +11,7 @@ import { read } from "./read/read_model";
 import { junk } from "./junk/junk_model";
 import { typing } from "./typing/typing_model";
 import { banner } from "./banner/banner_model";
+import { access } from "./access/access_mode";
 
 const schema = defineSchema({
   ...authTables,
@@ -38,6 +39,7 @@ const schema = defineSchema({
   junk,
   typing,
   banner,
+  access,
 });
 
 export default schema;

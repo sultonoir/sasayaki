@@ -88,6 +88,13 @@ export const getMessages = query({
       .order("desc")
       .paginate(paginationOpts);
 
+    const haveAccess = await ctx.db
+      .query("access")
+      .withIndex("by_access_delete", (q) =>
+        q.eq("userId", session._id).eq("chatId", chatId).eq("delete", true),
+      )
+      .unique();
+
     const newMessages = await asyncMap(messages.page, async (message) => {
       const user = await ctx.db.get(message.userId);
 
@@ -108,7 +115,9 @@ export const getMessages = query({
         "messageId",
       );
 
-      const access = message.userId === session._id;
+      const access =
+        message.userId === session._id || haveAccess?.delete || false;
+
       return {
         ...message,
         user,

@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as access_access_mode from "../access/access_mode.js";
+import type * as access_access_service from "../access/access_service.js";
 import type * as attachment_attachment_model from "../attachment/attachment_model.js";
 import type * as attachment_attachment_service from "../attachment/attachment_service.js";
 import type * as auth from "../auth.js";
@@ -49,6 +51,8 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "access/access_mode": typeof access_access_mode;
+  "access/access_service": typeof access_access_service;
   "attachment/attachment_model": typeof attachment_attachment_model;
   "attachment/attachment_service": typeof attachment_attachment_service;
   auth: typeof auth;

@@ -29,7 +29,9 @@ const ChatAttachment: React.FC<Props> = ({ attachments }) => {
   if (len === 2) {
     return (
       <div className="grid w-full max-w-[440px] grid-cols-2 gap-2">
-        {attachments.map((item) => renderImage(item, 220, 220))}
+        {attachments.map((item) => (
+          <RenderImage item={item} key={item._id} width={220} height={220} />
+        ))}
       </div>
     );
   }
@@ -38,9 +40,11 @@ const ChatAttachment: React.FC<Props> = ({ attachments }) => {
     return (
       <div className="grid w-full max-w-[448px] grid-cols-3 grid-rows-2 gap-2">
         <div className="col-span-2 row-span-2">
-          {renderImage(attachments[0], 300, 300)}
+          <RenderImage item={attachments[0]} width={300} height={300} />
         </div>
-        {attachments.slice(1).map((item) => renderImage(item, 144, 144))}
+        {attachments.slice(1).map((item) => (
+          <RenderImage item={item} key={item._id} width={220} height={220} />
+        ))}
       </div>
     );
   }
@@ -48,7 +52,9 @@ const ChatAttachment: React.FC<Props> = ({ attachments }) => {
   if (len === 4) {
     return (
       <div className="grid w-full max-w-[400px] grid-cols-2 gap-2">
-        {attachments.map((item) => renderImage(item, 200, 200))}
+        {attachments.map((item) => (
+          <RenderImage item={item} key={item._id} width={200} height={200} />
+        ))}
       </div>
     );
   }
@@ -57,10 +63,14 @@ const ChatAttachment: React.FC<Props> = ({ attachments }) => {
     return (
       <div className="flex size-full w-full max-w-[448px] flex-col gap-2">
         <div className="grid grid-cols-2 gap-2">
-          {attachments.slice(0, 2).map((item) => renderImage(item, 220, 220))}
+          {attachments.slice(0, 2).map((item) => (
+            <RenderImage item={item} key={item._id} width={220} height={220} />
+          ))}
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {attachments.slice(2).map((item) => renderImage(item, 220, 220))}
+          {attachments.slice(2).map((item) => (
+            <RenderImage item={item} key={item._id} width={220} height={220} />
+          ))}
         </div>
       </div>
     );
@@ -69,7 +79,9 @@ const ChatAttachment: React.FC<Props> = ({ attachments }) => {
   if (len === 6 || len === 9) {
     return (
       <div className="grid w-full max-w-[660px] grid-cols-3 gap-2">
-        {attachments.map((item) => renderImage(item, 220, 220))}
+        {attachments.map((item) => (
+          <RenderImage item={item} key={item._id} width={220} height={220} />
+        ))}
       </div>
     );
   }
@@ -77,21 +89,27 @@ const ChatAttachment: React.FC<Props> = ({ attachments }) => {
   return (
     <div className="flex size-full w-full max-w-[448px] flex-col gap-2">
       <div className="grid size-full items-center gap-2">
-        {attachments.slice(0, 1).map((item) => renderImage(item, 448, 220))}
+        {attachments.slice(0, 1).map((item) => (
+          <RenderImage item={item} key={item._id} width={448} height={220} />
+        ))}
       </div>
       <div className="grid grid-cols-3 gap-2">
-        {attachments.slice(1).map((item) => renderImage(item, 220, 220))}
+        {attachments.slice(1).map((item) => (
+          <RenderImage item={item} key={item._id} width={220} height={220} />
+        ))}
       </div>
     </div>
   );
 };
 
-const renderImage = (
-  item: Doc<"attachment">,
-  width?: number,
-  height?: number,
-) => (
-  <div key={item._id} className="group relative overflow-hidden rounded-md">
+interface RenderImageProps {
+  item: Doc<"attachment">;
+  width: number;
+  height: number;
+}
+
+const RenderImage: React.FC<RenderImageProps> = ({ item, width, height }) => (
+  <div className="group relative overflow-hidden rounded-md">
     <Image
       src={item.url}
       background={blurhashToDataUri(item.blur)}

@@ -1,15 +1,12 @@
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-} from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { VList, VListHandle } from "virtua";
 import { usePaginatedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import ChatInput from "./chat-input";
 import ChatLoader from "./chat-loader";
 import ChatContent from "./chat-content";
+import ChatFooter from "./chat-footer";
+import { useChat } from "@/hooks/use-chat";
 
 interface Props {
   chatId: Id<"chat">;
@@ -23,14 +20,9 @@ const ChatBody = React.memo(({ chatId }: Props) => {
   );
 
   const listRef = useRef<VListHandle>(null);
-  const isPrependRef = useRef(false);
   const shouldStickToBottomRef = useRef(true);
+  const { shift, setShift } = useChat();
 
-  useLayoutEffect(() => {
-    isPrependRef.current = false;
-  });
-
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (!listRef.current) return;
     if (!shouldStickToBottomRef.current) return;
@@ -38,7 +30,7 @@ const ChatBody = React.memo(({ chatId }: Props) => {
     listRef.current.scrollToIndex(results.length - 1, { align: "end" });
   }, [results.length]);
 
-  const handleSubmit = () => {
+  const scrollToBottom = () => {
     shouldStickToBottomRef.current = true;
   };
 
@@ -47,34 +39,38 @@ const ChatBody = React.memo(({ chatId }: Props) => {
 
     shouldStickToBottomRef.current =
       offset - listRef.current.scrollSize + listRef.current.viewportSize >=
-      // FIXME: The sum may not be 0 because of sub-pixel value when browser's window.devicePixelRatio has decimal value
       -1.5;
 
     if (offset < 100) {
-      isPrependRef.current = true;
+      setShift(true);
       loadMore(10);
     }
   };
 
+  const messages = useMemo(() => {
+    return [...results].reverse();
+  }, [results]);
+
   return (
     <div className="flex size-full flex-col">
+      {status === "LoadingFirstPage" && (
+        <div className="flex h-[calc(100svh-185px)] flex-col gap-2 overflow-y-auto p-3">
+          <ChatLoader length={40} />
+        </div>
+      )}
       <VList
         ref={listRef}
         style={{ flex: 1 }}
         reverse
-        shift={isPrependRef.current}
+        shift={shift} // Hanya aktif saat load more
         onScroll={handleScroll}
+        className="first:pt-5"
       >
-        {status === "LoadingFirstPage" && (
-          <div className="grid grid-cols-1 gap-1 px-4">
-            <ChatLoader length={20} />
-          </div>
-        )}
-        {results
-          .map((result) => <ChatContent message={result} key={result._id} />)
-          .reverse()}
+        {messages.map((result) => (
+          <ChatContent message={result} key={result._id} />
+        ))}
       </VList>
-      <ChatInput chatId={chatId} goingTobotom={handleSubmit} />
+      <ChatFooter chatId={chatId} goingTobotom={scrollToBottom} />
     </div>
   );
 });

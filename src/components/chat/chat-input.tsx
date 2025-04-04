@@ -16,6 +16,7 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { UploadedFile } from "@/types";
 import { EmojiPicker } from "../ui/emoji-picker";
+import { useChat } from "@/hooks/use-chat";
 
 interface Props {
   chatId: Id<"chat">;
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export default function ChatInput({ chatId, goingTobotom }: Props) {
+  const { setReply, reply } = useChat();
   const [isPending, setisPending] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const mutate = useMutation(api.message.message_service.sendMessage);
@@ -66,7 +68,12 @@ export default function ChatInput({ chatId, goingTobotom }: Props) {
         }
       }
       // Submit the message with attachments (uploaded images)
-      await mutate({ chatId, body: value, attachments: uploadImage });
+      await mutate({
+        chatId,
+        body: value,
+        attachments: uploadImage,
+        parentId: reply?._id,
+      });
     } catch (error) {
       let message = "Error sending message";
       if (error instanceof ConvexError) {
@@ -78,7 +85,7 @@ export default function ChatInput({ chatId, goingTobotom }: Props) {
       setisPending(false);
       return toast.custom((t) => <ErrorToast name={message} t={t} />);
     }
-
+    setReply(undefined);
     setisPending(false);
     setImages([]); // Clear images after submission
     setValue(""); // Clear text input
@@ -120,7 +127,7 @@ export default function ChatInput({ chatId, goingTobotom }: Props) {
   }, []);
 
   return (
-    <div className="relative mx-auto w-full flex-none shrink-0 border-t">
+    <>
       {isPending && images.length > 0 && (
         <div className="flex items-center gap-4 p-3">
           <FileIcon size={30} className="fill-primary/30 stroke-primary" />
@@ -200,7 +207,7 @@ export default function ChatInput({ chatId, goingTobotom }: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

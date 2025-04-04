@@ -22,5 +22,5 @@ export type Reply = Doc<"message"> & {
 export type Messages = Doc<"message"> & {
   user: Doc<"users">;
   attachment: Doc<"attachment">[];
-  child: Reply | null;
+  parent: Reply | null;
 };

@@ -31,7 +31,7 @@ export const getSession = query({
     if (!user) return null;
     const presence = await ctx.db
       .query("presence")
-      .withIndex("by_user")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
       .unique();
     if (!presence) return null;
     return {

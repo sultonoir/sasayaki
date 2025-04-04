@@ -23,4 +23,5 @@ export type Messages = Doc<"message"> & {
   user: Doc<"users">;
   attachment: Doc<"attachment">[];
   parent: Reply | null;
+  access: boolean;
 };

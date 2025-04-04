@@ -10,6 +10,7 @@ import { attachment } from "./attachment/attachment_model";
 import { read } from "./read/read_model";
 import { junk } from "./junk/junk_model";
 import { typing } from "./typing/typing_model";
+import { banner } from "./banner/banner_model";
 
 const schema = defineSchema({
   ...authTables,
@@ -22,6 +23,7 @@ const schema = defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.float64()),
     isAnonymous: v.optional(v.boolean()),
+    status: v.optional(v.string()),
   })
     .index("email", ["email"])
     .index("phone", ["phone"]),
@@ -35,6 +37,7 @@ const schema = defineSchema({
   read,
   junk,
   typing,
+  banner,
 });
 
 export default schema;

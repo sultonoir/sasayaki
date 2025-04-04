@@ -81,6 +81,7 @@ function generateFormat(format: string) {
 export const getMessages = query({
   args: { chatId: v.id("chat"), paginationOpts: paginationOptsValidator },
   handler: async (ctx, { chatId, paginationOpts }) => {
+    const session = await mustGetCurrentUser(ctx);
     const messages = await ctx.db
       .query("message")
       .withIndex("by_chat_time", (q) => q.eq("chatId", chatId))
@@ -107,11 +108,13 @@ export const getMessages = query({
         "messageId",
       );
 
+      const access = message.userId === session._id;
       return {
         ...message,
         user,
         parent,
         attachment,
+        access,
       };
     });
 

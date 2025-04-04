@@ -49,17 +49,19 @@ const ChatActions = ({ message }: Props) => {
       >
         <Reply />
       </Button>
-      <Button
-        variant="destructive"
-        size="icon"
-        className="size-7 text-white disabled:opacity-100"
-        aria-label="Remove message"
-        title="Remove message"
-        disabled={isPending}
-        loading={isPending}
-        onClick={handleRemoveMessage}
-        startContent={<Trash2 />}
-      />
+      {message.access && (
+        <Button
+          variant="destructive"
+          size="icon"
+          className="size-7 text-white disabled:opacity-100"
+          aria-label="Remove message"
+          title="Remove message"
+          disabled={isPending}
+          loading={isPending}
+          onClick={handleRemoveMessage}
+          startContent={<Trash2 />}
+        />
+      )}
     </div>
   );
 };

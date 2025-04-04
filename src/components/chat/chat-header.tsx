@@ -26,7 +26,8 @@ const ChatHeader = ({
   members,
   code,
 }: Props) => {
-  const memberonline = members.map((member) => member.online === true);
+  const memberonline = members.filter((member) => member.online === true);
+
   return (
     <header className="bg-card sticky top-0 z-50 flex shrink-0 items-center gap-2 rounded-t-lg border-b p-4">
       <SidebarTrigger className="-ml-1" />

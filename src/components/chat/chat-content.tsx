@@ -7,6 +7,8 @@ import ChatActions from "./chat-actions";
 import { cn } from "@/lib/utils";
 import { ImageIcon } from "lucide-react";
 import { useChat } from "@/hooks/use-chat";
+import Linkify from "../ui/Linkify";
+import UserTooltip from "../user/user-tooltip";
 
 interface Props {
   message: Messages;
@@ -15,7 +17,6 @@ interface Props {
 const ChatContent = ({ message }: Props) => {
   const { findMessage } = useChat();
   const parent = message.parent;
-
   return (
     <div
       id={message._id}
@@ -40,15 +41,18 @@ const ChatContent = ({ message }: Props) => {
       />
       <div className="flex size-full max-w-md flex-col">
         {parent && <ParentContent parent={parent} />}
-        <p>
-          <span className="font-semibold capitalize">
-            {message.user.username}
-          </span>
+        <div className="flex items-center">
+          <UserTooltip
+            userId={message.user._id}
+            name={message.user.name || "unknown name"}
+          />
           <span className="text-muted-foreground ml-2 text-xs">
             {fromNow(new Date(message._creationTime))}
           </span>
-        </p>
-        <p className="text-sm">{message.body}</p>
+        </div>
+        <div className="text-sm">
+          <Linkify>{message.body}</Linkify>
+        </div>
         {message.attachment.length > 0 && (
           <ChatAttachment attachments={message.attachment} />
         )}

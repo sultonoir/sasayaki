@@ -15,8 +15,8 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { UploadedFile } from "@/types";
-import { EmojiPicker } from "../ui/emoji-picker";
 import { useChat } from "@/hooks/use-chat";
+import Emoji from "../ui/emoji";
 
 interface Props {
   chatId: Id<"chat">;
@@ -182,11 +182,7 @@ export default function ChatInput({ chatId, goingTobotom }: Props) {
             </div>
           </div>
           <div className="absolute right-3 bottom-3 flex items-center gap-2">
-            <EmojiPicker
-              onChange={(v) => {
-                setValue(value + v);
-              }}
-            />
+            <Emoji onEmojiSelect={(e) => setValue((prev) => prev + e)} />
             <button
               type="button"
               disabled={isPending}

@@ -28,8 +28,8 @@ const ChatContent = ({ message }: Props) => {
       )}
     >
       <Image
-        src={message.user.image!}
-        alt={message.user.name!}
+        src={message.user.image || "/avatar.png"}
+        alt={message.user.name || "unknown user"}
         width={40}
         height={40}
         layout="fixed"

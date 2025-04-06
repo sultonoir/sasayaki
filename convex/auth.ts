@@ -7,9 +7,6 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   callbacks: {
     async afterUserCreatedOrUpdated(ctx, args) {
       if (args.existingUserId) return;
-      await ctx.db.patch(args.userId, {
-        username: `@${args.profile.email}`,
-      });
 
       await ctx.scheduler.runAfter(
         0,

@@ -10,16 +10,23 @@ import {
   EmojiPickerSearch,
   EmojiPickerContent,
 } from "@/components/ui/emoji-picker";
+import { cn } from "@/lib/utils";
 
-interface EmojiPickerProps {
+interface EmojiPickerProps extends React.ComponentProps<"button"> {
   onEmojiSelect: (value: string) => void;
 }
 
-const Emoji = ({ onEmojiSelect }: EmojiPickerProps) => {
+const Emoji = ({ onEmojiSelect, className, ...props }: EmojiPickerProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="cursor-pointer rounded-lg bg-black/5 p-2 dark:bg-white/5">
+        <button
+          {...props}
+          className={cn(
+            "cursor-pointer rounded-lg bg-black/5 p-2 dark:bg-white/5",
+            className,
+          )}
+        >
           <SmileIcon className="h-4 w-4 text-black/40 transition-colors hover:text-black dark:text-white/40 dark:hover:text-white" />
         </button>
       </PopoverTrigger>

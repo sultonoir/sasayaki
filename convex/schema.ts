@@ -16,10 +16,10 @@ import { access } from "./access/access_mode";
 const schema = defineSchema({
   ...authTables,
   users: defineTable({
-    name: v.optional(v.string()),
-    image: v.optional(v.string()),
-    email: v.optional(v.string()),
-    username: v.optional(v.string()),
+    name: v.string(),
+    image: v.string(),
+    email: v.string(),
+    username: v.string(),
     emailVerificationTime: v.optional(v.float64()),
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.float64()),

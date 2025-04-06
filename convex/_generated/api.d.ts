@@ -19,6 +19,7 @@ import type * as chat_chat_model from "../chat/chat_model.js";
 import type * as chat_chat_service from "../chat/chat_service.js";
 import type * as http from "../http.js";
 import type * as junk_junk_model from "../junk/junk_model.js";
+import type * as junk_junk_service from "../junk/junk_service.js";
 import type * as member_member_aggregate from "../member/member_aggregate.js";
 import type * as member_member_model from "../member/member_model.js";
 import type * as member_member_service from "../member/member_service.js";
@@ -62,6 +63,7 @@ declare const fullApi: ApiFromModules<{
   "chat/chat_service": typeof chat_chat_service;
   http: typeof http;
   "junk/junk_model": typeof junk_junk_model;
+  "junk/junk_service": typeof junk_junk_service;
   "member/member_aggregate": typeof member_member_aggregate;
   "member/member_model": typeof member_member_model;
   "member/member_service": typeof member_member_service;

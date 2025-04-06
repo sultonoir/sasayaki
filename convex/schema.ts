@@ -3,15 +3,17 @@ import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { todo } from "./todo/todo_model";
 import { presence, presence_heartbeats } from "./presence/presence_model";
-import { chat } from "./chat/chat_model";
 import { member } from "./member/member_model";
 import { message } from "./message/message_model";
 import { attachment } from "./attachment/attachment_model";
 import { read } from "./read/read_model";
-import { junk } from "./junk/junk_model";
 import { typing } from "./typing/typing_model";
 import { banner } from "./banner/banner_model";
 import { access } from "./access/access_mode";
+import { friend } from "./friend/friend_model";
+import { server, serverImage, serverList } from "./server/server_model";
+import { channel } from "./channel/channel_model";
+import { role, memberRole } from "./role/role_model";
 
 const schema = defineSchema({
   ...authTables,
@@ -31,15 +33,20 @@ const schema = defineSchema({
   todo,
   presence,
   presence_heartbeats,
-  chat,
   message,
   member,
   attachment,
   read,
-  junk,
   typing,
   banner,
   access,
+  friend,
+  server,
+  channel,
+  role,
+  memberRole,
+  serverImage,
+  serverList,
 });
 
 export default schema;

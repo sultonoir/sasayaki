@@ -10,12 +10,12 @@ import { mustGetCurrentUser } from "../user/user_service";
  */
 
 export const getTyping = query({
-  args: { chatId: v.string() },
-  handler: async (ctx, { chatId }) => {
+  args: { channelId: v.string() },
+  handler: async (ctx, { channelId }) => {
     const user = await mustGetCurrentUser(ctx);
     const rooms = await ctx.db
       .query("typing")
-      .withIndex("by_typing_rom", (q) => q.eq("roomid", chatId))
+      .withIndex("by_typing_rom", (q) => q.eq("roomid", channelId))
       .filter((q) => q.not(q.eq(q.field("userId"), user._id)))
       .collect();
 

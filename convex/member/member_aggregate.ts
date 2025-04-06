@@ -8,6 +8,6 @@ export const memberAggregate = new TableAggregate<{
   DataModel: DataModel;
   TableName: "member";
 }>(components.memberUserAggregae, {
-  namespace: (doc) => doc.chatId,
+  namespace: (doc) => doc.serverId,
   sortKey: (doc) => doc._creationTime,
 });

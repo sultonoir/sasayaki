@@ -8,6 +8,6 @@ export const messageAggregate = new TableAggregate<{
   DataModel: DataModel;
   TableName: "message";
 }>(components.messageIdAggregate, {
-  namespace: (doc) => doc.chatId,
+  namespace: (doc) => doc.channelId,
   sortKey: (doc) => doc._creationTime,
 });

@@ -3,16 +3,14 @@ import { mutation } from "../_generated/server";
 import { mustGetCurrentUser } from "../user/user_service";
 
 export const createAccess = mutation({
-  args: { chatId: v.id("chat") },
-  handler: async (ctx, { chatId }) => {
+  args: { serverId: v.id("server"), level: v.number() },
+  handler: async (ctx, { serverId, level }) => {
     const user = await mustGetCurrentUser(ctx);
 
     await ctx.db.insert("access", {
-      chatId,
+      serverId,
       userId: user._id,
-      add: true,
-      update: true,
-      delete: true,
+      level,
     });
   },
 });

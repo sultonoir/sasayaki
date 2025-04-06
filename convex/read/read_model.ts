@@ -2,9 +2,9 @@ import { defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export const read = defineTable({
-  chatId: v.id("chat"),
+  channelId: v.id("channel"),
   userId: v.id("users"),
   readAt: v.number(),
 })
-  .index("by_read_chatid", ["chatId"])
-  .index("by_read_user_chat", ["userId", "chatId"]);
+  .index("by_read_channel", ["channelId"])
+  .index("by_read_user_chat", ["userId", "channelId"]);

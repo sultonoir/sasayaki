@@ -9,7 +9,7 @@ import ChatFooter from "./chat-footer";
 import { useChat } from "@/hooks/use-chat";
 
 interface Props {
-  chatId: Id<"chat">;
+  chatId: Id<"channel">;
 }
 
 const ChatBody = React.memo(({ chatId }: Props) => {

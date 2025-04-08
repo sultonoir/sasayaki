@@ -25,6 +25,7 @@ import { useDialogCreateChannel } from "@/hooks/use-dialog-create-channel";
 import { useMutation } from "convex/react";
 import { handleError } from "@/lib/handle-eror";
 import { useDialogRmChannel } from "@/hooks/use-dialog-remove-channel";
+import ServerDropdown from "../server/server-dropdown";
 
 const SidebarChannel = React.memo(() => {
   const { setOpen, setId } = useDialogCreateChannel();
@@ -52,7 +53,7 @@ const SidebarChannel = React.memo(() => {
   return (
     <>
       <div className="flex w-full flex-col gap-2 border-b p-2">
-        <Button variant="accent">{data.name}</Button>
+        <ServerDropdown {...data} />
       </div>
       <div className="flex w-full flex-col gap-2 border-b p-2">
         <Button

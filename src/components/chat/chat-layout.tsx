@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React from "react";
 import { useDialogGroup } from "@/hooks/use-dialog-group";
-import { PageContainer, PageHeader } from "../ui/page-layouting";
-import { Doc } from "@/convex/_generated/dataModel";
-import ChatLoader from "./chat-loader";
+import { PageHeader } from "../ui/page-layouting";
 import ChatHeader from "./chat-header";
 import MemberLayout from "../member/member-layout";
 import { ServerChat } from "@/types";

@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { mutation, query, QueryCtx } from "../_generated/server";
 import { mustGetCurrentUser } from "../user/user_service";
 import { asyncMap } from "convex-helpers";
@@ -35,7 +35,17 @@ export const createServer = mutation({
     const member = ctx.db.insert("member", {
       userId: user._id,
       serverId: server,
+      username: user.username,
       joinedAt: Date.now(),
+    });
+
+    const access = ctx.db.insert("access", {
+      userId: user._id,
+      serverId: server,
+      read: true,
+      update: true,
+      remove: true,
+      create: true,
     });
 
     const imageServer = ctx.db.insert("serverImage", {
@@ -43,7 +53,7 @@ export const createServer = mutation({
       serverId: server,
     });
 
-    await Promise.all([channel, member, imageServer]);
+    await Promise.all([channel, member, imageServer, access]);
   },
 });
 
@@ -172,5 +182,24 @@ export const getServerByid = query({
       access,
       owner,
     };
+  },
+});
+
+export const removeServer = mutation({
+  args: { serverId: v.id("server") },
+  async handler(ctx, { serverId }) {
+    const user = await mustGetCurrentUser(ctx);
+
+    const server = await ctx.db.get(serverId);
+
+    if (!server) {
+      throw new ConvexError("server not found");
+    }
+
+    if (server.ownerId !== user._id) {
+      throw new ConvexError("you dont have access to remove server");
+    }
+
+    await ctx.db.delete(server._id);
   },
 });

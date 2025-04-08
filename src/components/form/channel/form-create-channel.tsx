@@ -23,6 +23,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { handleError } from "@/lib/handle-eror";
+import { useParams } from "next/navigation";
 
 const FormSchema = z.object({
   private: z.boolean().default(false),
@@ -30,31 +31,68 @@ const FormSchema = z.object({
 });
 
 export function FormCreateChannel({ className }: ComponentProps<"form">) {
+  const { setOpen, channel, setId } = useDialogCreateChannel();
+  const { server } = useParams<{ server: string }>();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      private: false,
-      name: "",
+      private: channel.isPrivate,
+      name: channel.name,
     },
   });
 
-  const { setOpen, id, setId } = useDialogCreateChannel();
-
   const mutate = useMutation(api.channel.channel_service.createChannel);
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  const editMutate = useMutation(api.channel.channel_service.editChannel);
+
+  async function handleCreate(data: z.infer<typeof FormSchema>) {
     try {
       await mutate({
         ...data,
-        serverId: id as unknown as Id<"server">,
+        serverId: channel.id as unknown as Id<"server">,
       });
     } catch (error) {
       return handleError({ error, message: "Error Create channel" });
     }
 
     setOpen(false);
-    setId("");
+    setId({
+      id: "",
+      name: "",
+      isPrivate: false,
+      type: "crete",
+    });
   }
 
+  async function handleUpdate(data: z.infer<typeof FormSchema>) {
+    try {
+      await editMutate({
+        serverId: server as unknown as Id<"server">,
+        private: data.private,
+        name: data.name,
+        channelId: channel.id as unknown as Id<"channel">,
+      });
+    } catch (error) {
+      return handleError({ error, message: "Error Create channel" });
+    }
+
+    setOpen(false);
+    setId({
+      id: "",
+      name: "",
+      isPrivate: false,
+      type: "crete",
+    });
+  }
+
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    if (channel.type === "crete") {
+      return handleCreate(data);
+    }
+    return handleUpdate(data);
+  }
+
+  const isPending =
+    form.formState.isSubmitting || form.watch("name").trim() === "";
   return (
     <Form {...form}>
       <form
@@ -119,7 +157,7 @@ export function FormCreateChannel({ className }: ComponentProps<"form">) {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" disabled={isPending}>
           Submit
         </Button>
       </form>

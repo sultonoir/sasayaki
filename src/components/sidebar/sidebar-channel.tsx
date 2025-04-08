@@ -1,7 +1,14 @@
 "use client";
 import React from "react";
 import { Button } from "../ui/button";
-import { Edit, Hash, LockIcon, PlusIcon, UserPlus } from "lucide-react";
+import {
+  Edit,
+  Hash,
+  LockIcon,
+  PlusIcon,
+  Trash2Icon,
+  UserPlus,
+} from "lucide-react";
 import FriendIcon from "../ui/friend-icon";
 import { useParams, useRouter } from "next/navigation";
 import { Doc, Id } from "@/convex/_generated/dataModel";
@@ -62,7 +69,12 @@ const SidebarChannel = React.memo(() => {
           <TooltipTrigger
             onClick={() => {
               setOpen(true);
-              setId(data._id);
+              setId({
+                id: data._id,
+                name: "",
+                isPrivate: false,
+                type: "crete",
+              });
             }}
           >
             <PlusIcon className="size-3" />
@@ -98,6 +110,7 @@ function Channel({
   access: Doc<"access">;
   owner: boolean;
 }) {
+  const { setOpen, setId } = useDialogCreateChannel();
   const { channel, server } = useParams<{ server: string; channel: string }>();
 
   const pathname = `/server/${server}/${ch._id}`;
@@ -138,7 +151,7 @@ function Channel({
       </button>
 
       {/* Conditionally showing buttons and other UI based on the owner's access */}
-      <div className="relative h-full w-14 flex-none">
+      <div className="relative h-full w-20 flex-none">
         {count > 0 && (
           <div className="absolute inset-0 flex items-center justify-end opacity-100 group-hover:opacity-0">
             <div className="bg-destructive size-fit rounded-lg px-2 py-0.5 text-[10px] text-white">
@@ -156,8 +169,25 @@ function Channel({
 
           {/* If owner and has update access, display the "Edit Channel" button */}
           {access?.update && (
-            <button className="btn btn-secondary">
+            <button
+              className="btn btn-secondary"
+              onClick={() => {
+                setOpen(true);
+                setId({
+                  id: ch._id,
+                  name: ch.name,
+                  isPrivate: ch.private,
+                  type: "upadate",
+                });
+              }}
+            >
               <Edit className="size-4" />
+            </button>
+          )}
+
+          {access?.remove && (
+            <button className="btn btn-primary hover:text-destructive">
+              <Trash2Icon className="size-4" />
             </button>
           )}
         </div>

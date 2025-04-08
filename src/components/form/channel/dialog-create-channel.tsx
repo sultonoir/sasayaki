@@ -23,15 +23,16 @@ import { FormCreateChannel } from "./form-create-channel";
 import { useDialogCreateChannel } from "@/hooks/use-dialog-create-channel";
 
 export default function DrawerDialogDemo() {
-  const { open, setOpen } = useDialogCreateChannel();
+  const { open, setOpen, channel } = useDialogCreateChannel();
   const isMobile = useIsMobile();
 
+  const title = channel.type === "crete" ? "Create" : "Update";
   if (!isMobile) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Create Channel</DialogTitle>
+            <DialogTitle>{title} Channel</DialogTitle>
             <DialogDescription>in Text Channels</DialogDescription>
           </DialogHeader>
           <FormCreateChannel />
@@ -44,7 +45,7 @@ export default function DrawerDialogDemo() {
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
         <DrawerHeader className="text-left">
-          <DrawerTitle>Create Channel</DrawerTitle>
+          <DrawerTitle>{title} Channel</DrawerTitle>
           <DrawerDescription>in Text Channels</DrawerDescription>
         </DrawerHeader>
         <FormCreateChannel className="px-4" />

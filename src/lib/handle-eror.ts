@@ -11,10 +11,7 @@ export const handleError = ({
 }) => {
   let defaultMessage = message;
   if (error instanceof ConvexError) {
-    defaultMessage = error.data || message;
-  }
-  if (error instanceof Error) {
-    defaultMessage = error.message || message;
+    defaultMessage = error.data;
   }
   toast.custom((t) => ErrorToast({ t, name: defaultMessage }));
   return;

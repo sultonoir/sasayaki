@@ -12,6 +12,16 @@ const DialogCreateGroup = dynamic(
 
 const DialogCreateChannel = dynamic(
   () => import("@/components/form/channel/dialog-create-channel"),
+  {
+    ssr: false,
+  },
+);
+
+const DialogRmChannel = dynamic(
+  () => import("@/components/form/channel/dialog-remove-channel"),
+  {
+    ssr: false,
+  },
 );
 
 const SessionProvider = () => {
@@ -20,6 +30,7 @@ const SessionProvider = () => {
     <>
       <DialogCreateGroup />
       <DialogCreateChannel />
+      <DialogRmChannel />
     </>
   );
 };

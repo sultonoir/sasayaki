@@ -24,6 +24,7 @@ import {
 import { useDialogCreateChannel } from "@/hooks/use-dialog-create-channel";
 import { useMutation } from "convex/react";
 import { handleError } from "@/lib/handle-eror";
+import { useDialogRmChannel } from "@/hooks/use-dialog-remove-channel";
 
 const SidebarChannel = React.memo(() => {
   const { setOpen, setId } = useDialogCreateChannel();
@@ -111,6 +112,7 @@ function Channel({
   owner: boolean;
 }) {
   const { setOpen, setId } = useDialogCreateChannel();
+  const { setIsOpen, setChannelId } = useDialogRmChannel();
   const { channel, server } = useParams<{ server: string; channel: string }>();
 
   const pathname = `/server/${server}/${ch._id}`;
@@ -185,8 +187,14 @@ function Channel({
             </button>
           )}
 
-          {access?.remove && (
-            <button className="btn btn-primary hover:text-destructive">
+          {access.remove && (
+            <button
+              className="btn btn-primary hover:text-destructive"
+              onClick={() => {
+                setIsOpen();
+                setChannelId(ch._id);
+              }}
+            >
               <Trash2Icon className="size-4" />
             </button>
           )}

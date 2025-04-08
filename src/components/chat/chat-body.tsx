@@ -40,7 +40,7 @@ const ChatBody = React.memo(({ channelId }: Props) => {
       offset - listRef.current.scrollSize + listRef.current.viewportSize >=
       -1.5;
 
-    if (offset < 100) {
+    if (offset < 100 && status === 'CanLoadMore') {
       setShift(true);
       loadMore(10);
     }
@@ -51,7 +51,7 @@ const ChatBody = React.memo(({ channelId }: Props) => {
   }, [results]);
 
   return (
-    <>
+    <div className="flex size-full flex-col">
       {status === "LoadingFirstPage" && (
         <div className="flex h-[calc(100svh-185px)] flex-col gap-2 overflow-y-auto p-3">
           <ChatLoader length={40} />
@@ -70,7 +70,7 @@ const ChatBody = React.memo(({ channelId }: Props) => {
         ))}
       </VList>
       <ChatFooter goingTobotom={scrollToBottom} />
-    </>
+    </div>
   );
 });
 

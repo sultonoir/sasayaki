@@ -11,3 +11,13 @@ export const messageAggregate = new TableAggregate<{
   namespace: (doc) => doc.channelId,
   sortKey: (doc) => doc._creationTime,
 });
+
+export const messageUserAggregate = new TableAggregate<{
+  Namespace: string; // channelId
+  Key: [string, number]; // [userId, timestamp]
+  DataModel: DataModel;
+  TableName: "message";
+}>(components.messageUserAggregate, {
+  namespace: (doc) => doc.channelId,
+  sortKey: (doc) => [doc.userId, doc._creationTime],
+});

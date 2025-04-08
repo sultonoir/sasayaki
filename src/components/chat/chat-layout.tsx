@@ -19,26 +19,24 @@ const ChatLayout = ({ server, channelId }: Props) => {
   const { open } = useDialogGroup();
 
   return (
-    <>
+    <div className="flex size-full flex-col">
       <PageHeader
         title={server.name}
         url={server.image.url}
         blur={server.image.blur}
         type="image"
       />
-      <PageContainer>
-        <ChatHeader server={server} />
-        <div className="relative isolate flex size-full overflow-x-hidden">
-          <div
-            data-state={open ? "open" : "close"}
-            className="bg-card flex size-full flex-col transition-all duration-300 ease-in-out will-change-transform data-[state=open]:lg:mr-[300px]"
-          >
-            <ChatBody channelId={channelId} />
-          </div>
-          <MemberLayout />
+      <ChatHeader server={server} className="border-t border-l" />
+      <div className="relative isolate flex size-full overflow-x-hidden border-l">
+        <div
+          data-state={open ? "open" : "close"}
+          className="bg-card flex size-full flex-col transition-all duration-300 ease-in-out will-change-transform data-[state=open]:lg:mr-[300px]"
+        >
+          <ChatBody channelId={channelId} />
         </div>
-      </PageContainer>
-    </>
+        <MemberLayout />
+      </div>
+    </div>
   );
 };
 

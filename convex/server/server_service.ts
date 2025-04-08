@@ -3,6 +3,7 @@ import { mutation, query, QueryCtx } from "../_generated/server";
 import { mustGetCurrentUser } from "../user/user_service";
 import { asyncMap } from "convex-helpers";
 import { getManyFrom, getOneFrom } from "convex-helpers/server/relationships";
+import { getReadChannel, getReadServer } from "../read/read_service";
 
 export const createServer = mutation({
   args: {
@@ -69,6 +70,8 @@ async function getServerByMember({ ctx }: { ctx: QueryCtx }) {
       .withIndex("by_server_channel", (q) => q.eq("serverId", member.serverId))
       .first();
 
+    const count = await getReadServer(ctx, member.serverId);
+
     if (!server || !image || !channel) {
       return null;
     }
@@ -77,6 +80,7 @@ async function getServerByMember({ ctx }: { ctx: QueryCtx }) {
       ...server,
       image,
       channel,
+      count,
     };
   });
 
@@ -141,6 +145,15 @@ export const getServerByid = query({
       "serverId",
     );
 
+    const newChannels = await asyncMap(channel, async (ch) => {
+      const count = await getReadChannel(ctx, ch._id);
+
+      return {
+        ...ch,
+        count,
+      };
+    });
+
     const access = await ctx.db
       .query("access")
       .withIndex("by_all_access", (q) =>
@@ -155,7 +168,7 @@ export const getServerByid = query({
     return {
       ...server,
       image: serverimage,
-      channel,
+      channel: newChannels,
       access,
       owner,
     };

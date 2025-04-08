@@ -79,6 +79,7 @@ function Wrapper() {
 type ContentProps = Doc<"server"> & {
   image: Doc<"serverImage">;
   channel: Doc<"channel">;
+  count: number;
 };
 
 function Content({ content }: { content: ContentProps }) {
@@ -103,6 +104,11 @@ function Content({ content }: { content: ContentProps }) {
               background={blurhashToDataUri(content.image.blur, 40, 40)}
               className="rounded-lg object-cover"
             />
+            {content.count > 0 && (
+              <div className="bg-destructive absolute right-1 bottom-0 rounded-lg px-1.5 py-0.5 text-[10px] text-white">
+                {content.count}
+              </div>
+            )}
           </Link>
         </TooltipTrigger>
         <TooltipContent side="right" align="center">

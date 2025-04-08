@@ -15,6 +15,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useDialogCreateChannel } from "@/hooks/use-dialog-create-channel";
+import { useMutation } from "convex/react";
+import { handleError } from "@/lib/handle-eror";
 
 const SidebarChannel = React.memo(() => {
   const { setOpen, setId } = useDialogCreateChannel();
@@ -77,6 +79,7 @@ const SidebarChannel = React.memo(() => {
             ch={ch}
             owner={data.owner}
             access={data.access}
+            count={ch.count}
           />
         ))}
       </div>
@@ -88,8 +91,10 @@ function Channel({
   ch,
   access,
   owner,
+  count,
 }: {
   ch: Doc<"channel">;
+  count: number;
   access: Doc<"access">;
   owner: boolean;
 }) {
@@ -99,7 +104,13 @@ function Channel({
 
   const roter = useRouter();
 
-  const handleNavigate = () => {
+  const mutate = useMutation(api.read.read_service.createRead);
+  const handleNavigate = async () => {
+    try {
+      await mutate({ channelId: ch._id });
+    } catch (error) {
+      return handleError({ error, message: "Error to navigate channel" });
+    }
     roter.prefetch(pathname);
     roter.push(pathname);
   };
@@ -127,20 +138,29 @@ function Channel({
       </button>
 
       {/* Conditionally showing buttons and other UI based on the owner's access */}
-      <div className="flex flex-none space-x-3 opacity-0 transition-all ease-in group-hover:opacity-100">
-        {/* If owner and has create access, display the "Invite Member" button */}
-        {access?.create && (
-          <button className="btn btn-primary">
-            <UserPlus className="size-4" />
-          </button>
+      <div className="relative h-full w-14 flex-none">
+        {count > 0 && (
+          <div className="absolute inset-0 flex items-center justify-end opacity-100 group-hover:opacity-0">
+            <div className="bg-destructive size-fit rounded-lg px-2 py-0.5 text-[10px] text-white">
+              {count}
+            </div>
+          </div>
         )}
+        <div className="absolute inset-0 flex flex-none space-x-3 opacity-0 transition-all ease-in group-hover:opacity-100">
+          {/* If owner and has create access, display the "Invite Member" button */}
+          {access?.create && (
+            <button className="btn btn-primary">
+              <UserPlus className="size-4" />
+            </button>
+          )}
 
-        {/* If owner and has update access, display the "Edit Channel" button */}
-        {access?.update && (
-          <button className="btn btn-secondary">
-            <Edit className="size-4" />
-          </button>
-        )}
+          {/* If owner and has update access, display the "Edit Channel" button */}
+          {access?.update && (
+            <button className="btn btn-secondary">
+              <Edit className="size-4" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

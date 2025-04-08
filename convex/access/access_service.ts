@@ -40,3 +40,18 @@ export const getAccessUpdate = async (ctx: QueryCtx, id: string) => {
 
   return haveAccess;
 };
+
+export const getAccess = async (ctx: QueryCtx, id: Id<"server">) => {
+  const user = await mustGetCurrentUser(ctx);
+
+  const haveAccess = await ctx.db
+    .query("access")
+    .withIndex("by_access_remove", (q) =>
+      q.eq("userId", user._id).eq("serverId", id),
+    )
+    .first();
+
+  if (!haveAccess) return null;
+
+  return haveAccess;
+};

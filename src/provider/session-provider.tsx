@@ -10,11 +10,16 @@ const DialogCreateGroup = dynamic(
   },
 );
 
+const DialogCreateChannel = dynamic(
+  () => import("@/components/form/channel/dialog-create-channel"),
+);
+
 const SessionProvider = () => {
   useOnline();
   return (
     <>
       <DialogCreateGroup />
+      <DialogCreateChannel />
     </>
   );
 };

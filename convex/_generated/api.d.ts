@@ -16,6 +16,7 @@ import type * as auth from "../auth.js";
 import type * as banner_banner_model from "../banner/banner_model.js";
 import type * as banner_banner_service from "../banner/banner_service.js";
 import type * as channel_channel_model from "../channel/channel_model.js";
+import type * as channel_channel_service from "../channel/channel_service.js";
 import type * as friend_friend_model from "../friend/friend_model.js";
 import type * as http from "../http.js";
 import type * as member_member_aggregate from "../member/member_aggregate.js";
@@ -62,6 +63,7 @@ declare const fullApi: ApiFromModules<{
   "banner/banner_model": typeof banner_banner_model;
   "banner/banner_service": typeof banner_banner_service;
   "channel/channel_model": typeof channel_channel_model;
+  "channel/channel_service": typeof channel_channel_service;
   "friend/friend_model": typeof friend_friend_model;
   http: typeof http;
   "member/member_aggregate": typeof member_member_aggregate;

@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Button } from "../ui/button";
-import { Edit, Hash, LockOpenIcon, PlusIcon, UserPlus } from "lucide-react";
+import { Edit, Hash, LockIcon, PlusIcon, UserPlus } from "lucide-react";
 import FriendIcon from "../ui/friend-icon";
 import { useParams } from "next/navigation";
 import { Doc, Id } from "@/convex/_generated/dataModel";
@@ -9,8 +9,15 @@ import { useQuery } from "convex-helpers/react";
 import { api } from "@/convex/_generated/api";
 import { Skeleton } from "../ui/skeleton";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useDialogCreateChannel } from "@/hooks/use-dialog-create-channel";
 
 const SidebarChannel = React.memo(() => {
+  const { setOpen, setId } = useDialogCreateChannel();
   const { server } = useParams<{ server: string }>();
 
   const { data, isPending, isError } = useQuery(
@@ -48,8 +55,20 @@ const SidebarChannel = React.memo(() => {
         </Button>
       </div>
       <div className="group text-muted-foreground hover:text-primary-foreground flex items-center justify-between px-4 py-2 text-xs">
-        <p>Text Channels</p>
-        <PlusIcon className="size-3" />
+        <p className="w-full">Text Channels</p>
+        <Tooltip>
+          <TooltipTrigger
+            onClick={() => {
+              setOpen(true);
+              setId(data._id);
+            }}
+          >
+            <PlusIcon className="size-3" />
+          </TooltipTrigger>
+          <TooltipContent side="top" align="center">
+            Create Channel
+          </TooltipContent>
+        </Tooltip>
       </div>
       <div className="flex grow flex-col gap-2 overflow-y-auto p-2">
         {data.channel.map((ch) => (
@@ -92,7 +111,7 @@ function Channel({
         // href={`/server/${server}/${ch._id}`}
       >
         {ch.private ? (
-          <LockOpenIcon className="size-4" />
+          <LockIcon className="size-4" />
         ) : (
           <Hash className="size-4" />
         )}
@@ -101,13 +120,6 @@ function Channel({
 
       {/* Conditionally showing buttons and other UI based on the owner's access */}
       <div className="flex flex-none space-x-3 opacity-0 transition-all ease-in group-hover:opacity-100">
-        {/* If owner and has read access, display the private channel message */}
-        {ch.private && access?.read && (
-          <span className="text-sm text-gray-600">
-            This is a private channel.
-          </span>
-        )}
-
         {/* If owner and has create access, display the "Invite Member" button */}
         {access?.create && (
           <button className="btn btn-primary">

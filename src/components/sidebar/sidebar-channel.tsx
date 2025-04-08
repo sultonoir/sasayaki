@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "../ui/button";
 import { Edit, Hash, LockIcon, PlusIcon, UserPlus } from "lucide-react";
 import FriendIcon from "../ui/friend-icon";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex-helpers/react";
 import { api } from "@/convex/_generated/api";
@@ -93,12 +93,20 @@ function Channel({
   access: Doc<"access">;
   owner: boolean;
 }) {
-  const { channel } = useParams<{ server: string; channel: string }>();
+  const { channel, server } = useParams<{ server: string; channel: string }>();
 
+  const pathname = `/server/${server}/${ch._id}`;
+
+  const roter = useRouter();
+
+  const handleNavigate = () => {
+    roter.prefetch(pathname);
+    roter.push(pathname);
+  };
   return (
     <div
       className={cn(
-        "hover:bg-accent/80 group inline-flex w-full items-center justify-between rounded-lg px-3 py-2",
+        "hover:bg-accent/80 group inline-flex w-full items-center justify-between rounded-lg px-3",
         {
           "bg-accent": channel === ch._id,
           hidden: ch.private && !(owner && access?.read),
@@ -107,8 +115,8 @@ function Channel({
     >
       {/* Displaying the channel link */}
       <button
-        className="inline-flex w-full items-center gap-2"
-        // href={`/server/${server}/${ch._id}`}
+        className="inline-flex w-full items-center gap-2 py-2"
+        onClick={handleNavigate}
       >
         {ch.private ? (
           <LockIcon className="size-4" />

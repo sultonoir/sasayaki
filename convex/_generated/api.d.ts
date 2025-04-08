@@ -8,7 +8,7 @@
  * @module
  */
 
-import type * as access_access_mode from "../access/access_mode.js";
+import type * as access_access_model from "../access/access_model.js";
 import type * as access_access_service from "../access/access_service.js";
 import type * as attachment_attachment_model from "../attachment/attachment_model.js";
 import type * as attachment_attachment_service from "../attachment/attachment_service.js";
@@ -20,9 +20,11 @@ import type * as friend_friend_model from "../friend/friend_model.js";
 import type * as http from "../http.js";
 import type * as member_member_aggregate from "../member/member_aggregate.js";
 import type * as member_member_model from "../member/member_model.js";
+import type * as member_member_service from "../member/member_service.js";
 import type * as member_member_trigger from "../member/member_trigger.js";
 import type * as message_message_aggregate from "../message/message_aggregate.js";
 import type * as message_message_model from "../message/message_model.js";
+import type * as message_message_service from "../message/message_service.js";
 import type * as message_message_trigger from "../message/message_trigger.js";
 import type * as personal_personal_model from "../personal/personal_model.js";
 import type * as presence_presence_model from "../presence/presence_model.js";
@@ -52,7 +54,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  "access/access_mode": typeof access_access_mode;
+  "access/access_model": typeof access_access_model;
   "access/access_service": typeof access_access_service;
   "attachment/attachment_model": typeof attachment_attachment_model;
   "attachment/attachment_service": typeof attachment_attachment_service;
@@ -64,9 +66,11 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "member/member_aggregate": typeof member_member_aggregate;
   "member/member_model": typeof member_member_model;
+  "member/member_service": typeof member_member_service;
   "member/member_trigger": typeof member_member_trigger;
   "message/message_aggregate": typeof message_message_aggregate;
   "message/message_model": typeof message_message_model;
+  "message/message_service": typeof message_message_service;
   "message/message_trigger": typeof message_message_trigger;
   "personal/personal_model": typeof personal_personal_model;
   "presence/presence_model": typeof presence_presence_model;

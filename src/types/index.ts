@@ -25,3 +25,8 @@ export type Messages = Doc<"message"> & {
   parent: Reply | null;
   access: boolean;
 };
+
+export type ServerChat = Doc<"server"> & {
+  channel: string;
+  image: Doc<"serverImage">;
+};

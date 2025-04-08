@@ -9,9 +9,9 @@ import { attachment } from "./attachment/attachment_model";
 import { read } from "./read/read_model";
 import { typing } from "./typing/typing_model";
 import { banner } from "./banner/banner_model";
-import { access } from "./access/access_mode";
+import { access } from "./access/access_model";
 import { friend } from "./friend/friend_model";
-import { server, serverImage, serverList } from "./server/server_model";
+import { server, serverImage } from "./server/server_model";
 import { channel } from "./channel/channel_model";
 import { role, memberRole } from "./role/role_model";
 
@@ -46,7 +46,6 @@ const schema = defineSchema({
   role,
   memberRole,
   serverImage,
-  serverList,
 });
 
 export default schema;

@@ -15,11 +15,3 @@ export const serverImage = defineTable({
   blur: v.string(),
   serverId: v.id("server"),
 }).index("by_server_image_Id", ["serverId"]);
-
-export const serverList = defineTable({
-  serverId: v.id("server"),
-  userId: v.id("users"),
-  hirarki: v.optional(v.number()),
-})
-  .index("by_server_hirarki", ["userId", "hirarki"])
-  .index("by_server_list_userId", ["userId"]);

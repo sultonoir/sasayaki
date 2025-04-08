@@ -38,7 +38,7 @@ const ChatActions = ({ message }: Props) => {
     setReply(message);
   };
   return (
-    <div className="bg-card group-hover/message:bg-accent absolute -top-4 right-10 flex translate-y-2 scale-95 items-center gap-1 rounded-lg border p-1 opacity-0 transition-all duration-300 ease-out group-hover/message:translate-y-0 group-hover/message:scale-100 group-hover/message:opacity-100">
+    <div className="group-hover/message:bg-card bg-card absolute -top-4 right-10 flex translate-y-2 scale-95 items-center gap-1 rounded-lg border p-1 opacity-0 transition-all duration-300 ease-out group-hover/message:translate-y-0 group-hover/message:scale-100 group-hover/message:opacity-100">
       <Button
         variant="ghost"
         size="icon"

@@ -19,20 +19,15 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { MessagesSquareIcon } from "lucide-react";
 import React from "react";
 import FieldImage from "./field-image";
 import { toast } from "sonner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { UploadedFile } from "@/types";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { generateId } from "@/lib/generateId";
+import { useDialogServer } from "@/hooks/use-dialog-server";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -41,8 +36,8 @@ const FormSchema = z.object({
   images: z.array(z.instanceof(File)),
 });
 
-export function FormCreatGroup() {
-  const [open, setOpen] = React.useState(false);
+export default function FormCreatGroup() {
+  const { open, setOpen } = useDialogServer();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -52,7 +47,7 @@ export function FormCreatGroup() {
     },
   });
 
-  const mutate = useMutation(api.chat.chat_service.createGroup);
+  const mutate = useMutation(api.server.server_service.createServer);
 
   async function onSubmit(value: z.infer<typeof FormSchema>) {
     const images: UploadedFile[] = [];
@@ -89,28 +84,16 @@ export function FormCreatGroup() {
       return toast.error("Failed to upload files");
     }
 
-    void mutate({ name: value.name, image: images[0].url });
+    void mutate({ name: value.name, image: images[0], code: generateId(10) });
     form.reset();
-    setOpen(false);
+    setOpen();
   }
 
   const disable = form.formState.isSubmitting;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Tooltip delayDuration={0}>
-        <TooltipTrigger asChild>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="create group">
-              <MessagesSquareIcon />
-            </Button>
-          </DialogTrigger>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Create Group</p>
-        </TooltipContent>
-      </Tooltip>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="bg-card sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create Group</DialogTitle>
           <DialogDescription className="sr-only">
@@ -141,7 +124,7 @@ export function FormCreatGroup() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} className="dark:bg-transparent" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

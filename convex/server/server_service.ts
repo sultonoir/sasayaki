@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation, query, QueryCtx } from "../_generated/server";
 import { mustGetCurrentUser } from "../user/user_service";
 import { asyncMap } from "convex-helpers";
-import { getManyFrom } from "convex-helpers/server/relationships";
+import { getManyFrom, getOneFrom } from "convex-helpers/server/relationships";
 
 export const createServer = mutation({
   args: {
@@ -47,41 +47,6 @@ export const createServer = mutation({
 });
 
 /**
- * helper get server hirarki list
- */
-
-async function getServerHirarki({ ctx }: { ctx: QueryCtx }) {
-  const user = await mustGetCurrentUser(ctx);
-  const serverlists = await ctx.db
-    .query("serverList")
-    .withIndex("by_server_list_userId", (q) => q.eq("userId", user._id))
-    .order("desc")
-    .collect();
-
-  const servers = await asyncMap(serverlists, async (list) => {
-    const server = await ctx.db
-      .query("server")
-      .withIndex("by_id", (q) => q.eq("_id", list.serverId))
-      .unique();
-    const image = await ctx.db
-      .query("serverImage")
-      .withIndex("by_server_image_Id", (q) => q.eq("serverId", list.serverId))
-      .unique();
-
-    if (!server || !image) {
-      return null;
-    }
-
-    return {
-      ...server,
-      image,
-    };
-  });
-
-  return servers.filter((item) => item !== null);
-}
-
-/**
  * helper get server from member
  */
 
@@ -98,13 +63,20 @@ async function getServerByMember({ ctx }: { ctx: QueryCtx }) {
       .query("serverImage")
       .withIndex("by_server_image_Id", (q) => q.eq("serverId", member.serverId))
       .unique();
-    if (!server || !image) {
+
+    const channel = await ctx.db
+      .query("channel")
+      .withIndex("by_server_channel", (q) => q.eq("serverId", member.serverId))
+      .first();
+
+    if (!server || !image || !channel) {
       return null;
     }
 
     return {
       ...server,
       image,
+      channel,
     };
   });
 
@@ -117,50 +89,75 @@ async function getServerByMember({ ctx }: { ctx: QueryCtx }) {
 
 export const getServers = query({
   handler: async (ctx) => {
-    const serverhirarki = await getServerHirarki({ ctx });
-
-    if (serverhirarki.length === 0) {
-      return await getServerByMember({ ctx });
-    }
-
-    return serverhirarki;
+    return await getServerByMember({ ctx });
   },
 });
 
-export const editServerHirarki = mutation({
-  args: {
-    servers: v.array(v.id("server")),
-  },
-  handler: async (ctx, { servers }) => {
-    const user = await mustGetCurrentUser(ctx);
-    const serverhirarki = await getManyFrom(
+export const getServerByChannelId = query({
+  args: { id: v.id("channel") },
+  async handler(ctx, { id }) {
+    const channel = await ctx.db.get(id);
+
+    if (!channel) return null;
+
+    const server = await ctx.db.get(channel.serverId);
+    const serverimage = await getOneFrom(
       ctx.db,
-      "serverList",
-      "by_server_list_userId",
-      user._id,
-      "userId",
+      "serverImage",
+      "by_server_image_Id",
+      channel.serverId,
+      "serverId",
     );
-    
-    if (serverhirarki.length === 0) {
-      await Promise.all(
-        servers.map(async (server, index) => {
-          await ctx.db.insert("serverList", {
-            serverId: server,
-            userId: user._id,
-            hirarki: index,
-          });
-        }),
-      );
 
-      return;
-    }
+    if (!server || !serverimage) return null;
 
-    await Promise.all(
-      serverhirarki.map(async (server, index) => {
-        await ctx.db.patch(server._id, {
-          hirarki: index,
-        });
-      }),
+    return {
+      ...server,
+      channel: channel.name,
+      image: serverimage,
+    };
+  },
+});
+
+export const getServerByid = query({
+  args: { id: v.id("server") },
+  async handler(ctx, { id }) {
+    const user = await mustGetCurrentUser(ctx);
+    const server = await ctx.db.get(id);
+
+    const serverimage = await getOneFrom(
+      ctx.db,
+      "serverImage",
+      "by_server_image_Id",
+      id,
+      "serverId",
     );
+
+    const channel = await getManyFrom(
+      ctx.db,
+      "channel",
+      "by_server_channel",
+      id,
+      "serverId",
+    );
+
+    const access = await ctx.db
+      .query("access")
+      .withIndex("by_all_access", (q) =>
+        q.eq("userId", user._id).eq("serverId", id),
+      )
+      .first();
+
+    if (!server || !serverimage || !access) return null;
+
+    const owner = server.ownerId === user._id;
+
+    return {
+      ...server,
+      image: serverimage,
+      channel,
+      access,
+      owner,
+    };
   },
 });

@@ -1,16 +1,14 @@
 "use client";
 import React from "react";
 import ChatInput from "./chat-input";
-import { Id } from "@/convex/_generated/dataModel";
 import { ChatReplyContent } from "./chat-reply-content";
 import { useChat } from "@/hooks/use-chat";
 
 interface Props {
-  chatId: Id<"chat">;
   goingTobotom: () => void;
 }
 
-const ChatFooter = ({ chatId, goingTobotom }: Props) => {
+const ChatFooter = ({ goingTobotom }: Props) => {
   const { reply } = useChat();
   return (
     <div className="relative mx-auto w-full flex-none shrink-0 border-t">
@@ -22,7 +20,7 @@ const ChatFooter = ({ chatId, goingTobotom }: Props) => {
           message={reply.body}
         />
       )}
-      <ChatInput chatId={chatId} goingTobotom={goingTobotom} />
+      <ChatInput goingTobotom={goingTobotom} />
     </div>
   );
 };

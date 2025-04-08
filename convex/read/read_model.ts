@@ -2,7 +2,7 @@ import { defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export const read = defineTable({
-  channelId: v.id("channel"),
+  channelId: v.string(),
   userId: v.id("users"),
   readAt: v.number(),
 })

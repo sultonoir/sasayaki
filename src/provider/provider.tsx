@@ -12,9 +12,10 @@ export function Provider({ children }: { children: ReactNode }) {
     <ConvexAuthNextjsProvider client={convex}>
       <ThemeProvider
         attribute="class"
-        defaultTheme="light"
+        defaultTheme="dark"
         enableSystem
-        disableTransitionOnChange>
+        disableTransitionOnChange
+      >
         {children}
       </ThemeProvider>
     </ConvexAuthNextjsProvider>

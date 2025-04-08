@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { useAutoResizeTextarea } from "@/hooks/use-auto-resize-textarea";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
 import { ConvexError } from "convex/values";
 import { toast } from "sonner";
 import ErrorToast from "../ui/error-toast";
@@ -17,22 +16,38 @@ import { Button } from "../ui/button";
 import { UploadedFile } from "@/types";
 import { useChat } from "@/hooks/use-chat";
 import Emoji from "../ui/emoji";
+import { useParams, usePathname } from "next/navigation";
 
 interface Props {
-  chatId: Id<"chat">;
   goingTobotom: () => void;
 }
 
-export default function ChatInput({ chatId, goingTobotom }: Props) {
+export default function ChatInput({ goingTobotom }: Props) {
   const { setReply, reply } = useChat();
+
+  //pending state
   const [isPending, setisPending] = useState(false);
+
+  //image state
   const [images, setImages] = useState<File[]>([]);
-  const mutate = useMutation(api.message.message_service.sendMessage);
+
+  // body state
   const [value, setValue] = useState("");
+
+  //caling mutation
+  const mutate = useMutation(api.message.message_service.sendMessage);
+
+  //text area ref
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 52,
     maxHeight: 200,
   });
+
+  //validation group chat or dm
+  const pathname = usePathname();
+  const { channel, dm } = useParams<{ channel: string; dm: string }>();
+
+  const channelId = pathname.startsWith("/server") ? channel : dm;
 
   const handleSubmit = async () => {
     setisPending(true);
@@ -44,7 +59,7 @@ export default function ChatInput({ chatId, goingTobotom }: Props) {
         images.forEach((file) => {
           formData.append("files", file);
         });
-        formData.append("folder", chatId);
+        formData.append("folder", channelId);
 
         const result = await fetch("/api/image", {
           method: "POST",
@@ -69,7 +84,7 @@ export default function ChatInput({ chatId, goingTobotom }: Props) {
       }
       // Submit the message with attachments (uploaded images)
       await mutate({
-        chatId,
+        channelId,
         body: value,
         attachments: uploadImage,
         parentId: reply?._id,

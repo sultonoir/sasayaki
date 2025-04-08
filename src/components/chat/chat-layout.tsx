@@ -1,37 +1,43 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React from "react";
-import ChatHeader from "./chat-header";
 import { useDialogGroup } from "@/hooks/use-dialog-group";
-import { Preloaded, usePreloadedQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { notFound } from "next/navigation";
+import { PageContainer, PageHeader } from "../ui/page-layouting";
+import { Doc } from "@/convex/_generated/dataModel";
+import ChatLoader from "./chat-loader";
+import ChatHeader from "./chat-header";
 import MemberLayout from "../member/member-layout";
+import { ServerChat } from "@/types";
 import ChatBody from "./chat-body";
 
 interface Props {
-  preload: Preloaded<typeof api.chat.chat_service.getChatByIdWithMembers>;
+  channelId: string;
+  server: ServerChat;
 }
 
-const ChatLayout = ({ preload }: Props) => {
+const ChatLayout = ({ server, channelId }: Props) => {
   const { open } = useDialogGroup();
-
-  const data = usePreloadedQuery(preload);
-
-  if (!data) return notFound();
 
   return (
     <>
-      <ChatHeader {...data} />
-      <div className="relative isolate flex size-full overflow-x-hidden">
-        {/* Chat body */}
-        <div
-          data-state={open ? "open" : "close"}
-          className="bg-card flex size-full flex-col transition-all duration-300 ease-in-out will-change-transform data-[state=open]:lg:mr-[300px]"
-        >
-          <ChatBody chatId={data._id} />
+      <PageHeader
+        title={server.name}
+        url={server.image.url}
+        blur={server.image.blur}
+        type="image"
+      />
+      <PageContainer>
+        <ChatHeader server={server} />
+        <div className="relative isolate flex size-full overflow-x-hidden">
+          <div
+            data-state={open ? "open" : "close"}
+            className="bg-card flex size-full flex-col transition-all duration-300 ease-in-out will-change-transform data-[state=open]:lg:mr-[300px]"
+          >
+            <ChatBody channelId={channelId} />
+          </div>
+          <MemberLayout />
         </div>
-        <MemberLayout members={data.members} />
-      </div>
+      </PageContainer>
     </>
   );
 };

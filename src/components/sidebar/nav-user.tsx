@@ -28,12 +28,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
+
 import { useSession } from "@/hooks/use-session";
 import { Doc } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex-helpers/react";
@@ -43,6 +38,7 @@ import { useEffect } from "react";
 import { UserAvatar } from "../user/user-avatar";
 import { useTheme } from "next-themes";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { Button } from "../ui/button";
 
 export function NavUser() {
   const { data, isPending, isError } = useQuery(
@@ -50,17 +46,13 @@ export function NavUser() {
   );
   if (isPending) {
     return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <div className="flex items-center space-x-4">
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[200px]" />
-            </div>
-          </div>
-        </SidebarMenuItem>
-      </SidebarMenu>
+      <div className="flex w-full items-center space-x-4 pt-2">
+        <Skeleton className="h-12 w-12 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      </div>
     );
   }
 
@@ -77,7 +69,6 @@ function Content({
 }) {
   const { signOut } = useAuthActions();
   const { setTheme, theme } = useTheme();
-  const { isMobile } = useSidebar();
 
   const { setSession } = useSession();
 
@@ -86,110 +77,107 @@ function Content({
   }, [setSession, user]);
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground focus-visible:ring-0"
-            >
-              <UserAvatar
-                name={user.name}
-                src={user.image}
-                online={user.presence.isOnline}
-              />
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user?.name}</span>
-                <span className="text-muted-foreground truncate text-xs">
-                  {user?.presence.isOnline ? "online" : "offline"}
-                </span>
-              </div>
-              <MoreVertical className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user?.image} alt={user?.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user?.name}</span>
-                  <span className="truncate text-xs">{user?.email}</span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="gap-2">
-                  <Palette size={16} className="text-muted-foreground" />
-                  Change theme
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    <DropdownMenuCheckboxItem
-                      checked={theme === "light"}
-                      onCheckedChange={() => setTheme("light")}
-                      className="flex items-center gap-2"
-                    >
-                      <Sun className="size-4" />
-                      Light
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={theme === "dark"}
-                      onCheckedChange={() => setTheme("dark")}
-                      className="flex items-center gap-2"
-                    >
-                      <Moon className="size-4" />
-                      Dark
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={theme === "system"}
-                      onCheckedChange={() => setTheme("system")}
-                      className="flex items-center gap-2"
-                    >
-                      <LaptopMinimal className="size-4" />
-                      System
-                    </DropdownMenuCheckboxItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={async() => signOut()}>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          size="lg"
+          variant="ghost"
+          className="bg-muted/50 h-fit w-full !p-2 focus-visible:ring-0"
+        >
+          <UserAvatar
+            name={user.name}
+            src={user.image}
+            online={user.presence.isOnline}
+          />
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-semibold">{user?.name}</span>
+            <span className="text-muted-foreground truncate text-xs">
+              {user?.presence.isOnline ? "online" : "offline"}
+            </span>
+          </div>
+          <MoreVertical className="ml-auto size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+        side="right"
+        align="end"
+        sideOffset={4}
+      >
+        <DropdownMenuLabel className="p-0 font-normal">
+          <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+            <Avatar className="h-8 w-8 rounded-lg">
+              <AvatarImage src={user?.image} alt={user?.name} />
+              <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">{user?.name}</span>
+              <span className="truncate text-xs">{user?.email}</span>
+            </div>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>
+            <Sparkles />
+            Upgrade to Pro
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem>
+            <BadgeCheck />
+            Account
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <CreditCard />
+            Billing
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Bell />
+            Notifications
+          </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="gap-2">
+              <Palette size={16} className="text-muted-foreground" />
+              Change theme
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuCheckboxItem
+                  checked={theme === "light"}
+                  onCheckedChange={() => setTheme("light")}
+                  className="flex items-center gap-2"
+                >
+                  <Sun className="size-4" />
+                  Light
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={theme === "dark"}
+                  onCheckedChange={() => setTheme("dark")}
+                  className="flex items-center gap-2"
+                >
+                  <Moon className="size-4" />
+                  Dark
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={theme === "system"}
+                  onCheckedChange={() => setTheme("system")}
+                  className="flex items-center gap-2"
+                >
+                  <LaptopMinimal className="size-4" />
+                  System
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={async () => signOut()}>
+          <LogOut />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

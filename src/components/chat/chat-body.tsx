@@ -2,20 +2,19 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { VList, VListHandle } from "virtua";
 import { usePaginatedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
 import ChatLoader from "./chat-loader";
 import ChatContent from "./chat-content";
 import ChatFooter from "./chat-footer";
 import { useChat } from "@/hooks/use-chat";
 
 interface Props {
-  chatId: Id<"channel">;
+  channelId: string;
 }
 
-const ChatBody = React.memo(({ chatId }: Props) => {
+const ChatBody = React.memo(({ channelId }: Props) => {
   const { loadMore, results, status } = usePaginatedQuery(
     api.message.message_service.getMessages,
-    { chatId },
+    { channelId },
     { initialNumItems: 14 },
   );
 
@@ -52,7 +51,7 @@ const ChatBody = React.memo(({ chatId }: Props) => {
   }, [results]);
 
   return (
-    <div className="flex size-full flex-col">
+    <>
       {status === "LoadingFirstPage" && (
         <div className="flex h-[calc(100svh-185px)] flex-col gap-2 overflow-y-auto p-3">
           <ChatLoader length={40} />
@@ -70,8 +69,8 @@ const ChatBody = React.memo(({ chatId }: Props) => {
           <ChatContent message={result} key={result._id} />
         ))}
       </VList>
-      <ChatFooter chatId={chatId} goingTobotom={scrollToBottom} />
-    </div>
+      <ChatFooter goingTobotom={scrollToBottom} />
+    </>
   );
 });
 

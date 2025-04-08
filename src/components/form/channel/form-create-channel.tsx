@@ -110,20 +110,13 @@ export function FormCreateChannel({ className }: ComponentProps<"form">) {
                   placeholder="# new channel"
                   value={field.value}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    // Get raw value from input
                     let newValue = e.target.value;
 
-                    // Replace any sequence of one or more spaces with a single hyphen
-                    // This handles any number of consecutive spaces (even millions)
+                    newValue = newValue.replace(/[^a-zA-Z0-9\s]/g, "-");
                     newValue = newValue.replace(/\s+/g, "-");
-
-                    // Remove any consecutive hyphens (replace with single hyphen)
                     newValue = newValue.replace(/-+/g, "-");
-
-                    // Update the form
-
                     if (newValue.length <= 100) {
-                      field.onChange(newValue);
+                      field.onChange(newValue.toLowerCase());
                     }
                   }}
                 />

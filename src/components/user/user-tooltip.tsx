@@ -1,10 +1,5 @@
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import React from "react";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import { Loader2 } from "lucide-react";
 import { getRandomColor } from "@/lib/random-color";
 import { useQuery } from "convex-helpers/react";
@@ -20,6 +15,11 @@ import { handleError } from "@/lib/handle-eror";
 import { Button } from "../ui/button";
 import { useToolTip } from "@/hooks/use-tooltip";
 import { blurhashToDataUri } from "@unpic/placeholder";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface Props {
   userId: Id<"users">;
@@ -33,46 +33,34 @@ interface ContnetProps {
   username?: string;
 }
 
-const UserTooltip: React.FC<Props> = ({
-  name,
-  userId,
-  side,
-  messageId: message,
-}) => {
+const UserTooltip: React.FC<Props> = ({ name, userId, side, messageId }) => {
   const colorname = getRandomColor(name);
-  const { setMessageId, messageId } = useToolTip();
-
-  const onOpenChange = (open: boolean) => {
-    if (open === true) {
-      setMessageId(message);
-    } else {
-      setMessageId("");
-    }
-  };
+  const [open, setOpen] = React.useState(false);
   return (
-    <HoverCard open={message === messageId} onOpenChange={onOpenChange}>
-      <HoverCardTrigger asChild>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
         <div
           style={{ color: colorname }}
           className="cursor-pointer font-semibold hover:underline"
         >
           {name}
         </div>
-      </HoverCardTrigger>
-      <HoverCardContent
+      </PopoverTrigger>
+      <PopoverContent
         sideOffset={2}
         side={side}
         className="w-fit overflow-hidden p-0"
         align="start"
       >
         <Content userId={userId} />
-      </HoverCardContent>
-    </HoverCard>
+      </PopoverContent>
+    </Popover>
   );
 };
 
 function Content({ userId }: ContnetProps) {
   const { user: session } = useSession();
+
   const {
     isPending,
     isError,
@@ -149,16 +137,24 @@ function Content({ userId }: ContnetProps) {
   );
 }
 
-function AvatarGroup({ groups }: { groups: Doc<"chat">[] }) {
+type Groups = Doc<"server"> & {
+  image: Doc<"serverImage">;
+};
+interface AvatarGroupProps {
+  groups: Groups[];
+}
+
+function AvatarGroup({ groups }: AvatarGroupProps) {
   return (
     <div className="flex -space-x-1.5">
       {groups.map((group) => (
         <Image
           className="ring-background rounded-full ring-1"
-          src={group.image}
+          src={group.image.url}
           width={20}
           height={20}
           alt="Avatar 01"
+          background={blurhashToDataUri(group.image.blur)}
           key={group._id}
         />
       ))}

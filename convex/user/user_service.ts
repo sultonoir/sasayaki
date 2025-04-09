@@ -2,6 +2,7 @@ import { ConvexError, v } from "convex/values";
 import { Doc } from "../_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { query, QueryCtx } from "../_generated/server";
+import { getServerMutual } from "../server/server_service";
 
 export async function mustGetCurrentUser(ctx: QueryCtx): Promise<Doc<"users">> {
   const userId = await getAuthUserId(ctx);
@@ -44,6 +45,7 @@ export const getSession = query({
 export const getUser = query({
   args: { id: v.id("users") },
   handler: async (ctx, { id }) => {
+    const session = await mustGetCurrentUser(ctx);
     const user = await ctx.db.get(id);
 
     if (!user) return null;
@@ -58,10 +60,12 @@ export const getUser = query({
       .withIndex("by_user", (q) => q.eq("userId", user._id))
       .unique();
 
+    const groups = await getServerMutual(ctx, session._id, user._id);
+
     return {
       ...user,
       banner,
-      groups: [],
+      groups,
       presence,
     };
   },

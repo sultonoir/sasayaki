@@ -4,6 +4,7 @@ import { mustGetCurrentUser } from "../user/user_service";
 import { asyncMap } from "convex-helpers";
 import { getManyFrom, getOneFrom } from "convex-helpers/server/relationships";
 import { getReadChannel, getReadServer } from "../read/read_service";
+import { Id } from "../_generated/dataModel";
 
 export const createServer = mutation({
   args: {
@@ -204,3 +205,53 @@ export const removeServer = mutation({
     await ctx.db.delete(server._id);
   },
 });
+
+export const getServerMutual = async (
+  ctx: QueryCtx,
+  currentId: Id<"users">,
+  otherId: Id<"users">,
+) => {
+  // Ambil semua member untuk kedua user
+  const currentMembers = await ctx.db
+    .query("member")
+    .withIndex("by_member_userid", (q) => q.eq("userId", currentId))
+    .collect();
+
+  const otherMembers = await ctx.db
+    .query("member")
+    .withIndex("by_member_userid", (q) => q.eq("userId", otherId))
+    .collect();
+
+  // Temukan server yang sama
+  const currentServerIds = new Set(
+    currentMembers.map((m) => m.serverId.toString()),
+  );
+  const mutualServerIds = otherMembers
+    .filter((m) => currentServerIds.has(m.serverId.toString()))
+    .map((m) => m.serverId);
+
+  if (mutualServerIds.length === 0) {
+    return [];
+  }
+
+  // Ambil server dan gambar server dalam satu loop asyncMap
+  const results = await asyncMap(mutualServerIds, async (serverId) => {
+    const server = await ctx.db.get(serverId);
+
+    if (!server) return null;
+
+    const image = await ctx.db
+      .query("serverImage")
+      .withIndex("by_server_image_Id", (q) => q.eq("serverId", serverId))
+      .first();
+
+    if (!image) return null;
+
+    return {
+      ...server,
+      image,
+    };
+  });
+
+  return results.filter((item) => item !== null);
+};

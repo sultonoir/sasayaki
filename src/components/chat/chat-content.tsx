@@ -46,7 +46,7 @@ const ChatContent = ({ message }: Props) => {
             userId={message.user._id}
             name={message.user.name || "unknown name"}
             side="right"
-            messageId={message._id}
+            sideOffset={10}
           />
           <span className="text-muted-foreground ml-2 text-xs">
             {fromNow(new Date(message._creationTime))}

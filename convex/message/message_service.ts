@@ -30,8 +30,12 @@ export const getMessages = query({
 
     const newMessages = await asyncMap(messages.page, async (message) => {
       const user = await ctx.db.get(message.userId);
+      const member = await ctx.db
+        .query("member")
+        .withIndex("by_member_userid", (q) => q.eq("userId", message.userId))
+        .first();
 
-      if (!user) {
+      if (!user || !member) {
         throw new ConvexError("user not found");
       }
 
@@ -53,7 +57,10 @@ export const getMessages = query({
 
       return {
         ...message,
-        user,
+        user: {
+          ...user,
+          name: member.username || user.name,
+        },
         parent,
         attachment,
         access,

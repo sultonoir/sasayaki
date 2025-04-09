@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef } from "react";
 
 export function useIntersectionObserver(
@@ -5,30 +7,25 @@ export function useIntersectionObserver(
   options: IntersectionObserverInit = {},
 ) {
   const targetRef = useRef<HTMLDivElement>(null);
-  const callbackRef = useRef(callback);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Update callback ref when callback changes
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => callbackRef.current(), 300); // Tingkatkan delay untuk stabilitas
+        callback();
       }
     }, options);
 
     const currentTarget = targetRef.current;
-    if (currentTarget) observer.observe(currentTarget);
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
 
     return () => {
-      if (currentTarget) observer.unobserve(currentTarget);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
     };
-  }, [options]); // Hapus callback dari dependencies karena sudah menggunakan callbackRef
+  }, [callback, options]);
 
   return targetRef;
 }

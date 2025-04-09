@@ -9,9 +9,8 @@ export interface UploadedFile {
 }
 
 export type Member = Doc<"member"> & {
-  username: string;
-  online: boolean;
-  image: string;
+  user: Doc<"users">;
+  presence: Doc<"presence">;
 };
 
 export type Reply = Doc<"message"> & {

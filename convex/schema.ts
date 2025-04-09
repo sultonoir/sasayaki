@@ -13,7 +13,8 @@ import { access } from "./access/access_model";
 import { friend } from "./friend/friend_model";
 import { server, serverImage } from "./server/server_model";
 import { channel } from "./channel/channel_model";
-import { role, memberRole } from "./role/role_model";
+import { role } from "./role/role_model";
+import { pm, personal } from "./personal/personal_model";
 
 const schema = defineSchema({
   ...authTables,
@@ -44,8 +45,9 @@ const schema = defineSchema({
   server,
   channel,
   role,
-  memberRole,
   serverImage,
+  personal,
+  pm,
 });
 
 export default schema;

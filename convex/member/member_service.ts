@@ -3,14 +3,35 @@ import { query } from "../_generated/server";
 import { paginationOptsValidator } from "convex/server";
 import { internalMutation } from "./member_trigger";
 import { Id } from "../_generated/dataModel";
+import { stream } from "convex-helpers/server/stream";
+import schema from "../schema";
 
 export const getMemberByServer = query({
-  args: { id: v.id("server"), pctx: paginationOptsValidator },
-  async handler(ctx, { id, pctx }) {
-    const member = await ctx.db
+  args: { id: v.id("server"), paginationOpts: paginationOptsValidator },
+  async handler(ctx, { id, paginationOpts }) {
+    const members = stream(ctx.db, schema)
       .query("member")
       .withIndex("by_member_server", (q) => q.eq("serverId", id))
-      .paginate(pctx);
+      .order("desc")
+      .map(async (member) => {
+        const user = await ctx.db.get(member.userId);
+        const presence = await ctx.db
+          .query("presence")
+          .withIndex("by_user", (q) => q.eq("userId", member.userId))
+          .first();
+
+        if (!user || !presence) {
+          return null;
+        }
+
+        return {
+          ...member,
+          user,
+          presence,
+        };
+      });
+
+    return members.paginate(paginationOpts);
   },
 });
 

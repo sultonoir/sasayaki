@@ -1,6 +1,6 @@
 import { useDialogGroup } from "@/hooks/use-dialog-group";
 import React from "react";
-import ChatLoader from "../chat/chat-loader";
+import MemberBody from "./member-body";
 
 const MemberLayout = () => {
   const { open } = useDialogGroup();
@@ -10,9 +10,7 @@ const MemberLayout = () => {
       className="bg-card absolute inset-y-0 right-0 w-full transform border-l transition-all duration-300 ease-in-out will-change-transform data-[state=close]:translate-x-full data-[state=open]:translate-x-0 lg:w-[300px]"
     >
       <div className="absolute inset-0 transition-transform duration-300 ease-in-out">
-        <div className="flex size-full flex-col overflow-y-auto">
-          <ChatLoader length={200} />
-        </div>
+        <MemberBody />
       </div>
     </div>
   );

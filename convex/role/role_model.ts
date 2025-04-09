@@ -6,11 +6,7 @@ export const role = defineTable({
   joinedAt: v.number(),
   name: v.string(),
   color: v.string(),
-}).index("by_role_server", ["serverId"]);
-
-export const memberRole = defineTable({
-  roleId: v.id("role"),
-  memberId: v.id("member"),
+  userId: v.id("users"),
 })
-  .index("by_member_role", ["memberId", "roleId"])
-  .index("by_roleId", ["roleId"]);
+  .index("by_role_server", ["serverId"])
+  .index("by_role_user", ["userId", "serverId"]);

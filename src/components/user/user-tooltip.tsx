@@ -10,7 +10,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import Emoji from "../ui/emoji";
 import { useMutation } from "convex/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { handleError } from "@/lib/handle-eror";
 import { Button } from "../ui/button";
 import { useToolTip } from "@/hooks/use-tooltip";
@@ -23,9 +23,9 @@ import {
 
 interface Props {
   userId: Id<"users">;
-  messageId: Id<"message">;
   name: string;
   side?: "right" | "top" | "bottom" | "left";
+  sideOffset?: number;
 }
 
 interface ContnetProps {
@@ -33,7 +33,7 @@ interface ContnetProps {
   username?: string;
 }
 
-const UserTooltip: React.FC<Props> = ({ name, userId, side, messageId }) => {
+const UserTooltip: React.FC<Props> = ({ name, userId, side, sideOffset }) => {
   const colorname = getRandomColor(name);
   const [open, setOpen] = React.useState(false);
   return (
@@ -47,26 +47,27 @@ const UserTooltip: React.FC<Props> = ({ name, userId, side, messageId }) => {
         </div>
       </PopoverTrigger>
       <PopoverContent
-        sideOffset={2}
+        sideOffset={sideOffset}
         side={side}
         className="w-fit overflow-hidden p-0"
         align="start"
       >
-        <Content userId={userId} />
+        <Content userId={userId} username={name} />
       </PopoverContent>
     </Popover>
   );
 };
 
-function Content({ userId }: ContnetProps) {
+function Content({ userId, username }: ContnetProps) {
   const { user: session } = useSession();
-
+  const { server } = useParams<{ server: Id<"server"> }>();
   const {
     isPending,
     isError,
     data: user,
   } = useQuery(api.user.user_service.getUser, {
     id: userId,
+    serverId: server,
   });
 
   if (isPending) {
@@ -112,15 +113,11 @@ function Content({ userId }: ContnetProps) {
           </div>
         </div>
       </div>
-      <div className="mt-4 flex size-full flex-col px-4">
-        <h1 className="leading-none font-semibold">{user.name}</h1>
+      <div className="mt-4 flex size-full flex-col gap-1 px-4">
+        <h1 className="leading-none font-semibold">{username}</h1>
         <p className="text-muted-foreground text-xs">{user.username}</p>
       </div>
-      <div className="px-4 text-xs">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo excepturi
-        esse ad animi. Corporis eligendi praesentium et nostrum maxime
-        molestiae.
-      </div>
+      {user.status && <div className="px-4 text-xs">{user.status}</div>}
       {user.groups.length > 0 && userId !== session?._id && (
         <div className="flex items-center gap-1 px-4">
           <AvatarGroup groups={user.groups} />
@@ -131,7 +128,7 @@ function Content({ userId }: ContnetProps) {
       )}
 
       {session?._id !== user._id && (
-        <FormSendDm userId={user._id} username={user.username} />
+        <FormSendDm userId={user._id} username={username} />
       )}
     </div>
   );
@@ -188,6 +185,12 @@ function FormSendDm({ userId, username }: ContnetProps) {
     setBody("");
     setMessageId("");
   };
+
+  function getPlaceholder(): string {
+    if (!username) return "";
+
+    return username.length > 8 ? username.slice(0, 8) + "..." : username;
+  }
   return (
     <form className="px-4 *:not-first:mt-2" onSubmit={handleSumbit}>
       <Label className="sr-only" htmlFor={userId}>
@@ -196,11 +199,11 @@ function FormSendDm({ userId, username }: ContnetProps) {
       <div className="relative">
         <Input
           id={userId}
-          className="pe-9"
+          className="pe-9 placeholder:text-xs"
           value={body}
           onChange={(e) => setBody(e.target.value)}
           disabled={isPending}
-          placeholder={`Message to @${username}`}
+          placeholder={`Message @${getPlaceholder()}`}
           type="text"
         />
         <div className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50">

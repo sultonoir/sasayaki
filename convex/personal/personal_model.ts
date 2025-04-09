@@ -2,6 +2,10 @@ import { defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export const personal = defineTable({
-  from: v.id("users"),
-  to: v.id("users"),
-}).index("by_personal_user", ["from", "to"]);
+  name: v.optional(v.string()),
+}).index("by_personal_name", ["name"]);
+
+export const pm = defineTable({
+  userId: v.id("users"),
+  personalId: v.id("personal"),
+});

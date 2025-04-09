@@ -43,8 +43,8 @@ export const getSession = query({
 });
 
 export const getUser = query({
-  args: { id: v.id("users") },
-  handler: async (ctx, { id }) => {
+  args: { id: v.id("users"), serverId: v.id("server") },
+  handler: async (ctx, { id, serverId }) => {
     const session = await mustGetCurrentUser(ctx);
     const user = await ctx.db.get(id);
 
@@ -61,12 +61,19 @@ export const getUser = query({
       .unique();
 
     const groups = await getServerMutual(ctx, session._id, user._id);
+    const roles = await ctx.db
+      .query("role")
+      .withIndex("by_role_user", (q) =>
+        q.eq("userId", user._id).eq("serverId", serverId),
+      )
+      .take(4);
 
     return {
       ...user,
       banner,
       groups,
       presence,
+      roles,
     };
   },
 });

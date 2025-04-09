@@ -1,4 +1,3 @@
-import { getManyFrom } from "convex-helpers/server/relationships";
 import { internalMutation, mutation, QueryCtx } from "../_generated/server";
 import { mustGetCurrentUser } from "../user/user_service";
 import {
@@ -8,6 +7,7 @@ import {
 import { Id } from "../_generated/dataModel";
 import { asyncMap } from "convex-helpers";
 import { v } from "convex/values";
+import { getAccessChannel } from "../channel/channel_service";
 
 export const getLastread = async (ctx: QueryCtx, channelId: string) => {
   const user = await mustGetCurrentUser(ctx);
@@ -70,13 +70,7 @@ export const createInternalRead = internalMutation({
 
 export const getReadServer = async (ctx: QueryCtx, serverId: Id<"server">) => {
   const user = await mustGetCurrentUser(ctx);
-  const channels = await getManyFrom(
-    ctx.db,
-    "channel",
-    "by_server_channel",
-    serverId,
-    "serverId",
-  );
+  const channels = await getAccessChannel(ctx, serverId, user._id);
 
   const count = await asyncMap(channels, async (channel) => {
     const getRead = await getLastread(ctx, channel._id);

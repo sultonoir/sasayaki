@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 import {
+  CalendarIcon,
   Edit,
   Hash,
   LockIcon,
@@ -9,7 +10,6 @@ import {
   Trash2Icon,
   UserPlus,
 } from "lucide-react";
-import FriendIcon from "../ui/friend-icon";
 import { useParams, useRouter } from "next/navigation";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex-helpers/react";
@@ -55,36 +55,42 @@ const SidebarChannel = React.memo(() => {
       <div className="flex w-full flex-col gap-2 border-b p-2">
         <ServerDropdown {...data} />
       </div>
-      <div className="flex w-full flex-col gap-2 border-b p-2">
-        <Button
-          className="justify-start"
-          variant="ghost"
-          size="sm"
-          startContent={<FriendIcon />}
-        >
-          Friends
-        </Button>
-      </div>
+      {data.owner ||
+        (data.access.create && (
+          <div className="flex w-full flex-col gap-2 border-b p-2">
+            <Button
+              className="justify-start"
+              variant="ghost"
+              size="sm"
+              startContent={<CalendarIcon />}
+            >
+              Create Event
+            </Button>
+          </div>
+        ))}
       <div className="group text-muted-foreground hover:text-primary-foreground flex items-center justify-between px-4 py-2 text-xs">
         <p className="w-full">Text Channels</p>
-        <Tooltip>
-          <TooltipTrigger
-            onClick={() => {
-              setOpen(true);
-              setId({
-                id: data._id,
-                name: "",
-                isPrivate: false,
-                type: "crete",
-              });
-            }}
-          >
-            <PlusIcon className="size-3" />
-          </TooltipTrigger>
-          <TooltipContent side="top" align="center">
-            Create Channel
-          </TooltipContent>
-        </Tooltip>
+        {data.owner ||
+          (data.access.create && (
+            <Tooltip>
+              <TooltipTrigger
+                onClick={() => {
+                  setOpen(true);
+                  setId({
+                    id: data._id,
+                    name: "",
+                    isPrivate: false,
+                    type: "crete",
+                  });
+                }}
+              >
+                <PlusIcon className="size-3" />
+              </TooltipTrigger>
+              <TooltipContent side="top" align="center">
+                Create Channel
+              </TooltipContent>
+            </Tooltip>
+          ))}
       </div>
       <div className="flex grow flex-col gap-2 overflow-y-auto p-2">
         {data.channel.map((ch) => (

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { handleError } from "@/lib/handle-eror";
+import { useRouter } from "next/navigation";
 
 export function LoginForm({
   className,
@@ -13,6 +14,9 @@ export function LoginForm({
   const { signIn } = useAuthActions();
   const [isPending, setisPending] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
+
   const handleClick = async () => {
     setisPending(true);
     await signIn("google", {
@@ -28,14 +32,13 @@ export function LoginForm({
         email: process.env.NEXT_PUBLIC_DEMO_EMAIL!,
         password: process.env.NEXT_PUBLIC_DEMO_PASSWORD!,
         flow: "signIn",
-        redirectTo: "/",
       });
     } catch (error) {
       setIsLoading(false);
       return handleError({ error, message: "Error signin" });
     }
-
     setisPending(false);
+    router.push("/");
   };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

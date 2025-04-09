@@ -78,6 +78,7 @@ async function getServerByMember({ ctx }: { ctx: QueryCtx }) {
     const channel = await ctx.db
       .query("channel")
       .withIndex("by_server_channel", (q) => q.eq("serverId", member.serverId))
+      .filter((q) => q.eq(q.field("private"), false))
       .first();
 
     const count = await getReadServer(ctx, member.serverId);

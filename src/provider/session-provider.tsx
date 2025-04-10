@@ -1,38 +1,40 @@
 "use client";
-import React from "react";
-import { useOnline } from "@/hooks/use-online";
-import dynamic from "next/dynamic";
 
-const DialogCreateGroup = dynamic(
-  () => import("@/components/form/group/form-create-group"),
-  {
-    ssr: false,
-  },
-);
+import { Doc } from "@/convex/_generated/dataModel";
+import { useSession } from "@/hooks/use-session";
+import * as React from "react";
 
-const DialogCreateChannel = dynamic(
-  () => import("@/components/form/channel/dialog-create-channel"),
-  {
-    ssr: false,
-  },
-);
+interface SessionProviderProps {
+  user: Doc<"users"> | null;
+  children: React.ReactNode;
+}
 
-const DialogRmChannel = dynamic(
-  () => import("@/components/form/channel/dialog-remove-channel"),
-  {
-    ssr: false,
-  },
-);
+const SessionProvider = ({ user, children }: SessionProviderProps) => {
+  const {setSession} = useSession()
+  React.useEffect(() => {
+    if (!user) return;
 
-const SessionProvider = () => {
-  useOnline();
-  return (
-    <>
-      <DialogCreateGroup />
-      <DialogCreateChannel />
-      <DialogRmChannel />
-    </>
-  );
+    // Kirim status online saat page load
+    setSession(user)
+    fetch("/api/user-online", {
+      method: "POST",
+      body: JSON.stringify({ userId: user._id, timestamp: Date.now() }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    // Kirim status offline saat page ditutup
+    const handleBeforeUnload = () => {
+      navigator.sendBeacon(
+        "/api/user-offline",
+        JSON.stringify({ userId: user._id, timestamp: Date.now() }),
+      );
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [setSession, user]);
+
+  return <>{children}</>;
 };
 
 export default SessionProvider;

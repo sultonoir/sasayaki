@@ -101,7 +101,7 @@ function Content({ userId, username }: ContnetProps) {
           />
 
           <div className="bg-card absolute -right-[5px] bottom-[10px] size-7 rounded-full p-1.5">
-            {user.presence?.isOnline ? (
+            {user.online ? (
               <div className="size-full rounded-full bg-emerald-500"></div>
             ) : (
               <>
@@ -165,7 +165,7 @@ function FormSendDm({ userId, username }: ContnetProps) {
   const { user } = useSession();
   const { setMessageId } = useToolTip();
 
-  const mutate = useMutation(api.chat.chat_service.createDm);
+  const mutate = useMutation(api.personal.personal_service.createDm);
 
   const router = useRouter();
   const handleSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -176,7 +176,7 @@ function FormSendDm({ userId, username }: ContnetProps) {
     }
 
     try {
-      await mutate({ message: body, other: userId });
+      await mutate({ body, otherId: userId });
     } catch (error) {
       setIsPending(false);
       return handleError({ error, message: "Error send dm" });

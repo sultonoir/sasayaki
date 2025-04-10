@@ -27,53 +27,16 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { useSession } from "@/hooks/use-session";
-import { Doc } from "@/convex/_generated/dataModel";
-import { useQuery } from "convex-helpers/react";
-import { api } from "@/convex/_generated/api";
-import { Skeleton } from "../ui/skeleton";
-import { useEffect } from "react";
 import { UserAvatar } from "../user/user-avatar";
 import { useTheme } from "next-themes";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "../ui/button";
+import { useSession } from "@/hooks/use-session";
 
 export function NavUser() {
-  const { data, isPending, isError } = useQuery(
-    api.user.user_service.getSession,
-  );
-  if (isPending) {
-    return (
-      <div className="flex w-full items-center space-x-4 pt-2">
-        <Skeleton className="h-12 w-12 rounded-full" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
-        </div>
-      </div>
-    );
-  }
-
-  if (isError || !data) return null;
-  return <Content user={data} />;
-}
-
-function Content({
-  user,
-}: {
-  user: Doc<"users"> & {
-    presence: Doc<"presence">;
-  };
-}) {
+  const { theme, setTheme } = useTheme();
+  const { user } = useSession();
   const { signOut } = useAuthActions();
-  const { setTheme, theme } = useTheme();
-
-  const { setSession } = useSession();
-
-  useEffect(() => {
-    setSession(user);
-  }, [setSession, user]);
 
   return (
     <DropdownMenu>
@@ -84,14 +47,14 @@ function Content({
           className="bg-muted/50 h-fit w-full !p-2 focus-visible:ring-0"
         >
           <UserAvatar
-            name={user.name}
-            src={user.image}
-            online={user.presence.isOnline}
+            name={user?.name}
+            src={user?.image}
+            online={user?.online}
           />
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold">{user?.name}</span>
             <span className="text-muted-foreground truncate text-xs">
-              {user?.presence.isOnline ? "online" : "offline"}
+              {true ? "online" : "offline"}
             </span>
           </div>
           <MoreVertical className="ml-auto size-4" />
@@ -106,9 +69,9 @@ function Content({
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <UserAvatar
-              name={user.name}
-              src={user.image}
-              online={user.presence.isOnline}
+              name={user?.name}
+              src={user?.image}
+              online={user?.online}
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">{user?.name}</span>

@@ -10,7 +10,6 @@ export interface UploadedFile {
 
 export type Member = Doc<"member"> & {
   user: Doc<"users">;
-  presence: Doc<"presence">;
 };
 
 export type Reply = Doc<"message"> & {
@@ -29,3 +28,5 @@ export type ServerChat = Doc<"server"> & {
   channel: string;
   image: Doc<"serverImage">;
 };
+
+export type Session = Doc<"users">;

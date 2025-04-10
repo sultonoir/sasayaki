@@ -2,7 +2,6 @@ import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { todo } from "./todo/todo_model";
-import { presence, presence_heartbeats } from "./presence/presence_model";
 import { member } from "./member/member_model";
 import { message } from "./message/message_model";
 import { attachment } from "./attachment/attachment_model";
@@ -28,12 +27,12 @@ const schema = defineSchema({
     phoneVerificationTime: v.optional(v.float64()),
     isAnonymous: v.optional(v.boolean()),
     status: v.optional(v.string()),
+    online: v.optional(v.boolean()),
+    lastSeen: v.optional(v.number()),
   })
     .index("email", ["email"])
     .index("phone", ["phone"]),
   todo,
-  presence,
-  presence_heartbeats,
   message,
   member,
   attachment,

@@ -15,19 +15,14 @@ export const getMemberByServer = query({
       .order("desc")
       .map(async (member) => {
         const user = await ctx.db.get(member.userId);
-        const presence = await ctx.db
-          .query("presence")
-          .withIndex("by_user", (q) => q.eq("userId", member.userId))
-          .first();
 
-        if (!user || !presence) {
+        if (!user) {
           return null;
         }
 
         return {
           ...member,
           user,
-          presence,
         };
       });
 

@@ -95,9 +95,9 @@ export default function FormCreatGroup() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="bg-card sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create Group</DialogTitle>
+          <DialogTitle>Create Server</DialogTitle>
           <DialogDescription className="sr-only">
-            Make changes to your profile here. Click save when you&apos;re done.
+            Make server for chatting with your friend.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

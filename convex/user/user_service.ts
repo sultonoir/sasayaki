@@ -30,14 +30,9 @@ export const getSession = query({
 
     const user = await ctx.db.get(userId);
     if (!user) return null;
-    const presence = await ctx.db
-      .query("presence")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
-      .unique();
-    if (!presence) return null;
+
     return {
       ...user,
-      presence,
     };
   },
 });
@@ -55,11 +50,6 @@ export const getUser = query({
       .withIndex("by_banner_user", (q) => q.eq("userId", user._id))
       .unique();
 
-    const presence = await ctx.db
-      .query("presence")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
-      .unique();
-
     const groups = await getServerMutual(ctx, session._id, user._id);
     const roles = await ctx.db
       .query("role")
@@ -72,7 +62,6 @@ export const getUser = query({
       ...user,
       banner,
       groups,
-      presence,
       roles,
     };
   },

@@ -8,4 +8,6 @@ export const personal = defineTable({
 export const pm = defineTable({
   userId: v.id("users"),
   personalId: v.id("personal"),
-});
+})
+  .index("by_pm_user", ["userId"])
+  .index("by_personalId", ["personalId"]);

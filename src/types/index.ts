@@ -29,4 +29,6 @@ export type ServerChat = Doc<"server"> & {
   image: Doc<"serverImage">;
 };
 
-export type Session = Doc<"users">;
+export type Session = Doc<"users"> & {
+  banner: Doc<"banner"> | null;
+};

@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useId, useState } from "react"
-import { CheckIcon, ImagePlusIcon, XIcon } from "lucide-react"
+import { useId, useState } from "react";
+import { CheckIcon, ImagePlusIcon, XIcon } from "lucide-react";
 
-import { useCharacterLimit } from "@/hooks/use-character-limit"
-import { useImageUpload } from "@/hooks/use-image-upload"
-import { Button } from "@/components/ui/button"
+import { useCharacterLimit } from "@/hooks/use-character-limit";
+import { useImageUpload } from "@/hooks/use-image-upload";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -15,15 +15,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import Image from "next/image";
 
-export default function Component() {
-  const id = useId()
+export default function EditProfile() {
+  const id = useId();
 
-  const maxLength = 180
+  const maxLength = 180;
   const {
     value,
     characterCount,
@@ -33,7 +34,7 @@ export default function Component() {
     maxLength,
     initialValue:
       "Hey, I am Margaret, a web developer who loves turning ideas into amazing websites!",
-  })
+  });
 
   return (
     <Dialog>
@@ -52,26 +53,16 @@ export default function Component() {
         </DialogDescription>
         <div className="overflow-y-auto">
           <ProfileBg defaultImage="/profile-bg.jpg" />
-          <Avatar defaultImage="/avatar-72-01.jpg" />
+          <Avatar defaultImage="/avatar.png" />
           <div className="px-6 pt-4 pb-6">
             <form className="space-y-4">
               <div className="flex flex-col gap-4 sm:flex-row">
                 <div className="flex-1 space-y-2">
-                  <Label htmlFor={`${id}-first-name`}>First name</Label>
+                  <Label htmlFor={`${id}-first-name`}>Name</Label>
                   <Input
                     id={`${id}-first-name`}
                     placeholder="Matt"
                     defaultValue="Margaret"
-                    type="text"
-                    required
-                  />
-                </div>
-                <div className="flex-1 space-y-2">
-                  <Label htmlFor={`${id}-last-name`}>Last name</Label>
-                  <Input
-                    id={`${id}-last-name`}
-                    placeholder="Welsh"
-                    defaultValue="Villard"
                     type="text"
                     required
                   />
@@ -147,31 +138,31 @@ export default function Component() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 function ProfileBg({ defaultImage }: { defaultImage?: string }) {
-  const [hideDefault, setHideDefault] = useState(false)
+  const [hideDefault, setHideDefault] = useState(false);
   const {
     previewUrl,
     fileInputRef,
     handleThumbnailClick,
     handleFileChange,
     handleRemove,
-  } = useImageUpload()
+  } = useImageUpload();
 
-  const currentImage = previewUrl || (!hideDefault ? defaultImage : null)
+  const currentImage = previewUrl || (!hideDefault ? defaultImage : null);
 
   const handleImageRemove = () => {
-    handleRemove()
-    setHideDefault(true)
-  }
+    handleRemove();
+    setHideDefault(true);
+  };
 
   return (
     <div className="h-32">
       <div className="bg-muted relative flex h-full w-full items-center justify-center overflow-hidden">
         {currentImage && (
-          <img
+          <Image
             className="h-full w-full object-cover"
             src={currentImage}
             alt={
@@ -213,20 +204,20 @@ function ProfileBg({ defaultImage }: { defaultImage?: string }) {
         aria-label="Upload image file"
       />
     </div>
-  )
+  );
 }
 
 function Avatar({ defaultImage }: { defaultImage?: string }) {
   const { previewUrl, fileInputRef, handleThumbnailClick, handleFileChange } =
-    useImageUpload()
+    useImageUpload();
 
-  const currentImage = previewUrl || defaultImage
+  const currentImage = previewUrl || defaultImage;
 
   return (
     <div className="-mt-10 px-6">
       <div className="border-background bg-muted relative flex size-20 items-center justify-center overflow-hidden rounded-full border-4 shadow-xs shadow-black/10">
         {currentImage && (
-          <img
+          <Image
             src={currentImage}
             className="h-full w-full object-cover"
             width={80}
@@ -252,5 +243,5 @@ function Avatar({ defaultImage }: { defaultImage?: string }) {
         />
       </div>
     </div>
-  )
+  );
 }

@@ -11,18 +11,20 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
       if (args.existingUserId || args.provider.id === "google") return;
 
       await ctx.db.patch(args.userId, {
-        username: faker.internet.username({ firstName: "sasayaki" }),
+        username: faker.internet.username({
+          firstName: emailToName(args.profile.email ?? ""),
+        }),
         name: emailToName(args.profile.email ?? ""),
       });
 
-      await ctx.scheduler.runAfter(
-        0,
-        internal.member.member_service.autoAddMember,
-        {
-          userId: args.userId,
-          username: faker.internet.username({ firstName: "sasayaki" }),
-        },
-      );
+      // await ctx.scheduler.runAfter(
+      //   0,
+      //   internal.member.member_service.autoAddMember,
+      //   {
+      //     userId: args.userId,
+      //     username: faker.internet.username({ firstName: "sasayaki" }),
+      //   },
+      // );
     },
   },
 });

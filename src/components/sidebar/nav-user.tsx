@@ -31,7 +31,8 @@ import { UserAvatar } from "../user/user-avatar";
 import { useTheme } from "next-themes";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "../ui/button";
-import { useSession } from "@/hooks/use-session";
+import { useSession } from "@/provider/session-provider";
+import Link from "next/link";
 
 export function NavUser() {
   const { theme, setTheme } = useTheme();
@@ -44,7 +45,7 @@ export function NavUser() {
         <Button
           size="lg"
           variant="ghost"
-          className="bg-muted/50 h-fit w-full !p-2 focus-visible:ring-0"
+          className="bg-muted/50 h-fit w-full border !p-2 focus-visible:ring-0"
         >
           <UserAvatar
             name={user?.name}
@@ -88,9 +89,11 @@ export function NavUser() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheck />
-            Account
+          <DropdownMenuItem asChild>
+            <Link href="/setting/profile">
+              <BadgeCheck />
+              Account
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <CreditCard />

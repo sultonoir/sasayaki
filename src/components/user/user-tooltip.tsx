@@ -1,11 +1,10 @@
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import React from "react";
-import { Loader2 } from "lucide-react";
+import { Edit2Icon, Loader2, PlusIcon } from "lucide-react";
 import { getRandomColor } from "@/lib/random-color";
 import { useQuery } from "convex-helpers/react";
 import { api } from "@/convex/_generated/api";
 import { Image } from "@unpic/react/nextjs";
-import { useSession } from "@/hooks/use-session";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import Emoji from "../ui/emoji";
@@ -20,6 +19,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Badge } from "../ui/badge";
+import { useSession } from "@/provider/session-provider";
+import Link from "next/link";
 
 interface Props {
   userId: Id<"users">;
@@ -49,7 +51,7 @@ const UserTooltip: React.FC<Props> = ({ name, userId, side, sideOffset }) => {
       <PopoverContent
         sideOffset={sideOffset}
         side={side}
-        className="w-fit overflow-hidden p-0"
+        className="w-fit overflow-hidden rounded-lg p-0"
         align="start"
       >
         <Content userId={userId} username={name} />
@@ -127,8 +129,35 @@ function Content({ userId, username }: ContnetProps) {
         </div>
       )}
 
-      {session?._id !== user._id && (
+      {user.roles.length === 0 ? (
+        <Badge variant="outline" className="mx-4">
+          <PlusIcon className="size-4" />
+          <span className="text-muted-foreground text-[10px]">Add role</span>
+        </Badge>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {user.roles.map((role) => (
+            <Badge key={role._id}>
+              <span
+                className="size-4 flex-none rounded-lg"
+                style={{ background: role.color }}
+              />
+              {role.name}
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      {session?._id !== user._id ? (
         <FormSendDm userId={user._id} username={username} />
+      ) : (
+        <Link
+          href="/setting/profile"
+          className="bg-accent/80 hover:bg-accent mx-4 inline-flex items-center justify-center gap-2 rounded-md border py-1.5 text-xs"
+        >
+          <Edit2Icon className="size-3" />
+          Edit profile
+        </Link>
       )}
     </div>
   );

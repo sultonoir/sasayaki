@@ -22,7 +22,7 @@ const MemberContent = ({ member, className, ...props }: MemberContentProps) => {
           side="left"
           sideOffset={75}
         />
-        <p className="text-muted-foreground text-[10px]">
+        <p className="text-muted-foreground max-w-[200px] truncate text-xs">
           {member.user.status}
         </p>
       </div>

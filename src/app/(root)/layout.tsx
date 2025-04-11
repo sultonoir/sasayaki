@@ -5,7 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
 import React from "react";
-import SessionProvider from "@/provider/session-provider";
+import { SessionProvider } from "@/provider/session-provider";
 import DialogProvider from "@/provider/dialog-provider";
 
 export default async function Layout({

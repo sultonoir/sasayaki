@@ -15,6 +15,7 @@ export const UserAvatar = ({
   online,
   className,
 }: Props) => {
+  console.log({ online });
   return (
     <div className={cn("relative isolate flex-none flex-shrink-0", className)}>
       <Image
@@ -31,7 +32,7 @@ export const UserAvatar = ({
         className={cn(
           "border-card absolute -end-0.5 bottom-0.5 size-3 rounded-full border-2 bg-emerald-500",
           {
-            "bg-muted": online === false,
+            "bg-muted": !online,
           },
         )}
       >

@@ -31,7 +31,10 @@ const schema = defineSchema({
     lastSeen: v.optional(v.number()),
   })
     .index("email", ["email"])
-    .index("phone", ["phone"]),
+    .index("phone", ["phone"])
+    .searchIndex("by_user_username", {
+      searchField: "username",
+    }),
   todo,
   message,
   member,

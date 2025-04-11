@@ -1,7 +1,9 @@
 import { getOneFrom } from "convex-helpers/server/relationships";
-import { Doc, Id } from "../_generated/dataModel";
-import { MutationCtx } from "../_generated/server";
+import { Id } from "../_generated/dataModel";
+import { mutation, MutationCtx } from "../_generated/server";
 import { CreateBannerSchema } from "./banner_model";
+import { ConvexError, v } from "convex/values";
+import { mustGetCurrentUser } from "../user/user_service";
 
 export async function createBanner({
   ctx,
@@ -18,7 +20,7 @@ export async function updateBanner({
   value,
 }: {
   ctx: MutationCtx;
-  value: Doc<"banner">;
+  value: CreateBannerSchema;
 }) {
   const banner = await ctx.db
     .query("banner")
@@ -28,8 +30,9 @@ export async function updateBanner({
     .unique();
 
   if (!banner) {
-    await ctx.db.patch(value._id, value);
+    return await ctx.db.insert("banner", value);
   }
+  await ctx.db.patch(banner?._id, value);
 }
 
 export async function getBanner({
@@ -39,5 +42,18 @@ export async function getBanner({
   ctx: MutationCtx;
   userId: Id<"users">;
 }) {
-  return getOneFrom(ctx.db,'banner','by_banner_user',userId,'userId')
+  return getOneFrom(ctx.db, "banner", "by_banner_user", userId, "userId");
 }
+
+export const removeBanner = mutation({
+  args: { bannerId: v.id("banner") },
+  handler: async (ctx, { bannerId }) => {
+    const user = await mustGetCurrentUser(ctx);
+
+    if (!user) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    await ctx.db.delete(bannerId);
+  },
+});

@@ -50,47 +50,47 @@ const SidebarChannel = React.memo(() => {
 
   if (isError || !data) return null;
 
+  const accessCreate = data.owner || !!data.access.create;
+
   return (
     <>
       <div className="flex w-full flex-col gap-2 border-b p-2">
         <ServerDropdown {...data} />
       </div>
-      {data.owner ||
-        (data.access.create && (
-          <div className="flex w-full flex-col gap-2 border-b p-2">
-            <Button
-              className="justify-start"
-              variant="ghost"
-              size="sm"
-              startContent={<CalendarIcon />}
-            >
-              Create Event
-            </Button>
-          </div>
-        ))}
+      {accessCreate && (
+        <div className="flex w-full flex-col gap-2 border-b p-2">
+          <Button
+            className="justify-start"
+            variant="ghost"
+            size="sm"
+            startContent={<CalendarIcon />}
+          >
+            Create Event
+          </Button>
+        </div>
+      )}
       <div className="group text-muted-foreground hover:text-primary-foreground flex items-center justify-between px-4 py-2 text-xs">
         <p className="w-full">Text Channels</p>
-        {data.owner ||
-          (data.access.create && (
-            <Tooltip>
-              <TooltipTrigger
-                onClick={() => {
-                  setOpen(true);
-                  setId({
-                    id: data._id,
-                    name: "",
-                    isPrivate: false,
-                    type: "crete",
-                  });
-                }}
-              >
-                <PlusIcon className="size-3" />
-              </TooltipTrigger>
-              <TooltipContent side="top" align="center">
-                Create Channel
-              </TooltipContent>
-            </Tooltip>
-          ))}
+        {accessCreate && (
+          <Tooltip>
+            <TooltipTrigger
+              onClick={() => {
+                setOpen(true);
+                setId({
+                  id: data._id,
+                  name: "",
+                  isPrivate: false,
+                  type: "crete",
+                });
+              }}
+            >
+              <PlusIcon className="size-3" />
+            </TooltipTrigger>
+            <TooltipContent side="top" align="center">
+              Create Channel
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
       <div className="flex grow flex-col gap-2 overflow-y-auto p-2">
         {data.channel.map((ch) => (

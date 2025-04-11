@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { FileWithPath, useDropzone } from "react-dropzone";
 import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
 import { stringToFile } from "@/lib/stringToFile";
 import { ImageCropper } from "@/components/ui/image-cropper";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export type FileWithPreview = FileWithPath & {
   preview: string;
@@ -23,70 +24,87 @@ interface FieldImageProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export default function FieldImage({
-  setImages,
   images,
+  setImages,
   className,
   placeholder = "Drag 'n' drop some images here, or click to select images",
 }: FieldImageProps) {
-  const [selectedFile, setSelectedFile] =
-    React.useState<FileWithPreview | null>(null);
+  const [name, setName] = useState("");
+  const [selectedFile, setSelectedFile] = React.useState<string>();
   const [isDialogOpen, setDialogOpen] = React.useState(false);
 
-  const handleCropComplete = (croppedImageUrl: string, name: string) => {
-    const file = stringToFile(croppedImageUrl, name);
-    setImages([file]);
-  };
-
-  const onDrop = React.useCallback(
-    (acceptedFiles: File[]) => {
-      if (acceptedFiles.length === 0) {
-        return;
-      }
-
-      const file = acceptedFiles[0]; // Hanya ambil file pertama
-
-      if (!file) {
-        return;
-      }
-
-      const fileWithPreview = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      });
-
-      setSelectedFile(fileWithPreview);
-      setDialogOpen(true);
-      setImages([file]); // Tetap set dalam array untuk konsistensi
+  const handleCropComplete = React.useCallback(
+    (croppedImageUrl: string) => {
+      const file = stringToFile(croppedImageUrl, name);
+      setImages([file]);
     },
-    [setImages],
+    [name, setImages],
   );
+
+  const onDrop = React.useCallback((acceptedFiles: File[]) => {
+    if (!acceptedFiles?.[0]) return;
+
+    const file = acceptedFiles[0];
+
+    const fileWithPreview = URL.createObjectURL(file);
+    setName(file.name);
+    setSelectedFile(fileWithPreview);
+    setDialogOpen(true);
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept,
   });
 
+  // Cleanup URL.createObjectURL
+  React.useEffect(() => {
+    return () => {
+      if (selectedFile) {
+        URL.revokeObjectURL(selectedFile);
+      }
+    };
+  }, [selectedFile]);
+
   return (
     <div className="space-y-4">
+      <ImageCropper
+        dialogOpen={isDialogOpen}
+        setDialogOpen={setDialogOpen}
+        selectedFile={selectedFile}
+        handleCropComplete={handleCropComplete}
+      />
+
       {images.length > 0 ? (
         <div className="flex items-center justify-center">
-          <ImageCropper
-            dialogOpen={isDialogOpen}
-            setDialogOpen={setDialogOpen}
-            selectedFile={selectedFile}
-            setSelectedFile={setSelectedFile}
-            handleCropComplete={handleCropComplete} // Pass the callback to ImageCropper
-          />
+          <div className="relative size-36 cursor-pointer rounded-full ring-2 ring-slate-200 ring-offset-2">
+            <Image
+              className="rounded-full"
+              width={144}
+              height={144}
+              src={URL.createObjectURL(images[0])}
+              alt="Preview"
+            />
+            <div className="absolute inset-0" {...getRootProps()}>
+              <Input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                {...getInputProps()}
+              />
+            </div>
+          </div>
         </div>
       ) : (
         <div
           {...getRootProps()}
           className={cn(
             "cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors",
-            className,
             {
               "border-primary bg-primary/10": isDragActive,
               "border-border": !isDragActive,
             },
+            className,
           )}
         >
           <Input

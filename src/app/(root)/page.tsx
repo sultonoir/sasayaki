@@ -1,8 +1,17 @@
-import Demo from "@/components/ui/demo";
+import FriendIcon from "@/components/ui/friend-icon";
+import { PageContainer, PageTitle } from "@/components/ui/page-layouting";
 import React from "react";
 
 const Page = () => {
-  return <Demo />;
+  return (
+    <>
+      <PageTitle>
+        <FriendIcon />
+        Friend
+      </PageTitle>
+      <PageContainer></PageContainer>
+    </>
+  );
 };
 
 export default Page;

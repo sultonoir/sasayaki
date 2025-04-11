@@ -1,20 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { ImageCropper } from "@/components/ui/image-cropper";
 import { useImageUpload } from "@/hooks/use-image-upload";
-import { useShowMedia } from "@/hooks/use-show-media";
 import { stringToFile } from "@/lib/stringToFile";
 import { useProfileEdit } from "@/provider/profile-edit-provider";
+import { ImagePlusIcon, XIcon } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
-const FieldAvatarPreview = () => {
+const FieldBannerPreview = () => {
   const { state, dispatch } = useProfileEdit();
 
   const onUpload = (url: string, name: string) => {
     URL.revokeObjectURL(url);
     const file = stringToFile(url, name);
-    dispatch({ type: "SET_AVATAR", payload: file });
-    dispatch({ type: "SET_REMOVE_AVATAR", payload: true });
+    dispatch({ type: "SET_BANNER", payload: file });
+    dispatch({ type: "SET_REMOVE_BANNER", payload: true });
   };
 
   const {
@@ -28,81 +28,83 @@ const FieldAvatarPreview = () => {
     handleCropComplete,
   } = useImageUpload({ onUpload, useCropper: true });
 
-  const { currentImage, shouldShow } = useShowMedia({
-    avatar: state.avatar,
-    initialAvatar: state.initialAvatar,
-    isRmAvatar: state.isRmAvatar,
-  });
+  const currentImage = previewUrl || state.initialBanner?.url;
 
   const handleRemoveImage = () => {
     if (state.avatar) {
       // Jika user sudah upload gambar baru, hapus dari state dan local preview
-      dispatch({ type: "SET_AVATAR", payload: undefined });
+      dispatch({ type: "SET_BANNER", payload: undefined });
       handleRemove(); // hapus preview & file input
     }
 
     // Tetap set ini agar backend tahu bahwa avatar lama harus dihapus
-    dispatch({ type: "SET_REMOVE_AVATAR", payload: true });
+    dispatch({ type: "SET_REMOVE_BANNER", payload: true });
   };
 
   return (
-    <div className="-mt-10 px-3">
+    <div className="h-32">
       <ImageCropper
         dialogOpen={isCropOpen}
         setDialogOpen={setIsCropOpen}
         selectedFile={previewUrl}
         handleCropComplete={handleCropComplete}
+        aspect={3 / 1}
       />
-      <div className="border-background bg-muted group relative flex size-20 items-center justify-center rounded-full border-4 shadow-xs shadow-black/10">
-        {shouldShow && (
+      <div className="bg-muted/80 relative flex h-full w-full items-center justify-center overflow-hidden">
+        {currentImage && (
           <Image
-            src={currentImage ?? "/avatar.png"}
-            className="h-full w-full rounded-full object-cover"
-            width={80}
-            height={80}
-            alt="Profile image"
+            className="h-full w-full object-cover"
+            src={currentImage}
+            alt={
+              previewUrl
+                ? "Preview of uploaded image"
+                : "Default profile background"
+            }
+            width={512}
+            height={96}
           />
         )}
-        <div className="bg-card absolute -right-[10px] bottom-[2px] size-7 rounded-full p-1">
-          <div className="size-full rounded-full bg-emerald-500"></div>
-        </div>
-        <div className="absolute -right-50 w-fit items-center justify-between gap-1 opacity-0 transition-all duration-300 group-hover:-right-33 group-hover:opacity-100">
-          <div className="flex cursor-pointer flex-col gap-1 rounded-lg border bg-zinc-700 px-2 py-2 text-xs">
-            <span
-              className="hover:bg-accent w-full rounded-md px-3 py-1.5 text-center"
-              onClick={handleThumbnailClick}
-            >
-              Change image
-            </span>
-            <span
-              className="hover:bg-accent w-full rounded-md px-3 py-1.5 text-center"
+        <div className="absolute inset-0 flex items-center justify-center gap-2">
+          <button
+            type="button"
+            className="focus-visible:border-ring focus-visible:ring-ring/50 z-50 flex size-10 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-[color,box-shadow] outline-none hover:bg-black/80 focus-visible:ring-[3px]"
+            onClick={handleThumbnailClick}
+            aria-label={currentImage ? "Change image" : "Upload image"}
+          >
+            <ImagePlusIcon size={16} aria-hidden="true" />
+          </button>
+          {currentImage && (
+            <button
+              type="button"
+              className="focus-visible:border-ring focus-visible:ring-ring/50 z-50 flex size-10 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-[color,box-shadow] outline-none hover:bg-black/80 focus-visible:ring-[3px]"
               onClick={handleRemoveImage}
+              aria-label="Remove image"
             >
-              Remove image
-            </span>
-          </div>
+              <XIcon size={16} aria-hidden="true" />
+            </button>
+          )}
         </div>
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className="hidden"
-          accept="image/*"
-          aria-label="Upload profile picture"
-        />
       </div>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+        accept="image/*"
+        aria-label="Upload image file"
+      />
     </div>
   );
 };
 
-const FieldAvatarButton = () => {
+const FieldBannerButton = () => {
   const { state, dispatch } = useProfileEdit();
 
   const onUpload = (url: string, name: string) => {
     URL.revokeObjectURL(url);
     const file = stringToFile(url, name);
-    dispatch({ type: "SET_AVATAR", payload: file });
-    dispatch({ type: "SET_REMOVE_AVATAR", payload: true });
+    dispatch({ type: "SET_BANNER", payload: file });
+    dispatch({ type: "SET_REMOVE_BANNER", payload: true });
   };
 
   const {
@@ -116,25 +118,21 @@ const FieldAvatarButton = () => {
     handleCropComplete,
   } = useImageUpload({ onUpload, useCropper: true });
 
-  const { shouldShow } = useShowMedia({
-    avatar: state.avatar,
-    initialAvatar: state.initialAvatar,
-    isRmAvatar: state.isRmAvatar,
-  });
+  const currentImage = previewUrl || state.initialAvatar;
 
   const handleRemoveImage = () => {
     if (state.avatar) {
       // Jika user sudah upload gambar baru, hapus dari state dan local preview
-      dispatch({ type: "SET_AVATAR", payload: undefined });
+      dispatch({ type: "SET_BANNER", payload: undefined });
       handleRemove(); // hapus preview & file input
     }
 
     // Tetap set ini agar backend tahu bahwa avatar lama harus dihapus
-    dispatch({ type: "SET_REMOVE_AVATAR", payload: true });
+    dispatch({ type: "SET_REMOVE_BANNER", payload: true });
   };
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-2">
       <p className="text-sm">Change avatar</p>
       <div className="flex gap-2">
         <Button
@@ -144,7 +142,7 @@ const FieldAvatarButton = () => {
         >
           Change Avatar
         </Button>
-        {shouldShow && (
+        {currentImage && (
           <Button
             onClick={handleRemoveImage}
             variant="link"
@@ -172,4 +170,4 @@ const FieldAvatarButton = () => {
   );
 };
 
-export { FieldAvatarButton, FieldAvatarPreview };
+export { FieldBannerPreview, FieldBannerButton };

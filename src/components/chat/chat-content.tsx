@@ -52,9 +52,12 @@ const ChatContent = ({ message }: Props) => {
             {fromNow(new Date(message._creationTime))}
           </span>
         </div>
-        <div className="text-sm">
-          <Linkify>{message.body}</Linkify>
+        <div className="w-full overflow-hidden text-sm break-words whitespace-normal">
+          <div className="break-all">
+            <Linkify>{message.body}</Linkify>
+          </div>
         </div>
+
         {message.attachment.length > 0 && (
           <ChatAttachment attachments={message.attachment} />
         )}

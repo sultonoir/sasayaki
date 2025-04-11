@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { api } from "@/convex/_generated/api";
+import { ProfileEditProvider } from "@/provider/profile-edit-provider";
 import { SessionProvider } from "@/provider/session-provider";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
@@ -15,7 +16,7 @@ const LayoutSetting = async ({ children }: { children: React.ReactNode }) => {
   );
   return (
     <SessionProvider user={user}>
-      {children}
+      <ProfileEditProvider user={user}>{children}</ProfileEditProvider>
       <Toaster position="top-center" richColors />
     </SessionProvider>
   );

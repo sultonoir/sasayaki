@@ -18,6 +18,7 @@ import {
 } from "../ui/tooltip";
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/hooks/use-sidebar";
 
 const SidebarSever = () => {
   const { setOpen } = useDialogServer();
@@ -83,6 +84,7 @@ type ContentProps = Doc<"server"> & {
 };
 
 function Content({ content }: { content: ContentProps }) {
+  const { toggle } = useSidebar();
   const { server } = useParams();
   const active = server === content._id;
   return (
@@ -93,7 +95,7 @@ function Content({ content }: { content: ContentProps }) {
       })}
     >
       <Tooltip key={content._id}>
-        <TooltipTrigger key={content._id} asChild>
+        <TooltipTrigger key={content._id} asChild onClick={toggle}>
           <Link href={`/server/${content._id}/${content.channel._id}`}>
             <Image
               alt={content.name}

@@ -1,4 +1,4 @@
-import UserPage from "@/components/user/user-page";
+import UserProfile from "@/components/user/user-profile";
 import { api } from "@/convex/_generated/api";
 import { capitalizeWords } from "@/lib/capitalize";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const ProfilePage = async () => {
-  return <UserPage />;
+  return <UserProfile />;
 };
 
 export default ProfilePage;

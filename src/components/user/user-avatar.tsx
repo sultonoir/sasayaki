@@ -15,7 +15,6 @@ export const UserAvatar = ({
   online,
   className,
 }: Props) => {
-  console.log({ online });
   return (
     <div className={cn("relative isolate flex-none flex-shrink-0", className)}>
       <Image

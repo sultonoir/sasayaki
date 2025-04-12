@@ -39,7 +39,9 @@ export const ChatReplyContent: React.FC<Props> = ({
     >
       <div className="flex flex-1 flex-col items-start justify-between py-2">
         <p className="text-xs font-semibold">{name}</p>
-        <p className="text-muted-foreground line-clamp-2 text-xs">{message}</p>
+        <p className="text-muted-foreground line-clamp-2 text-xs break-all">
+          {message}
+        </p>
       </div>
       {media && media?.length > 0 && (
         <div className="relative aspect-square size-11 flex-none flex-shrink-0 overflow-hidden rounded-sm">

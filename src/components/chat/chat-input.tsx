@@ -138,6 +138,7 @@ export default function ChatInput({ goingTobotom }: Props) {
   });
 
   const removeImage = useCallback((name: string) => {
+    URL.revokeObjectURL(name);
     setImages((prev) => prev.filter((i) => i.name !== name));
   }, []);
 
@@ -155,7 +156,7 @@ export default function ChatInput({ goingTobotom }: Props) {
       {!isPending && images.length > 0 && (
         <ImageGallery images={images} removeImage={removeImage} />
       )}
-      <div className="relative flex flex-col">
+      <div className="relative flex w-full flex-col overflow-hidden rounded-lg">
         <div className="max-h-[200px] overflow-y-auto">
           <Textarea
             id="ai-input-04"
@@ -247,7 +248,7 @@ const ImageGallery = ({
   }, [images]);
 
   return (
-    <div className="relative flex max-w-[calc(100svw-360px)] items-center gap-4 overflow-x-auto p-3">
+    <div className="relative flex items-center gap-4 overflow-x-auto border-t p-3">
       {imageURLs.map(({ name, url }) => (
         <div className="relative min-w-[200px]" key={name}>
           <Button

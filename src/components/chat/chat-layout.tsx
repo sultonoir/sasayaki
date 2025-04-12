@@ -23,8 +23,8 @@ const ChatLayout = ({ server, channelId }: Props) => {
         blur={server.image.blur}
         type="image"
       />
-      <ChatHeader server={server} className="border-t border-l" />
-      <div className="relative isolate flex size-full overflow-x-hidden border-l">
+      <ChatHeader server={server} className="border-y" />
+      <div className="relative isolate flex size-full overflow-x-hidden">
         <div
           data-state={open ? "open" : "close"}
           className="bg-card flex size-full flex-col transition-all duration-300 ease-in-out will-change-transform data-[state=open]:lg:mr-[300px]"

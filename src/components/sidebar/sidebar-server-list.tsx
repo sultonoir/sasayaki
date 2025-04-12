@@ -7,47 +7,63 @@ import { api } from "@/convex/_generated/api";
 import { Skeleton } from "../ui/skeleton";
 import { Doc } from "@/convex/_generated/dataModel";
 import { MessageCircle, PlusCircleIcon } from "lucide-react";
-import { useDialogServer } from "@/hooks/use-dialog-server";
 import { blurhashToDataUri } from "@unpic/placeholder";
 
+import { useParams, usePathname } from "next/navigation";
 import {
-  Tooltip,
-  TooltipButton,
-  TooltipContent,
-  TooltipTrigger,
-} from "../ui/tooltip";
-import { useParams } from "next/navigation";
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "../ui/sidebar";
 import { cn } from "@/lib/utils";
-import { useSidebar } from "@/hooks/use-sidebar";
 
 const SidebarSever = () => {
-  const { setOpen } = useDialogServer();
+  const pathname = usePathname();
+
   return (
-    <div className="flex size-full min-h-0 flex-1 flex-col items-center gap-3 overflow-x-hidden overflow-y-auto">
-      <TooltipButton
-        asChild
-        className="bg-sidebar-accent hover:bg-primary size-10 flex-none items-center justify-center"
-        tooltip={{
-          children: "Direct message",
-          hidden: false,
-        }}
-      >
-        <Link href="/">
-          <MessageCircle />
-        </Link>
-      </TooltipButton>
-      <Wrapper />
-      <TooltipButton
-        className="bg-sidebar-accent hover:bg-primary size-10 flex-none items-center justify-center"
-        tooltip={{
-          children: "Create Server",
-          hidden: false,
-        }}
-        onClick={setOpen}
-      >
-        <PlusCircleIcon />
-      </TooltipButton>
-    </div>
+    <Sidebar collapsible="none" className="w-fit">
+      <SidebarContent className="scrollbar-hidden items-center">
+        <SidebarGroup className="px-0 py-2">
+          <SidebarMenu className="items-center gap-3">
+            <SidebarMenuItem className="px-2">
+              <SidebarMenuButton
+                isActive={pathname === "/"}
+                variant="default"
+                className="bg-sidebar-accent hover:bg-primary size-12 flex-none items-center justify-center"
+                size="lg"
+                tooltip={{
+                  children: "Direct message",
+                  hidden: false,
+                }}
+                asChild
+              >
+                <Link href="/">
+                  <MessageCircle />
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <Wrapper />
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                variant="default"
+                size="lg"
+                className="bg-sidebar-accent hover:bg-primary size-12 flex-none items-center justify-center"
+                tooltip={{
+                  children: "Create Server",
+                  hidden: false,
+                }}
+              >
+                <PlusCircleIcon />
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   );
 };
 
@@ -59,8 +75,13 @@ function Wrapper() {
   if (isPending) {
     return (
       <>
-        {Array.from({ length: 10 }).map((_, i) => (
-          <Skeleton key={i} className="size-10 rounded-full" />
+        {Array.from({ length: 20 }).map((_, i) => (
+          <SidebarMenuItem
+            key={i}
+            className="size-12 flex-none items-center justify-center p-0"
+          >
+            <Skeleton key={i} className="size-12" />
+          </SidebarMenuItem>
         ))}
       </>
     );
@@ -69,11 +90,11 @@ function Wrapper() {
   if (isError || data.length === 0) return null;
 
   return (
-    <>
+    <SidebarMenuItem>
       {data.map((item) => (
         <Content key={item._id} content={item} />
       ))}
-    </>
+    </SidebarMenuItem>
   );
 }
 
@@ -84,39 +105,47 @@ type ContentProps = Doc<"server"> & {
 };
 
 function Content({ content }: { content: ContentProps }) {
-  const { toggle } = useSidebar();
   const { server } = useParams();
   const active = server === content._id;
   return (
     <div
-      className={cn("relative px-3", {
-        "after:bg-primary relative overflow-hidden rounded-none after:pointer-events-none after:absolute after:inset-y-0 after:left-0 after:w-1 after:rounded-full":
+      className={cn("relative px-2", {
+        "after:bg-primary after:absolute after:inset-y-0 after:left-0 after:w-1 after:origin-left after:scale-y-100 after:rounded-full after:transition-transform after:duration-500 after:ease-out":
           active,
+        "after:scale-y-0 after:transition-transform after:duration-500 after:ease-in":
+          !active,
       })}
     >
-      <Tooltip key={content._id}>
-        <TooltipTrigger key={content._id} asChild onClick={toggle}>
-          <Link href={`/server/${content._id}/${content.channel._id}`}>
-            <Image
-              alt={content.name}
-              src={content.image.url}
-              width={40}
-              height={40}
-              layout="fixed"
-              background={blurhashToDataUri(content.image.blur, 40, 40)}
-              className="rounded-lg object-cover"
-            />
-            {content.count > 0 && (
-              <div className="bg-destructive absolute right-1 bottom-0 rounded-lg px-1.5 py-0.5 text-[10px] text-white">
+      <SidebarMenuButton
+        asChild
+        variant="default"
+        size="lg"
+        isActive={active}
+        className="size-12 flex-none items-center justify-center p-0"
+        tooltip={{
+          children: content.name,
+          hidden: false,
+        }}
+      >
+        <Link href={`/server/${content._id}/${content.channel._id}`}>
+          <Image
+            alt={content.name}
+            src={content.image.url}
+            width={48}
+            height={48}
+            layout="fixed"
+            background={blurhashToDataUri(content.image.blur, 40, 40)}
+            className="rounded-md object-cover"
+          />
+          {content.count > 0 && (
+            <div className="bg-card absolute right-0 bottom-0 rounded-lg p-1 text-[10px] text-white">
+              <span className="bg-destructive rounded-full px-1.5 py-0.5">
                 {content.count}
-              </div>
-            )}
-          </Link>
-        </TooltipTrigger>
-        <TooltipContent side="right" align="center">
-          {content.name}
-        </TooltipContent>
-      </Tooltip>
+              </span>
+            </div>
+          )}
+        </Link>
+      </SidebarMenuButton>
     </div>
   );
 }

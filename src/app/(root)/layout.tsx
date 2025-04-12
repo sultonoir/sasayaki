@@ -1,12 +1,10 @@
-import { PageLayout } from "@/components/ui/page-layouting";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { SidebarApp } from "@/components/sidebar/sidebar-app";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { api } from "@/convex/_generated/api";
+import { SessionProvider } from "@/provider/session-provider";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
 import React from "react";
-import { SessionProvider } from "@/provider/session-provider";
-import DialogProvider from "@/provider/dialog-provider";
 
 export default async function Layout({
   children,
@@ -20,13 +18,23 @@ export default async function Layout({
       token: await convexAuthNextjsToken(),
     },
   );
+
   return (
     <SessionProvider user={user}>
-      <TooltipProvider delayDuration={0}>
-        <PageLayout>{children}</PageLayout>
-        <Toaster richColors position="top-center" />
-      </TooltipProvider>
-      <DialogProvider />
+      <SidebarProvider
+        style={
+          {
+            "--sidebar-width": "370px",
+          } as React.CSSProperties
+        }
+      >
+        <SidebarApp />
+        <SidebarInset>
+          <div className="bg-card m-2 flex flex-1 flex-col overflow-hidden rounded-xl border pt-0">
+            <>{children}</>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
     </SessionProvider>
   );
 }

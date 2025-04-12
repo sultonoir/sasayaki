@@ -11,7 +11,7 @@ interface Props {
 const ChatFooter = ({ goingTobotom }: Props) => {
   const { reply } = useChat();
   return (
-    <div className="relative mx-auto w-full flex-none shrink-0 border-t">
+    <div className="relative flex flex-none shrink-0 flex-col gap-2">
       {reply && (
         <ChatReplyContent
           name={reply.user.username}

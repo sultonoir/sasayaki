@@ -33,10 +33,12 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "../ui/button";
 import { useSession } from "@/provider/session-provider";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function NavUser() {
   const { theme, setTheme } = useTheme();
   const { user } = useSession();
+  const router = useRouter();
   const { signOut } = useAuthActions();
 
   return (
@@ -139,7 +141,12 @@ export function NavUser() {
           </DropdownMenuSub>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={async () => signOut()}>
+        <DropdownMenuItem
+          onSelect={async () => {
+            signOut();
+            router.replace("/signin");
+          }}
+        >
           <LogOut />
           Log out
         </DropdownMenuItem>

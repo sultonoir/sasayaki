@@ -4,7 +4,7 @@ import React from "react";
 
 const ChatTyping = ({ roomid }: { roomid: string }) => {
   const { data } = useQuery(api.typing.typing_service.getTyping, {
-    chatId: roomid,
+    channelId: roomid,
   });
   return <div className="p-2">{data}</div>;
 };

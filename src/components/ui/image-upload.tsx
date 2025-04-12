@@ -168,6 +168,5 @@ function Gallery({ images, setImages }: FieldImageProps) {
 
 export function DemoImage() {
   const [images, setImages] = useState<UploadedFile[]>([]);
-  console.log({ images });
   return <ImageUpload images={images} setImages={setImages} />;
 }

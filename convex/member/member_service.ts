@@ -5,6 +5,7 @@ import { internalMutation } from "./member_trigger";
 import { Id } from "../_generated/dataModel";
 import { stream } from "convex-helpers/server/stream";
 import schema from "../schema";
+import { getOneFrom } from "convex-helpers/server/relationships";
 
 export const getMemberByServer = query({
   args: { id: v.id("server"), paginationOpts: paginationOptsValidator },
@@ -20,9 +21,18 @@ export const getMemberByServer = query({
           return null;
         }
 
+        const profile = await getOneFrom(
+          ctx.db,
+          "userImage",
+          "by_user_image",
+          user._id,
+          "userId",
+        );
+
         return {
           ...member,
           user,
+          profile,
         };
       });
 

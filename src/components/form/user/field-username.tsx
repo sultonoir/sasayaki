@@ -31,9 +31,10 @@ const FieldUsername = () => {
           className="peer pe-9"
           placeholder="Username"
           value={state.username}
-          onChange={(e) =>
-            dispatch({ type: "SET_USERNAME", payload: e.target.value })
-          }
+          onChange={(e) => {
+            dispatch({ type: "SET_USERNAME", payload: e.target.value });
+            dispatch({ type: "SET_TOAST", payload: "initial" });
+          }}
           type="text"
           required
         />

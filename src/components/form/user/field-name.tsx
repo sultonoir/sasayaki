@@ -12,9 +12,10 @@ const FieldName = () => {
         id="first-name"
         placeholder="Matt"
         value={state.name}
-        onChange={(e) =>
-          dispatch({ type: "SET_NAME", payload: e.target.value })
-        }
+        onChange={(e) => {
+          dispatch({ type: "SET_NAME", payload: e.target.value });
+          dispatch({ type: "SET_TOAST", payload: "initial" });
+        }}
         type="text"
         required
       />

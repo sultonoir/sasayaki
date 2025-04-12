@@ -21,21 +21,34 @@ import {
 } from "@/components/ui/popover";
 import { Badge } from "../ui/badge";
 import { useSession } from "@/provider/session-provider";
-import Link from "next/link";
+import { useModal } from "@/hooks/use-modal";
 
 interface Props {
   userId: Id<"users">;
   name: string;
   side?: "right" | "top" | "bottom" | "left";
+  image?: string;
+  blur?: string;
   sideOffset?: number;
 }
 
 interface ContnetProps {
   userId: Id<"users">;
   username?: string;
+  image: string;
+  blur: string;
 }
 
-const UserTooltip: React.FC<Props> = ({ name, userId, side, sideOffset }) => {
+const UserTooltip: React.FC<Props> = ({
+  name,
+  userId,
+  side,
+  sideOffset,
+  image,
+  blur,
+}) => {
+  const blurImage = blur || "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm";
+  const profileImage = image || "/avatar.png";
   const colorname = getRandomColor(name);
   const [open, setOpen] = React.useState(false);
   return (
@@ -54,13 +67,19 @@ const UserTooltip: React.FC<Props> = ({ name, userId, side, sideOffset }) => {
         className="w-fit overflow-hidden rounded-lg p-0"
         align="start"
       >
-        <Content userId={userId} username={name} />
+        <Content
+          userId={userId}
+          username={name}
+          blur={blurImage}
+          image={profileImage}
+        />
       </PopoverContent>
     </Popover>
   );
 };
 
-function Content({ userId, username }: ContnetProps) {
+function Content({ userId, username, image, blur }: ContnetProps) {
+  const { toggle } = useModal();
   const { user: session } = useSession();
   const { server } = useParams<{ server: Id<"server"> }>();
   const {
@@ -84,21 +103,22 @@ function Content({ userId, username }: ContnetProps) {
         <Image
           src={user.banner.url}
           width={256}
-          height={100}
+          aspectRatio={3 / 1}
           alt={user.name || "unknown user"}
           background={blurhashToDataUri(user.banner.blur, 256, 100)}
         />
       ) : (
-        <div className="h-[100px] w-full bg-sky-200"></div>
+        <div className="h-[100px] w-full bg-rose-200"></div>
       )}
       <div className="relative isolate size-full">
         <div className="bg-card absolute -top-[65px] left-2.5 rounded-full p-1.5">
           <Image
             alt={user?.name || "unknown user"}
-            src={user?.image || "/avatar.png"}
+            src={image}
             layout="fixed"
             width={80}
             height={80}
+            background={blurhashToDataUri(blur)}
             className="rounded-full object-cover"
           />
 
@@ -151,13 +171,13 @@ function Content({ userId, username }: ContnetProps) {
       {session?._id !== user._id ? (
         <FormSendDm userId={user._id} username={username} />
       ) : (
-        <Link
-          href="/setting/profile"
-          className="bg-accent/80 hover:bg-accent mx-4 inline-flex items-center justify-center gap-2 rounded-md border py-1.5 text-xs"
+        <button
+          onClick={toggle}
+          className="bg-accent/80 hover:bg-accent mx-4 inline-flex items-center justify-center gap-2 rounded-md border py-1.5 text-xs outline-none focus:ring-0"
         >
           <Edit2Icon className="size-3" />
           Edit profile
-        </Link>
+        </button>
       )}
     </div>
   );
@@ -188,7 +208,11 @@ function AvatarGroup({ groups }: AvatarGroupProps) {
   );
 }
 
-function FormSendDm({ userId, username }: ContnetProps) {
+interface FormSendDmProps {
+  userId: Id<"users">;
+  username?: string;
+}
+function FormSendDm({ userId, username }: FormSendDmProps) {
   const [body, setBody] = React.useState("");
   const [isPending, setIsPending] = React.useState(false);
   const { user } = useSession();

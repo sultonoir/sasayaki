@@ -1,7 +1,12 @@
+import EditProfileDialog from "@/components/form/user/edit-profile.dialog";
 import React from "react";
 
 const Page = () => {
-  return <div>Page</div>;
+  return (
+    <div>
+      <EditProfileDialog />
+    </div>
+  );
 };
 
 export default Page;

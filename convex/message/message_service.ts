@@ -1,9 +1,8 @@
 import { getManyFrom, getOneFrom } from "convex-helpers/server/relationships";
 import { Id } from "../_generated/dataModel";
 import { query, QueryCtx } from "../_generated/server";
-import { ConvexError, v } from "convex/values";
+import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
-import { asyncMap } from "convex-helpers";
 import { mutation } from "./message_trigger";
 import {
   attachmentSchema,
@@ -11,6 +10,8 @@ import {
 } from "../attachment/attachment_service";
 import { mustGetCurrentUser } from "../user/user_service";
 import { getAccessUpdate } from "../access/access_service";
+import { stream } from "convex-helpers/server/stream";
+import schema from "../schema";
 
 /**
  * get message paginations
@@ -20,57 +21,59 @@ export const getMessages = query({
   args: { channelId: v.string(), paginationOpts: paginationOptsValidator },
   handler: async (ctx, { channelId, paginationOpts }) => {
     const session = await mustGetCurrentUser(ctx);
-    const messages = await ctx.db
+    const haveAccess = await getAccessUpdate(ctx, channelId);
+    const messages = stream(ctx.db, schema)
       .query("message")
       .withIndex("by_message_channel", (q) => q.eq("channelId", channelId))
-      .order("desc")
-      .paginate(paginationOpts);
+      .map(async (message) => {
+        const user = await ctx.db.get(message.userId);
+        const member = await ctx.db
+          .query("member")
+          .withIndex("by_member_userid", (q) => q.eq("userId", message.userId))
+          .first();
 
-    const haveAccess = await getAccessUpdate(ctx, channelId);
+        if (!user || !member) {
+          return null;
+        }
 
-    const newMessages = await asyncMap(messages.page, async (message) => {
-      const user = await ctx.db.get(message.userId);
-      const member = await ctx.db
-        .query("member")
-        .withIndex("by_member_userid", (q) => q.eq("userId", message.userId))
-        .first();
+        const parent = await getParentMessage({
+          ctx,
+          parentId: message.parentId,
+        });
 
-      if (!user || !member) {
-        throw new ConvexError("user not found");
-      }
+        const attachment = await getManyFrom(
+          ctx.db,
+          "attachment",
+          "by_attachment_messageid",
+          message._id,
+          "messageId",
+        );
 
-      const parent = await getParentMessage({
-        ctx,
-        parentId: message.parentId,
+        const access =
+          message.userId === session._id || haveAccess?.remove || false;
+
+        const profile = await getOneFrom(
+          ctx.db,
+          "userImage",
+          "by_user_image",
+          user._id,
+          "userId",
+        );
+
+        return {
+          ...message,
+          user: {
+            ...user,
+            name: member.username || user.name,
+          },
+          parent,
+          attachment,
+          access,
+          profile,
+        };
       });
 
-      const attachment = await getManyFrom(
-        ctx.db,
-        "attachment",
-        "by_attachment_messageid",
-        message._id,
-        "messageId",
-      );
-
-      const access =
-        message.userId === session._id || haveAccess?.remove || false;
-
-      return {
-        ...message,
-        user: {
-          ...user,
-          name: member.username || user.name,
-        },
-        parent,
-        attachment,
-        access,
-      };
-    });
-
-    return {
-      ...messages,
-      page: newMessages,
-    };
+    return messages.paginate(paginationOpts);
   },
 });
 
@@ -108,10 +111,19 @@ async function getParentMessage({
     "messageId",
   );
 
+  const profile = await getOneFrom(
+    ctx.db,
+    "userImage",
+    "by_user_image",
+    user._id,
+    "userId",
+  );
+
   return {
     ...message,
     user,
     attachment,
+    profile,
   };
 }
 

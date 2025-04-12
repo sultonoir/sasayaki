@@ -9,6 +9,8 @@ interface MemberContentProps extends React.ComponentProps<"div"> {
 }
 
 const MemberContent = ({ member, className, ...props }: MemberContentProps) => {
+  const blur = member.profile?.blur || "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm";
+  const image = member.profile?.url || member.user.image || "/avatar.png";
   return (
     <div
       className={cn("flex flex-row gap-4 first:mt-2 last:mb-2", className)}
@@ -21,6 +23,8 @@ const MemberContent = ({ member, className, ...props }: MemberContentProps) => {
           name={member.username || member.user.name || ""}
           side="left"
           sideOffset={75}
+          image={image}
+          blur={blur}
         />
         <p className="text-muted-foreground max-w-[200px] truncate text-xs">
           {member.user.status}

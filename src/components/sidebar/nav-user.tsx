@@ -32,9 +32,9 @@ import { useTheme } from "next-themes";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "../ui/button";
 import { useSession } from "@/provider/session-provider";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSidebar } from "../ui/sidebar";
+import { useModal } from "@/hooks/use-modal";
 
 export function NavUser() {
   const { theme, setTheme } = useTheme();
@@ -42,6 +42,7 @@ export function NavUser() {
   const router = useRouter();
   const { signOut } = useAuthActions();
   const { isMobile } = useSidebar();
+  const { toggle } = useModal();
 
   return (
     <DropdownMenu>
@@ -53,7 +54,8 @@ export function NavUser() {
         >
           <UserAvatar
             name={user?.name}
-            src={user?.image}
+            src={user?.profile?.url}
+            blur={user?.profile?.blur}
             online={user?.online}
           />
           <div className="grid flex-1 text-left text-sm leading-tight">
@@ -75,7 +77,8 @@ export function NavUser() {
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <UserAvatar
               name={user?.name}
-              src={user?.image}
+              src={user?.profile?.url}
+              blur={user?.profile?.blur}
               online={user?.online}
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
@@ -93,11 +96,9 @@ export function NavUser() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/setting/profile">
-              <BadgeCheck />
-              Account
-            </Link>
+          <DropdownMenuItem onSelect={toggle}>
+            <BadgeCheck />
+            Account
           </DropdownMenuItem>
           <DropdownMenuItem>
             <CreditCard />

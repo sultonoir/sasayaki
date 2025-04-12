@@ -28,6 +28,7 @@ const FieldBio = () => {
           const newValue = e.target.value;
           if (newValue.length <= maxLength) {
             dispatch({ type: "SET_BIO", payload: newValue });
+            dispatch({ type: "SET_TOAST", payload: "initial" });
             setCharacterCount(newValue.length);
             adjustHeight();
           }

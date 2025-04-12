@@ -22,17 +22,18 @@ export async function updateBanner({
   ctx: MutationCtx;
   value: CreateBannerSchema;
 }) {
-  const banner = await ctx.db
-    .query("banner")
-    .withIndex("by_banner_user", (q) =>
-      q.eq("userId", value.userId).eq("url", value.url),
-    )
-    .unique();
+  const banner = await getOneFrom(
+    ctx.db,
+    "banner",
+    "by_banner_user",
+    value.userId,
+    "userId",
+  );
 
   if (!banner) {
     return await ctx.db.insert("banner", value);
   }
-  await ctx.db.patch(banner?._id, value);
+  await ctx.db.patch(banner._id, value);
 }
 
 export async function getBanner({

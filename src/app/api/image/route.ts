@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
       return {
         url: result.secure_url,
-        fileId: result.asset_id,
+        fileId: result.public_id,
         name: file.name,
         format: result.resource_type,
         blur,

@@ -15,6 +15,7 @@ const FieldAvatarPreview = () => {
     const file = stringToFile(url, name);
     dispatch({ type: "SET_AVATAR", payload: file });
     dispatch({ type: "SET_REMOVE_AVATAR", payload: true });
+    dispatch({ type: "SET_TOAST", payload: "initial" });
   };
 
   const {
@@ -43,6 +44,7 @@ const FieldAvatarPreview = () => {
 
     // Tetap set ini agar backend tahu bahwa avatar lama harus dihapus
     dispatch({ type: "SET_REMOVE_AVATAR", payload: true });
+    dispatch({ type: "SET_TOAST", payload: "initial" });
   };
 
   return (
@@ -53,7 +55,7 @@ const FieldAvatarPreview = () => {
         selectedFile={previewUrl}
         handleCropComplete={handleCropComplete}
       />
-      <div className="border-background bg-muted group relative flex size-20 items-center justify-center rounded-full border-4 shadow-xs shadow-black/10">
+      <div className="border-background bg-muted group/banner relative flex size-20 items-center justify-center rounded-full border-4 shadow-xs shadow-black/10">
         {shouldShow && (
           <Image
             src={currentImage ?? "/avatar.png"}
@@ -66,16 +68,16 @@ const FieldAvatarPreview = () => {
         <div className="bg-card absolute -right-[10px] bottom-[2px] size-7 rounded-full p-1">
           <div className="size-full rounded-full bg-emerald-500"></div>
         </div>
-        <div className="absolute -right-50 w-fit items-center justify-between gap-1 opacity-0 transition-all duration-300 group-hover:-right-33 group-hover:opacity-100">
-          <div className="flex cursor-pointer flex-col gap-1 rounded-lg border bg-zinc-700 px-2 py-2 text-xs">
+        <div className="absolute -right-96 w-fit items-center justify-between gap-1 opacity-0 transition-all duration-300 group-hover/banner:-right-33 group-hover/banner:opacity-100">
+          <div className="bg-muted flex cursor-pointer flex-col gap-1 rounded-lg border px-2 py-2 text-xs">
             <span
-              className="hover:bg-accent w-full rounded-md px-3 py-1.5 text-center"
+              className="hover:bg-accent hover:text-primary-foreground text-muted-foreground w-full rounded-md px-3 py-1.5 text-center"
               onClick={handleThumbnailClick}
             >
               Change image
             </span>
             <span
-              className="hover:bg-accent w-full rounded-md px-3 py-1.5 text-center"
+              className="hover:bg-accent hover:text-primary-foreground text-muted-foreground w-full rounded-md px-3 py-1.5 text-center"
               onClick={handleRemoveImage}
             >
               Remove image

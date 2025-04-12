@@ -1,12 +1,14 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Image } from "@unpic/react/nextjs";
+import { blurhashToDataUri } from "@unpic/placeholder";
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
   src?: string;
   name?: string;
   username?: string;
   online?: boolean;
+  blur?: string;
 }
 
 export const UserAvatar = ({
@@ -14,6 +16,7 @@ export const UserAvatar = ({
   name,
   online,
   className,
+  blur = "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm",
 }: Props) => {
   return (
     <div className={cn("relative isolate flex-none flex-shrink-0", className)}>
@@ -23,8 +26,7 @@ export const UserAvatar = ({
         width={38}
         height={38}
         layout="fixed"
-        priority={true}
-        loading="eager"
+        background={blurhashToDataUri(blur)}
         className="rounded-full object-cover"
       />
       <span

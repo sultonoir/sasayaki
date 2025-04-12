@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ImageCropper } from "@/components/ui/image-cropper";
 import { useImageUpload } from "@/hooks/use-image-upload";
+import { useShowMedia } from "@/hooks/use-show-media";
 import { stringToFile } from "@/lib/stringToFile";
 import { useProfileEdit } from "@/provider/profile-edit-provider";
 import { ImagePlusIcon, XIcon } from "lucide-react";
@@ -15,6 +16,7 @@ const FieldBannerPreview = () => {
     const file = stringToFile(url, name);
     dispatch({ type: "SET_BANNER", payload: file });
     dispatch({ type: "SET_REMOVE_BANNER", payload: true });
+    dispatch({ type: "SET_TOAST", payload: "initial" });
   };
 
   const {
@@ -28,10 +30,14 @@ const FieldBannerPreview = () => {
     handleCropComplete,
   } = useImageUpload({ onUpload, useCropper: true });
 
-  const currentImage = previewUrl || state.initialBanner?.url;
+  const { currentImage, shouldShow } = useShowMedia({
+    avatar: state.banner,
+    initialAvatar: state.initialBanner?.url,
+    isRmAvatar: state.isRmBanner,
+  });
 
   const handleRemoveImage = () => {
-    if (state.avatar) {
+    if (state.banner) {
       // Jika user sudah upload gambar baru, hapus dari state dan local preview
       dispatch({ type: "SET_BANNER", payload: undefined });
       handleRemove(); // hapus preview & file input
@@ -39,10 +45,11 @@ const FieldBannerPreview = () => {
 
     // Tetap set ini agar backend tahu bahwa avatar lama harus dihapus
     dispatch({ type: "SET_REMOVE_BANNER", payload: true });
+    dispatch({ type: "SET_TOAST", payload: "initial" });
   };
 
   return (
-    <div className="h-32">
+    <div className="h-24">
       <ImageCropper
         dialogOpen={isCropOpen}
         setDialogOpen={setIsCropOpen}
@@ -50,11 +57,11 @@ const FieldBannerPreview = () => {
         handleCropComplete={handleCropComplete}
         aspect={3 / 1}
       />
-      <div className="bg-muted/80 relative flex h-full w-full items-center justify-center overflow-hidden">
-        {currentImage && (
+      <div className="bg-muted/80 relative isolate flex h-full w-full items-center justify-center overflow-hidden">
+        {shouldShow && (
           <Image
             className="h-full w-full object-cover"
-            src={currentImage}
+            src={currentImage!}
             alt={
               previewUrl
                 ? "Preview of uploaded image"
@@ -73,7 +80,7 @@ const FieldBannerPreview = () => {
           >
             <ImagePlusIcon size={16} aria-hidden="true" />
           </button>
-          {currentImage && (
+          {shouldShow && (
             <button
               type="button"
               className="focus-visible:border-ring focus-visible:ring-ring/50 z-50 flex size-10 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-[color,box-shadow] outline-none hover:bg-black/80 focus-visible:ring-[3px]"

@@ -47,6 +47,7 @@
     "convex": "^1.21.0",
     "convex-helpers": "^0.1.76",
     "date-fns": "^3.6.0",
+    "framer-motion": "^12.6.5",
     "frimousse": "^0.2.0",
     "lucide-react": "^0.485.0",
     "motion": "^12.6.2",

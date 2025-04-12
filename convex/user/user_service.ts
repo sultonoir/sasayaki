@@ -1,9 +1,11 @@
 import { ConvexError, v } from "convex/values";
 import { Doc } from "../_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { mutation, query, QueryCtx } from "../_generated/server";
+import { mutation, MutationCtx, query, QueryCtx } from "../_generated/server";
 import { getServerMutual } from "../server/server_service";
 import { updateBanner } from "../banner/banner_service";
+import { CreateBannerSchema } from "../banner/banner_model";
+import { getOneFrom } from "convex-helpers/server/relationships";
 
 export async function mustGetCurrentUser(ctx: QueryCtx): Promise<Doc<"users">> {
   const userId = await getAuthUserId(ctx);
@@ -35,9 +37,17 @@ export const getSession = query({
       .query("banner")
       .withIndex("by_banner_user", (q) => q.eq("userId", user._id))
       .first();
+    const image = await getOneFrom(
+      ctx.db,
+      "userImage",
+      "by_user_image",
+      user._id,
+      "userId",
+    );
 
     return {
       ...user,
+      profile: image,
       banner,
     };
   },
@@ -93,7 +103,15 @@ export const searchUsername = query({
 export const updateUser = mutation({
   args: {
     name: v.optional(v.string()),
-    image: v.optional(v.string()),
+    image: v.optional(
+      v.object({
+        format: v.string(),
+        fileId: v.string(),
+        url: v.string(),
+        name: v.string(),
+        blur: v.string(),
+      }),
+    ),
     status: v.optional(v.string()),
     username: v.optional(v.string()),
     banner: v.optional(
@@ -109,18 +127,46 @@ export const updateUser = mutation({
   handler: async (ctx, { name, username, image, status, banner }) => {
     const user = await mustGetCurrentUser(ctx);
 
-    await ctx.db.patch(user._id, { name, image, status, username });
+    if (image) {
+      await updateImage({ ctx, value: { ...image, userId: user._id } });
+    }
 
     if (banner) {
       await updateBanner({ ctx, value: { ...banner, userId: user._id } });
     }
+
+    await ctx.db.patch(user._id, { name, status, username });
   },
 });
 
 export const removeImage = mutation({
-  handler: async (ctx) => {
+  args: { imageId: v.id("userImage") },
+  handler: async (ctx, { imageId }) => {
     const user = await mustGetCurrentUser(ctx);
 
-    await ctx.db.patch(user._id, { image: "/avatar.png" });
+    if (!user) return;
+    await ctx.db.delete(imageId);
   },
 });
+
+async function updateImage({
+  ctx,
+  value,
+}: {
+  ctx: MutationCtx;
+  value: CreateBannerSchema;
+}) {
+  const image = await getOneFrom(
+    ctx.db,
+    "userImage",
+    "by_user_image",
+    value.userId,
+    "userId",
+  );
+
+  if (!image) {
+    return await ctx.db.insert("userImage", value);
+  }
+
+  await ctx.db.patch(image._id, value);
+}

@@ -23,12 +23,20 @@ const DialogRmChannel = dynamic(
   },
 );
 
+const DialogEditProfile = dynamic(
+  () => import("@/components/form/user/edit-profile.dialog"),
+  {
+    ssr: false,
+  },
+);
+
 const DialogProvider = () => {
   return (
     <>
       <DialogCreateGroup />
       <DialogCreateChannel />
       <DialogRmChannel />
+      <DialogEditProfile />
     </>
   );
 };

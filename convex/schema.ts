@@ -14,6 +14,7 @@ import { server, serverImage } from "./server/server_model";
 import { channel } from "./channel/channel_model";
 import { role } from "./role/role_model";
 import { pm, personal } from "./personal/personal_model";
+import { userImage } from "./user/user_model";
 
 const schema = defineSchema({
   ...authTables,
@@ -35,6 +36,7 @@ const schema = defineSchema({
     .searchIndex("by_user_username", {
       searchField: "username",
     }),
+  userImage,
   todo,
   message,
   member,

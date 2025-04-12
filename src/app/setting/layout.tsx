@@ -1,3 +1,4 @@
+import FieldToast from "@/components/form/user/field-toast";
 import { Toaster } from "@/components/ui/sonner";
 import { api } from "@/convex/_generated/api";
 import { ProfileEditProvider } from "@/provider/profile-edit-provider";
@@ -16,7 +17,10 @@ const LayoutSetting = async ({ children }: { children: React.ReactNode }) => {
   );
   return (
     <SessionProvider user={user}>
-      <ProfileEditProvider user={user}>{children}</ProfileEditProvider>
+      <ProfileEditProvider user={user}>
+        {children}
+        <FieldToast />
+      </ProfileEditProvider>
       <Toaster position="top-center" richColors />
     </SessionProvider>
   );

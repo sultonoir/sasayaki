@@ -9,12 +9,16 @@ import { ImageIcon } from "lucide-react";
 import { useChat } from "@/hooks/use-chat";
 import Linkify from "../ui/Linkify";
 import UserTooltip from "../user/user-tooltip";
+import { blurhashToDataUri } from "@unpic/placeholder";
 
 interface Props {
   message: Messages;
 }
 
 const ChatContent = ({ message }: Props) => {
+  const blur = message.profile?.blur || "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm";
+  const image = message.profile?.url || message.user.image || "/avatar.png";
+
   const { findMessage } = useChat();
   const parent = message.parent;
   return (
@@ -28,13 +32,14 @@ const ChatContent = ({ message }: Props) => {
       )}
     >
       <Image
-        src={message.user.image || "/avatar.png"}
+        src={image}
         alt={message.user.name || "unknown user"}
         width={40}
         height={40}
         layout="fixed"
         priority={true}
         loading="eager"
+        background={blurhashToDataUri(blur)}
         className={cn("rounded-full object-cover", {
           "mt-[30px]": parent,
         })}
@@ -46,6 +51,8 @@ const ChatContent = ({ message }: Props) => {
             userId={message.user._id}
             name={message.user.name || "unknown name"}
             side="right"
+            image={image}
+            blur={blur}
             sideOffset={10}
           />
           <span className="text-muted-foreground ml-2 text-xs">
@@ -68,6 +75,7 @@ const ChatContent = ({ message }: Props) => {
 };
 
 function ParentContent({ parent }: { parent: Reply }) {
+  const blur = parent.profile?.blur || "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm";
   const handleFind = () => {
     // Mencari elemen dengan id berdasarkan parent._id
     const element = document.getElementById(parent._id);
@@ -86,13 +94,14 @@ function ParentContent({ parent }: { parent: Reply }) {
     >
       <div className="border-muted-foreground/50 group-hover/parent:border-foreground absolute top-4 left-[24px] h-[18px] w-[30px] rounded-tl-lg border-t-4 border-l-4 text-gray-600" />
       <Image
-        src={parent.user.image || "/avatar.png"}
+        src={parent.profile?.url || parent.user.image || "/avatar.png"}
         alt={parent.user.username || "unknown user"}
         width={15}
         height={15}
         layout="fixed"
         priority={true}
         loading="eager"
+        background={blurhashToDataUri(blur)}
         className="rounded-full object-cover"
       />
 

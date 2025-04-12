@@ -17,11 +17,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "../ui/sidebar";
 import { cn } from "@/lib/utils";
+import { useDialogServer } from "@/hooks/use-dialog-server";
 
 const SidebarSever = () => {
   const pathname = usePathname();
+  const {setOpen} = useDialogServer()
 
   return (
     <Sidebar collapsible="none" className="w-fit">
@@ -51,6 +54,7 @@ const SidebarSever = () => {
               <SidebarMenuButton
                 variant="default"
                 size="lg"
+                onClick={setOpen}
                 className="bg-sidebar-accent hover:bg-primary size-12 flex-none items-center justify-center"
                 tooltip={{
                   children: "Create Server",
@@ -106,6 +110,7 @@ type ContentProps = Doc<"server"> & {
 
 function Content({ content }: { content: ContentProps }) {
   const { server } = useParams();
+  const { toggleSidebar, isMobile } = useSidebar();
   const active = server === content._id;
   return (
     <div
@@ -121,6 +126,11 @@ function Content({ content }: { content: ContentProps }) {
         variant="default"
         size="lg"
         isActive={active}
+        onClick={() => {
+          if (isMobile && active) {
+            toggleSidebar();
+          }
+        }}
         className="size-12 flex-none items-center justify-center p-0"
         tooltip={{
           children: content.name,

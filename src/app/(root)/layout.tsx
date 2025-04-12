@@ -1,6 +1,7 @@
 import { SidebarApp } from "@/components/sidebar/sidebar-app";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { api } from "@/convex/_generated/api";
+import DialogProvider from "@/provider/dialog-provider";
 import { SessionProvider } from "@/provider/session-provider";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
@@ -35,6 +36,7 @@ export default async function Layout({
           </div>
         </SidebarInset>
       </SidebarProvider>
+      <DialogProvider />
     </SessionProvider>
   );
 }

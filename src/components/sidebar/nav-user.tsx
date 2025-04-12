@@ -34,12 +34,14 @@ import { Button } from "../ui/button";
 import { useSession } from "@/provider/session-provider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSidebar } from "../ui/sidebar";
 
 export function NavUser() {
   const { theme, setTheme } = useTheme();
   const { user } = useSession();
   const router = useRouter();
   const { signOut } = useAuthActions();
+  const { isMobile } = useSidebar();
 
   return (
     <DropdownMenu>
@@ -65,7 +67,7 @@ export function NavUser() {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-        side="right"
+        side={isMobile ? "bottom" : "right"}
         align="end"
         sideOffset={4}
       >

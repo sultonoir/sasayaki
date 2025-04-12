@@ -8,11 +8,7 @@ import SidebarHome from "./sidebar-home";
 
 export function SidebarApp({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar
-      className="[&>[data-sidebar=sidebar]]:flex-col"
-      variant="floating"
-      {...props}
-    >
+    <Sidebar variant="floating" {...props}>
       <Sidebar collapsible="none" className="w-full flex-row overflow-hidden">
         <SidebarSever />
         <SidebarHome />

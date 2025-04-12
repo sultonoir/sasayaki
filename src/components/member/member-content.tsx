@@ -16,7 +16,7 @@ const MemberContent = ({ member, className, ...props }: MemberContentProps) => {
       className={cn("flex flex-row gap-4 first:mt-2 last:mb-2", className)}
       {...props}
     >
-      <UserAvatar src={member.user.image} online={member.user.online} />
+      <UserAvatar src={image} online={member.user.online} />
       <div className="flex flex-col">
         <UserTooltip
           userId={member.userId}

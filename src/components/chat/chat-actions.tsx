@@ -6,6 +6,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { handleError } from "@/lib/handle-eror";
 import { useChat } from "@/hooks/use-chat";
+import { toast } from "sonner";
 
 interface Props {
   message: Messages;
@@ -20,11 +21,30 @@ const ChatActions = ({ message }: Props) => {
   //api mutation
   const mutate = useMutation(api.message.message_service.removeMessage);
 
+  const handleRemoveImage = async () => {
+    if (!message.attachment) return;
+    const result = await fetch("/api/attachments", {
+      method: "DELETE",
+      body: JSON.stringify({
+        fileIds: message.attachment.map((item) => item.fileId),
+      }),
+    });
+
+    if (!result.ok) {
+      toast.error("Failed to upload files");
+      return;
+    }
+  };
   //handle remove message
   const handleRemoveMessage = async () => {
     setIsPending(true);
     try {
-      await mutate({ id: message._id });
+      const removefromdb = mutate({
+        id: message._id,
+        attachments: message.attachment.map((item) => item._id),
+      });
+
+      await Promise.all([removefromdb, handleRemoveImage]);
     } catch (error) {
       setIsPending(false);
       return handleError({ error, message: "Error remove message" });

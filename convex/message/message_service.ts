@@ -156,8 +156,17 @@ export const sendMessage = mutation({
 });
 
 export const removeMessage = mutation({
-  args: { id: v.id("message") },
-  handler: async (ctx, { id }) => {
+  args: {
+    id: v.id("message"),
+    attachments: v.optional(v.array(v.id("attachment"))),
+  },
+  handler: async (ctx, { id, attachments }) => {
     await ctx.db.delete(id);
+
+    if (attachments) {
+      for (const atc of attachments) {
+        await ctx.db.delete(atc);
+      }
+    }
   },
 });

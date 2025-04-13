@@ -45,9 +45,9 @@ export default function ChatInput({ goingTobotom }: Props) {
 
   //validation group chat or dm
   const pathname = usePathname();
-  const { channel, dm } = useParams<{ channel: string; dm: string }>();
+  const { channel, dmId } = useParams<{ channel: string; dmId: string }>();
 
-  const channelId = pathname.startsWith("/server") ? channel : dm;
+  const channelId = pathname.startsWith("/server") ? channel : dmId;
 
   const handleSubmit = async () => {
     setisPending(true);

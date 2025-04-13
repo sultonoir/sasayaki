@@ -19,7 +19,12 @@ export const UserAvatar = ({
   blur = "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm",
 }: Props) => {
   return (
-    <div className={cn("relative isolate flex-none flex-shrink-0", className)}>
+    <div
+      className={cn(
+        "relative isolate w-fit flex-none flex-shrink-0",
+        className,
+      )}
+    >
       <Image
         src={src}
         alt={name}

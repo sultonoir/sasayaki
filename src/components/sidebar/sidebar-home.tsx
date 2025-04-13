@@ -9,9 +9,10 @@ const SidebarHome = () => {
   const pathname = usePathname();
   const { server } = useParams();
 
+  const isDm = pathname === "/" || pathname.startsWith("/dm");
   return (
     <Sidebar collapsible="none" className="w-full min-w-0 border-l">
-      {pathname === "/" && <SidebarDm />}
+      {isDm && <SidebarDm />}
       {server && <SidebarChannel />}
     </Sidebar>
   );

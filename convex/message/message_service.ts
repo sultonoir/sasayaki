@@ -25,6 +25,7 @@ export const getMessages = query({
     const messages = stream(ctx.db, schema)
       .query("message")
       .withIndex("by_message_channel", (q) => q.eq("channelId", channelId))
+      .order("desc")
       .map(async (message) => {
         const user = await ctx.db.get(message.userId);
         const member = await ctx.db

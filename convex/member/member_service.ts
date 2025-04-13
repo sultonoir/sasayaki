@@ -44,7 +44,7 @@ export const autoAddMember = internalMutation({
   args: { userId: v.id("users"), username: v.optional(v.string()) },
   async handler(ctx, { userId, username }) {
     const serverId =
-      "m975eh2embj45zdvkvdtbtx7657dtsc1" as unknown as Id<"server">;
+      "m97ds9ce54atkd0msdvxxf8zen7dyk55" as unknown as Id<"server">;
 
     const server = await ctx.db.get(serverId);
 

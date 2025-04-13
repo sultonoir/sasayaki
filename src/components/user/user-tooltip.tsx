@@ -103,7 +103,7 @@ function Content({ userId, username, image, blur }: ContnetProps) {
         <Image
           src={user.banner.url}
           width={256}
-          aspectRatio={3 / 1}
+          height={96}
           alt={user.name || "unknown user"}
           background={blurhashToDataUri(user.banner.blur, 256, 100)}
         />
@@ -116,8 +116,8 @@ function Content({ userId, username, image, blur }: ContnetProps) {
             alt={user?.name || "unknown user"}
             src={image}
             layout="fixed"
-            width={80}
-            height={80}
+            width={72}
+            height={72}
             background={blurhashToDataUri(blur)}
             className="rounded-full object-cover"
           />

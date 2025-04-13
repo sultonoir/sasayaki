@@ -83,6 +83,42 @@ export const getUser = query({
   },
 });
 
+export const getUserByid = query({
+  args: { id: v.id("users") },
+  handler: async (ctx, { id }) => {
+    const session = await mustGetCurrentUser(ctx);
+    const user = await ctx.db.get(id);
+
+    if (!user) return null;
+
+    const banner = await ctx.db
+      .query("banner")
+      .withIndex("by_banner_user", (q) => q.eq("userId", user._id))
+      .unique();
+
+    const groups = await getServerMutual(ctx, session._id, user._id);
+
+    const profile = await getOneFrom(
+      ctx.db,
+      "userImage",
+      "by_user_image",
+      user._id,
+      "userId",
+    );
+
+    const blur = profile?.blur || "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm";
+    const image = user.image || profile?.url || "/avatar.png";
+
+    return {
+      ...user,
+      image,
+      blur,
+      banner,
+      groups,
+    };
+  },
+});
+
 export const searchUsername = query({
   args: { username: v.string() },
   handler: async (ctx, { username }) => {

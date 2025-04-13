@@ -16,7 +16,7 @@ const PageTitle = ({
   return (
     <div
       className={cn(
-        "flex h-10 flex-none items-center justify-center gap-4 py-2",
+        "flex h-10 flex-none items-center justify-center gap-2 py-2",
         className,
       )}
       {...props}

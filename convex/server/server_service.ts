@@ -245,11 +245,19 @@ export const getServerMutual = async (
       .withIndex("by_server_image_Id", (q) => q.eq("serverId", serverId))
       .first();
 
+    const channel = await ctx.db
+      .query("channel")
+      .withIndex("by_server_channel", (q) => q.eq("serverId", serverId))
+      .first();
+
+    if (!channel) return null;
+
     if (!image) return null;
 
     return {
       ...server,
       image,
+      channel
     };
   });
 

@@ -115,11 +115,11 @@ const FieldToast = () => {
     if (state.banner) files.push(state.banner);
 
     try {
-      if (state.initialBanner) {
+      if (state.isRmBanner) {
         await handleRemoveBanner();
       }
 
-      if (state.initialAvatar) {
+      if (state.isRmAvatar) {
         await handleRemoveImage();
       }
 

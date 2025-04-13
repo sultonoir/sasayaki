@@ -1,0 +1,47 @@
+"use client";
+import React from "react";
+import { UserAvatar } from "../user/user-avatar";
+import { useDialogGroup } from "@/hooks/use-dialog-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "../ui/button";
+import { User } from "lucide-react";
+
+interface DmHeaderProps {
+  name: string;
+  image: string;
+  blur: string;
+  online: boolean;
+}
+const DmHeader = (props: DmHeaderProps) => {
+  const { setOpen, open } = useDialogGroup();
+  return (
+    <div className="flex items-center justify-between px-4 py-2">
+      <div className="flex items-center gap-2">
+        <UserAvatar {...props} />
+        <p className="text-sm">{props.name}</p>
+      </div>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="disabled:opacity-100"
+            onClick={setOpen}
+            aria-label="button toggle member layout"
+          >
+            <User />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="px-2 py-1 text-xs">
+          {!open ? "Show" : "Hide"} user profile
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  );
+};
+
+export default DmHeader;

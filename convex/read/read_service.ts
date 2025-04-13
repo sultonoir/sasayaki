@@ -101,10 +101,7 @@ export const getReadServer = async (ctx: QueryCtx, serverId: Id<"server">) => {
   return count.reduce((acc, curr) => acc + curr, 0);
 };
 
-export const getReadChannel = async (
-  ctx: QueryCtx,
-  channelId: Id<"channel">,
-) => {
+export const getReadChannel = async (ctx: QueryCtx, channelId: string) => {
   const user = await mustGetCurrentUser(ctx);
   const getRead = await getLastread(ctx, channelId);
   const readTimestamp = getRead?.readAt || 0;

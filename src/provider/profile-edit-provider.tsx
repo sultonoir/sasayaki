@@ -45,7 +45,7 @@ const createInitialState = (user: Session | null): ProfileEditState => ({
   isRmAvatar: false,
   isRmBanner: false,
   toast: undefined,
-  initialAvatar: user?.image,
+  initialAvatar: user?.image || user?.profile?.url,
   initialBanner: user?.banner ?? null,
   bio: user?.status || "",
 });

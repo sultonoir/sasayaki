@@ -36,3 +36,15 @@ export type Session = Doc<"users"> & {
   profile: Doc<"userImage"> | null;
   banner: Doc<"banner"> | null;
 };
+
+export type Group = Doc<"server"> & {
+  image: Doc<"serverImage">;
+  channel: Doc<"channel">;
+};
+
+export type DmPage = Doc<"users"> & {
+  image: string;
+  blur: string;
+  banner: Doc<"banner"> | null;
+  groups: Group[];
+};

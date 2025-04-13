@@ -21,16 +21,18 @@ import {
 } from "../ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useDialogServer } from "@/hooks/use-dialog-server";
+import SidebarNewMessage from "./sidebar-new-message";
 
 const SidebarSever = () => {
   const pathname = usePathname();
-  const {setOpen} = useDialogServer()
+  const { setOpen } = useDialogServer();
 
   return (
     <Sidebar collapsible="none" className="w-fit">
       <SidebarContent className="scrollbar-hidden items-center">
         <SidebarGroup className="px-0 py-2">
           <SidebarMenu className="items-center gap-3">
+            <SidebarNewMessage />
             <SidebarMenuItem className="px-2">
               <SidebarMenuButton
                 isActive={pathname === "/"}
@@ -91,7 +93,7 @@ function Wrapper() {
     );
   }
 
-  if (isError || data.length === 0) return null;
+  if (isError || !data) return null;
 
   return (
     <SidebarMenuItem>

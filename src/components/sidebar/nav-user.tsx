@@ -1,47 +1,28 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  CreditCard,
-  LaptopMinimal,
-  LogOut,
-  Moon,
-  MoreVertical,
-  Palette,
-  Sparkles,
-  Sun,
-} from "lucide-react";
+import { BadgeCheck, LogOut, MoreVertical } from "lucide-react";
 
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserAvatar } from "../user/user-avatar";
-import { useTheme } from "next-themes";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "../ui/button";
 import { useSession } from "@/provider/session-provider";
 import { useRouter } from "next/navigation";
-import { useSidebar } from "../ui/sidebar";
 import { useModal } from "@/hooks/use-modal";
+import { Image } from "@unpic/react/nextjs";
+import { blurhashToDataUri } from "@unpic/placeholder";
 
 export function NavUser() {
-  const { theme, setTheme } = useTheme();
   const { user } = useSession();
   const router = useRouter();
   const { signOut } = useAuthActions();
-  const { isMobile } = useSidebar();
   const { toggle } = useModal();
 
   return (
@@ -68,91 +49,74 @@ export function NavUser() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-        side={isMobile ? "bottom" : "right"}
-        align="end"
+        className="w-[--radix-dropdown-menu-trigger-width] min-w-[340px] rounded-lg p-0"
+        side={"top"}
+        align="center"
         sideOffset={4}
       >
-        <DropdownMenuLabel className="p-0 font-normal">
-          <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <UserAvatar
-              name={user?.name}
-              src={user?.profile?.url}
-              blur={user?.profile?.blur}
-              online={user?.online}
+        {user?.banner ? (
+          <Image
+            src={user.banner.url}
+            width={340}
+            height={96}
+            alt={user.name}
+            background={blurhashToDataUri(user.banner.blur, 256, 100)}
+          />
+        ) : (
+          <div className="h-[100px] w-full bg-rose-200"></div>
+        )}
+        <div className="-mt-10 px-3">
+          <div className="border-secondary bg-muted group/banner relative flex size-20 items-center justify-center rounded-full border-4 shadow-xs shadow-black/10">
+            <Image
+              src={user?.profile?.url ?? "/avatar.png"}
+              className="h-full w-full rounded-full object-cover"
+              width={80}
+              height={80}
+              alt="Profile image"
+              background={blurhashToDataUri(
+                user?.profile?.blur ?? "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm",
+                256,
+                100,
+              )}
             />
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{user?.name}</span>
-              <span className="truncate text-xs">{user?.email}</span>
+            <div className="bg-popover absolute -right-[10px] bottom-[5px] size-7 rounded-full p-1.5">
+              {user?.online ? (
+                <div className="size-full rounded-full bg-emerald-500"></div>
+              ) : (
+                <>
+                  <div className="bg-muted-foreground size-full rounded-full p-1">
+                    <div className="bg-popover size-full rounded-full"></div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Sparkles />
-            Upgrade to Pro
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem onSelect={toggle}>
-            <BadgeCheck />
-            Account
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
-          </DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="gap-2">
-              <Palette size={16} className="text-muted-foreground" />
-              Change theme
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuCheckboxItem
-                  checked={theme === "light"}
-                  onCheckedChange={() => setTheme("light")}
-                  className="flex items-center gap-2"
-                >
-                  <Sun className="size-4" />
-                  Light
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={theme === "dark"}
-                  onCheckedChange={() => setTheme("dark")}
-                  className="flex items-center gap-2"
-                >
-                  <Moon className="size-4" />
-                  Dark
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={theme === "system"}
-                  onCheckedChange={() => setTheme("system")}
-                  className="flex items-center gap-2"
-                >
-                  <LaptopMinimal className="size-4" />
-                  System
-                </DropdownMenuCheckboxItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onSelect={async () => {
-            signOut();
-            router.replace("/signin");
-          }}
-        >
-          <LogOut />
-          Log out
-        </DropdownMenuItem>
+        </div>
+        <div className="p-4 pb-0">
+          <p className="pb-1 leading-none font-semibold">{user?.name}</p>
+          <p className="text-muted-foreground pb-4 text-xs">{user?.username}</p>
+        </div>
+        <div className="p-4 pt-0">
+          <div className="bg-muted/70 rounded-lg p-2">
+            <DropdownMenuGroup>
+              <DropdownMenuItem onSelect={toggle} className="cursor-pointer">
+                <BadgeCheck />
+                Account
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={async () => {
+                  signOut();
+                  router.replace("/signin");
+                }}
+                className="cursor-pointer"
+              >
+                <LogOut />
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </div>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

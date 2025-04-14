@@ -17,6 +17,7 @@ import { UploadedFile } from "@/types";
 import { useChat } from "@/hooks/use-chat";
 import Emoji from "../ui/emoji";
 import { useParams, usePathname } from "next/navigation";
+import { useDialogGroup } from "@/hooks/use-dialog-group";
 
 interface Props {
   goingTobotom: () => void;
@@ -230,6 +231,7 @@ const ImageGallery = ({
   images: File[];
   removeImage: (name: string) => void;
 }) => {
+  const { open } = useDialogGroup();
   const [imageURLs, setImageURLs] = useState<{ name: string; url: string }[]>(
     [],
   );
@@ -248,7 +250,15 @@ const ImageGallery = ({
   }, [images]);
 
   return (
-    <div className="relative flex items-center gap-4 overflow-x-auto border-t p-3">
+    <div
+      className={cn(
+        "relative flex items-center gap-4 overflow-x-auto border-t p-3 transition-all duration-300 ease-in-out",
+        {
+          "max-w-[calc(100svw-720px)]": open,
+          "max-w-[calc(100svw-420px)]": !open,
+        },
+      )}
+    >
       {imageURLs.map(({ name, url }) => (
         <div className="relative min-w-[200px]" key={name}>
           <Button
@@ -259,7 +269,13 @@ const ImageGallery = ({
           >
             <Trash2 />
           </Button>
-          <Image width={200} height={230} alt={name} src={url} />
+          <Image
+            width={200}
+            height={230}
+            alt={name}
+            src={url}
+            className="rounded-xl"
+          />
         </div>
       ))}
     </div>

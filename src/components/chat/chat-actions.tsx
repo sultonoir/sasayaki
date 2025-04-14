@@ -22,7 +22,7 @@ const ChatActions = ({ message }: Props) => {
   const mutate = useMutation(api.message.message_service.removeMessage);
 
   const handleRemoveImage = async () => {
-    if (!message.attachment) return;
+    if (message.attachment.length === 0) return;
     const result = await fetch("/api/attachments", {
       method: "DELETE",
       body: JSON.stringify({
@@ -39,12 +39,11 @@ const ChatActions = ({ message }: Props) => {
   const handleRemoveMessage = async () => {
     setIsPending(true);
     try {
-      const removefromdb = mutate({
+      await handleRemoveImage();
+      await mutate({
         id: message._id,
         attachments: message.attachment.map((item) => item._id),
       });
-
-      await Promise.all([removefromdb, handleRemoveImage]);
     } catch (error) {
       setIsPending(false);
       return handleError({ error, message: "Error remove message" });

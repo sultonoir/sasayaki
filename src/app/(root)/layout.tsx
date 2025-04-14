@@ -33,7 +33,7 @@ export default async function Layout({
           }
         >
           <SidebarApp />
-          <SidebarInset>
+          <SidebarInset className="overflow-x-hidden">
             <div className="bg-card m-2 flex flex-1 flex-col overflow-hidden rounded-xl border pt-0">
               {children}
             </div>

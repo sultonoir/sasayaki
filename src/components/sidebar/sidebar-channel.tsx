@@ -24,6 +24,7 @@ import {
 import { useDialogCreateChannel } from "@/hooks/use-dialog-create-channel";
 import { useDialogRmChannel } from "@/hooks/use-dialog-remove-channel";
 import ServerDropdown from "../server/server-dropdown";
+import { useSidebar } from "../ui/sidebar";
 
 const SidebarChannel = React.memo(() => {
   const { setOpen, setId } = useDialogCreateChannel();
@@ -119,12 +120,23 @@ function Channel({
   const { setOpen, setId } = useDialogCreateChannel();
   const { setIsOpen, setChannelId } = useDialogRmChannel();
   const { channel, server } = useParams<{ server: string; channel: string }>();
-
+  const { isMobile, toggleSidebar } = useSidebar();
   const pathname = `/server/${server}/${ch._id}`;
-
+  const isActive = channel === ch._id;
   const router = useRouter();
 
   const handleNavigate = async () => {
+    if (isMobile && isActive) {
+      toggleSidebar();
+      return;
+    }
+
+    if (isMobile) {
+      toggleSidebar();
+      router.prefetch(pathname);
+      router.push(pathname);
+      return;
+    }
     router.prefetch(pathname);
     router.push(pathname);
   };

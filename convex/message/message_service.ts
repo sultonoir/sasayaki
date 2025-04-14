@@ -12,14 +12,19 @@ import { mustGetCurrentUser } from "../user/user_service";
 import { getAccessUpdate } from "../access/access_service";
 import { stream } from "convex-helpers/server/stream";
 import schema from "../schema";
+import { getMemberUsername } from "../member/member_service";
 
 /**
  * get message paginations
  */
 
 export const getMessages = query({
-  args: { channelId: v.string(), paginationOpts: paginationOptsValidator },
-  handler: async (ctx, { channelId, paginationOpts }) => {
+  args: {
+    channelId: v.string(),
+    serverId: v.optional(v.id("server")),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, { channelId, paginationOpts, serverId }) => {
     const session = await mustGetCurrentUser(ctx);
     const haveAccess = await getAccessUpdate(ctx, channelId);
     const messages = stream(ctx.db, schema)
@@ -28,12 +33,9 @@ export const getMessages = query({
       .order("desc")
       .map(async (message) => {
         const user = await ctx.db.get(message.userId);
-        const member = await ctx.db
-          .query("member")
-          .withIndex("by_member_userid", (q) => q.eq("userId", message.userId))
-          .first();
+        const member = await getMemberUsername(ctx, message.userId, serverId);
 
-        if (!user || !member) {
+        if (!user) {
           return null;
         }
 
@@ -65,7 +67,7 @@ export const getMessages = query({
           ...message,
           user: {
             ...user,
-            name: member.username || user.name,
+            name: member || user.name,
           },
           parent,
           attachment,

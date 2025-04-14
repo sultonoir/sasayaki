@@ -36,7 +36,7 @@ export const createServer = mutation({
     const member = ctx.db.insert("member", {
       userId: user._id,
       serverId: server,
-      username: user.username,
+      username: user.name,
       joinedAt: Date.now(),
     });
 
@@ -257,7 +257,7 @@ export const getServerMutual = async (
     return {
       ...server,
       image,
-      channel
+      channel,
     };
   });
 

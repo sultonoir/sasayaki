@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query } from "../_generated/server";
+import { query, QueryCtx } from "../_generated/server";
 import { paginationOptsValidator } from "convex/server";
 import { internalMutation } from "./member_trigger";
 import { Id } from "../_generated/dataModel";
@@ -69,3 +69,19 @@ export const autoAddMember = internalMutation({
     Promise.all([access, member]);
   },
 });
+
+export async function getMemberUsername(
+  ctx: QueryCtx,
+  userId: Id<"users">,
+  serverId?: Id<"server">,
+) {
+  if (!serverId) return undefined;
+
+  const member = await ctx.db
+    .query("member")
+    .withIndex("by_user_member", (q) =>
+      q.eq("userId", userId).eq("serverId", serverId),
+    )
+    .unique();
+  return member?.username;
+}

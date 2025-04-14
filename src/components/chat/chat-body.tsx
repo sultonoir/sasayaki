@@ -6,15 +6,18 @@ import ChatLoader from "./chat-loader";
 import ChatContent from "./chat-content";
 import ChatFooter from "./chat-footer";
 import { useChat } from "@/hooks/use-chat";
+import { useParams } from "next/navigation";
+import { Id } from "@/convex/_generated/dataModel";
 
 interface Props {
   channelId: string;
 }
 
 const ChatBody = React.memo(({ channelId }: Props) => {
+  const { server } = useParams<{ server: Id<"server"> }>();
   const { loadMore, results, status } = usePaginatedQuery(
     api.message.message_service.getMessages,
-    { channelId },
+    { channelId, serverId: server },
     { initialNumItems: 14 },
   );
 

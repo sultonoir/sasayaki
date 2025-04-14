@@ -96,11 +96,13 @@ function Wrapper() {
   if (isError || !data) return null;
 
   return (
-    <SidebarMenuItem>
+    <>
       {data.map((item) => (
-        <Content key={item._id} content={item} />
+        <SidebarMenuItem key={item._id}>
+          <Content content={item} />
+        </SidebarMenuItem>
       ))}
-    </SidebarMenuItem>
+    </>
   );
 }
 

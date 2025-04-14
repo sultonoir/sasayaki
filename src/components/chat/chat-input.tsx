@@ -25,6 +25,8 @@ interface Props {
 
 export default function ChatInput({ goingTobotom }: Props) {
   const { setReply, reply } = useChat();
+  const typing = useMutation(api.typing.typing_service.createTyping);
+  const removeTyping = useMutation(api.typing.typing_service.removeTyping);
 
   //pending state
   const [isPending, setisPending] = useState(false);
@@ -90,6 +92,7 @@ export default function ChatInput({ goingTobotom }: Props) {
         attachments: uploadImage,
         parentId: reply?._id,
       });
+      removeTyping({ roomid: channelId });
     } catch (error) {
       let message = "Error sending message";
       if (error instanceof ConvexError) {
@@ -162,10 +165,10 @@ export default function ChatInput({ goingTobotom }: Props) {
           <Textarea
             id="ai-input-04"
             onFocus={() => {
-              console.log("text focus");
+              typing({ roomid: channelId });
             }}
             onBlur={() => {
-              console.log("text blur");
+              removeTyping({ roomid: channelId });
             }}
             value={value}
             placeholder="Type a message"

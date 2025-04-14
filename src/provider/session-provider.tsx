@@ -1,6 +1,8 @@
 "use client";
 
+import { api } from "@/convex/_generated/api";
 import { Session } from "@/types";
+import { useQuery } from "convex-helpers/react";
 import { createContext, useContext, useEffect } from "react";
 
 interface SessionProviderProps {
@@ -44,12 +46,13 @@ export const SessionProvider = ({
   user: Session | null;
 }) => {
   // Panggil hook walaupun user null (biar nggak conditional)
+  const { data } = useQuery(api.user.user_service.getSession);
   useUserPresence(user?._id ?? null);
 
   // Kalau user null, jangan render apa-apa
 
   return (
-    <SessionContext.Provider value={{ user }}>
+    <SessionContext.Provider value={{ user: data || null }}>
       {children}
     </SessionContext.Provider>
   );

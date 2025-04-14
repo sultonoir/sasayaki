@@ -8,6 +8,7 @@ import { CreateBannerSchema } from "../banner/banner_model";
 import { getOneFrom } from "convex-helpers/server/relationships";
 import { getRoles } from "../role/role_service";
 import { getIsFriend, getMutualFriends } from "../friend/friend_service";
+import { internal } from "../_generated/api";
 
 export async function mustGetCurrentUser(ctx: QueryCtx): Promise<Doc<"users">> {
   const userId = await getAuthUserId(ctx);
@@ -208,3 +209,17 @@ async function updateImage({
 
   await ctx.db.patch(image._id, value);
 }
+
+export const updateOnlineUser = mutation({
+  args: { userId: v.id("users"), online: v.boolean(), lastSeen: v.number() },
+  handler: async (ctx, { userId, online, lastSeen }) => {
+    await ctx.db.patch(userId, { online, lastSeen });
+    await ctx.scheduler.runAfter(
+      1000,
+      internal.typing.typing_service.forceRemoveTyping,
+      {
+        userId,
+      },
+    );
+  },
+});

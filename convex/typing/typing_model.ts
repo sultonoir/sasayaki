@@ -6,5 +6,5 @@ export const typing = defineTable({
   userId: v.id("users"),
   isTyping: v.boolean(),
 })
-  .index("by_user_typing", ["userId", "isTyping"])
+  .index("by_user_typing", ["userId", "roomid"])
   .index("by_typing_rom", ["roomid"]);

@@ -18,13 +18,17 @@ import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal";
 import { Image } from "@unpic/react/nextjs";
 import { blurhashToDataUri } from "@unpic/placeholder";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export function NavUser() {
   const { user } = useSession();
   const router = useRouter();
   const { signOut } = useAuthActions();
   const { toggle } = useModal();
+  const mutate = useMutation(api.user.user_service.updateOnlineUser);
 
+  console.log({ user });
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,7 +41,7 @@ export function NavUser() {
             name={user?.name}
             src={user?.profile?.url}
             blur={user?.profile?.blur}
-            online={user?.online}
+            online={!!user?.online}
           />
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold">{user?.name}</span>
@@ -106,6 +110,12 @@ export function NavUser() {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onSelect={async () => {
+                  if (!user) return;
+                  void mutate({
+                    userId: user._id,
+                    online: false,
+                    lastSeen: Date.now(),
+                  });
                   signOut();
                   router.replace("/signin");
                 }}

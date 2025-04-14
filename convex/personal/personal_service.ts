@@ -1,12 +1,12 @@
 import { v } from "convex/values";
 import { Id } from "../_generated/dataModel";
-import { query, QueryCtx } from "../_generated/server";
+import { mutation, query, QueryCtx } from "../_generated/server";
 import { mustGetCurrentUser } from "../user/user_service";
 import { stream } from "convex-helpers/server/stream";
 import schema from "../schema";
 import { getReadChannel } from "../read/read_service";
 import { getOneFrom } from "convex-helpers/server/relationships";
-import { mutation } from "../message/message_trigger";
+import { mutation as messagemutation } from "../message/message_trigger";
 
 export const getPm = async (ctx: QueryCtx, otherId: Id<"users">) => {
   const user = await mustGetCurrentUser(ctx);
@@ -34,7 +34,7 @@ export const getPm = async (ctx: QueryCtx, otherId: Id<"users">) => {
   return undefined;
 };
 
-export const createDm = mutation({
+export const createDm = messagemutation({
   args: { otherId: v.id("users"), body: v.string() },
   handler: async (ctx, { otherId, body }) => {
     const user = await mustGetCurrentUser(ctx);
@@ -61,6 +61,31 @@ export const createDm = mutation({
       channelId: personal,
       sentAt: Date.now(),
     });
+  },
+});
+
+export const getDm = mutation({
+  args: { otherId: v.id("users") },
+  handler: async (ctx, { otherId }) => {
+    const user = await mustGetCurrentUser(ctx);
+    const personal = await getPm(ctx, otherId);
+
+    if (!personal) {
+      const personalId = await ctx.db.insert("personal", {});
+
+      await ctx.db.insert("pm", { userId: user._id, personalId });
+      await ctx.db.insert("pm", { userId: otherId, personalId });
+
+      return {
+        personalId,
+        otherId,
+      };
+    }
+
+    return {
+      personalId: personal,
+      otherId,
+    };
   },
 });
 

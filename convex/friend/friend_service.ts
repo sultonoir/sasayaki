@@ -1,9 +1,11 @@
 import { v } from "convex/values";
-import { mutation, QueryCtx } from "../_generated/server";
+import { mutation, query, QueryCtx } from "../_generated/server";
 import { mustGetCurrentUser } from "../user/user_service";
 import { Id } from "../_generated/dataModel";
 import { getOneFrom } from "convex-helpers/server/relationships";
 import { asyncMap } from "convex-helpers";
+import { stream } from "convex-helpers/server/stream";
+import schema from "../schema";
 
 export const addFriend = mutation({
   args: { friendId: v.id("users") },
@@ -75,3 +77,31 @@ export async function getMutualFriends(
 
   return commonFriends.filter((item) => item !== null);
 }
+
+export const getAllFriends = query({
+  handler: async (ctx) => {
+    const user = await mustGetCurrentUser(ctx);
+
+    const friends = stream(ctx.db, schema)
+      .query("friend")
+      .withIndex("by_friend_owner", (q) => q.eq("ownerId", user._id))
+      .map(async (f) => {
+        const user = await ctx.db.get(f.friendId);
+        const profile = await getOneFrom(
+          ctx.db,
+          "userImage",
+          "by_user_image",
+          f.friendId,
+          "userId",
+        );
+
+        if (!user) return null;
+        return {
+          ...user,
+          profile,
+        };
+      });
+
+    return friends.collect();
+  },
+});

@@ -42,7 +42,7 @@ export type Group = Doc<"server"> & {
   channel: Doc<"channel">;
 };
 
-interface Friend extends Doc<"users"> {
+export interface Friend extends Doc<"users"> {
   profile: Doc<"userImage"> | null;
 }
 

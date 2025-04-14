@@ -1,4 +1,7 @@
 // app/api/user-online/route.ts
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { fetchMutation } from "convex/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -15,6 +18,11 @@ export async function POST(req: NextRequest) {
     );
 
     // TODO: Update database status user jadi online
+    await fetchMutation(api.user.user_service.updateOnlineUser, {
+      userId: userId as unknown as Id<"users">,
+      online: true,
+      lastSeen: Date.now(),
+    });
     // await db.user.update({ where: { id: userId }, data: { isOnline: true } });
 
     return NextResponse.json({ message: "User marked as online" });

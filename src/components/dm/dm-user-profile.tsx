@@ -67,35 +67,70 @@ const DmUserProfile = ({ user }: Props) => {
           <p>{formatDate(user._creationTime, "MMM d, yyyy")}</p>
         </div>
       </div>
-      <div className="p-4 pt-0">
-        <div className="rounded-xl bg-white/5 p-4">
-          <Collapsible>
-            <CollapsibleTrigger className="flex w-full items-center justify-between text-sm">
-              Mututal Servers - {user.groups.length}
-              <ChevronsUpDown className="size-4" />
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              {user.groups.map((item) => (
-                <Link
-                  href={`/server/${item._id}/${item.channel._id}`}
-                  key={item._id}
-                  className="mt-4 flex items-center gap-2 rounded-lg px-1 py-2 text-sm hover:bg-white/5"
-                >
-                  <Image
-                    src={item.image.url ?? "/avatar.png"}
-                    className="h-full w-full rounded-full object-cover"
-                    width={40}
-                    height={40}
-                    background={blurhashToDataUri(item.image.blur)}
-                    alt="Profile image"
-                  />
-                  <p>{item.name}</p>
-                </Link>
-              ))}
-            </CollapsibleContent>
-          </Collapsible>
+      {user.groups.length > 0 && (
+        <div className="p-4 pt-0">
+          <div className="rounded-xl bg-white/5 p-4">
+            <Collapsible>
+              <CollapsibleTrigger className="flex w-full items-center justify-between text-sm">
+                Mututal Servers - {user.groups.length}
+                <ChevronsUpDown className="size-4" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                {user.groups.map((item) => (
+                  <Link
+                    href={`/server/${item._id}/${item.channel._id}`}
+                    key={item._id}
+                    className="mt-4 flex items-center gap-2 rounded-lg px-1 py-2 text-sm hover:bg-white/5"
+                  >
+                    <Image
+                      src={item.image.url ?? "/avatar.png"}
+                      className="h-full w-full rounded-full object-cover"
+                      width={40}
+                      height={40}
+                      background={blurhashToDataUri(item.image.blur)}
+                      alt="Profile image"
+                    />
+                    <p>{item.name}</p>
+                  </Link>
+                ))}
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
         </div>
-      </div>
+      )}
+      {user.friends.length > 0 && (
+        <div className="p-4 pt-0">
+          <div className="rounded-xl bg-white/5 p-4">
+            <Collapsible>
+              <CollapsibleTrigger className="flex w-full items-center justify-between text-sm">
+                Mututal Friends - {user.friends.length}
+                <ChevronsUpDown className="size-4" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                {user.friends.map((item) => (
+                  <div
+                    key={item._id}
+                    className="mt-4 flex items-center gap-2 rounded-lg px-1 py-2 text-sm hover:bg-white/5"
+                  >
+                    <Image
+                      src={item.profile?.url ?? "/avatar.png"}
+                      className="h-full w-full rounded-full object-cover"
+                      width={40}
+                      height={40}
+                      background={blurhashToDataUri(
+                        item.profile?.blur ??
+                          "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm",
+                      )}
+                      alt="Profile image"
+                    />
+                    <p>{item.name}</p>
+                  </div>
+                ))}
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

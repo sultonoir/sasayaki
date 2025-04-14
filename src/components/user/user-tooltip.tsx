@@ -1,6 +1,12 @@
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import React from "react";
-import { Edit2Icon, Loader2, PlusIcon } from "lucide-react";
+import {
+  Edit2Icon,
+  Loader2,
+  PlusIcon,
+  UserCheck,
+  UserPlus,
+} from "lucide-react";
 import { getRandomColor } from "@/lib/random-color";
 import { useQuery } from "convex-helpers/react";
 import { api } from "@/convex/_generated/api";
@@ -22,6 +28,7 @@ import {
 import { Badge } from "../ui/badge";
 import { useSession } from "@/provider/session-provider";
 import { useModal } from "@/hooks/use-modal";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface Props {
   userId: Id<"users">;
@@ -82,6 +89,8 @@ function Content({ userId, username, image, blur }: ContnetProps) {
   const { toggle } = useModal();
   const { user: session } = useSession();
   const { server } = useParams<{ server: Id<"server"> }>();
+  const mutate = useMutation(api.friend.friend_service.addFriend);
+
   const {
     isPending,
     isError,
@@ -99,6 +108,28 @@ function Content({ userId, username, image, blur }: ContnetProps) {
 
   return (
     <div className="relative isolate flex size-full w-64 flex-col gap-4 px-4 first:px-0 first:pt-0 last:pb-4">
+      {user._id !== session?._id && (
+        <div className="absolute top-2 right-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                className="focus-visible:border-ring focus-visible:ring-ring/50 z-50 flex size-10 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-[color,box-shadow] outline-none hover:bg-black/80 focus-visible:ring-0"
+                onClick={() => mutate({ friendId: userId })}
+                aria-label={"friends"}
+              >
+                {user.isFriend ? (
+                  <UserCheck className="size-4" />
+                ) : (
+                  <UserPlus className="size-4" />
+                )}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {user.isFriend ? "remove" : "add"} friend
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      )}
       {user.banner ? (
         <Image
           src={user.banner.url}

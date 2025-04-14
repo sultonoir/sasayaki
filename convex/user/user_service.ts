@@ -7,6 +7,7 @@ import { updateBanner } from "../banner/banner_service";
 import { CreateBannerSchema } from "../banner/banner_model";
 import { getOneFrom } from "convex-helpers/server/relationships";
 import { getRoles } from "../role/role_service";
+import { getIsFriend, getMutualFriends } from "../friend/friend_service";
 
 export async function mustGetCurrentUser(ctx: QueryCtx): Promise<Doc<"users">> {
   const userId = await getAuthUserId(ctx);
@@ -69,12 +70,14 @@ export const getUser = query({
 
     const groups = await getServerMutual(ctx, session._id, user._id);
     const roles = await getRoles(ctx, user._id, serverId);
+    const isFriend = await getIsFriend(ctx, id);
 
     return {
       ...user,
       banner,
       groups,
       roles,
+      isFriend,
     };
   },
 });
@@ -94,6 +97,8 @@ export const getUserByid = query({
 
     const groups = await getServerMutual(ctx, session._id, user._id);
 
+    const friends = await getMutualFriends(ctx, session._id, id);
+
     const profile = await getOneFrom(
       ctx.db,
       "userImage",
@@ -111,6 +116,7 @@ export const getUserByid = query({
       blur,
       banner,
       groups,
+      friends: friends.filter((f) => f._id !== user._id),
     };
   },
 });

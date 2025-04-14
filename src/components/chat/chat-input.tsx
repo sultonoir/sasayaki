@@ -169,7 +169,7 @@ export default function ChatInput({ goingTobotom }: Props) {
             }}
             value={value}
             placeholder="Type a message"
-            className="w-full resize-none rounded-none border-none bg-black/5 px-4 py-3 leading-[1.2] placeholder:text-black/70 focus-visible:ring-0 dark:bg-white/5 dark:text-white dark:placeholder:text-white/70"
+            className="dark:bg-secondary w-full resize-none rounded-none border-none bg-black/5 px-4 py-3 leading-[1.2] placeholder:text-black/70 focus-visible:ring-0 dark:text-white dark:placeholder:text-white/70"
             ref={textareaRef}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -183,7 +183,7 @@ export default function ChatInput({ goingTobotom }: Props) {
             }}
           />
         </div>
-        <div className="h-12 bg-black/5 dark:bg-white/5">
+        <div className="bg-secondary h-12">
           <div className="absolute bottom-3 left-3 flex items-center gap-2">
             <div
               {...getRootProps()}

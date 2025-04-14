@@ -42,9 +42,14 @@ export type Group = Doc<"server"> & {
   channel: Doc<"channel">;
 };
 
+interface Friend extends Doc<"users"> {
+  profile: Doc<"userImage"> | null;
+}
+
 export type DmPage = Doc<"users"> & {
   image: string;
   blur: string;
   banner: Doc<"banner"> | null;
   groups: Group[];
+  friends: Friend[];
 };

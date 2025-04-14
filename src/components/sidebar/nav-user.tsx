@@ -31,7 +31,7 @@ export function NavUser() {
         <Button
           size="lg"
           variant="ghost"
-          className="bg-muted/50 h-fit w-full border !p-2 focus-visible:ring-0"
+          className="bg-secondary h-fit w-full border !p-2 focus-visible:ring-0"
         >
           <UserAvatar
             name={user?.name}

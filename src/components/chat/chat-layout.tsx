@@ -1,11 +1,13 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDialogGroup } from "@/hooks/use-dialog-group";
 import { PageHeader } from "../ui/page-layouting";
 import ChatHeader from "./chat-header";
 import MemberLayout from "../member/member-layout";
 import { ServerChat } from "@/types";
 import ChatBody from "./chat-body";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface Props {
   channelId: string;
@@ -14,6 +16,11 @@ interface Props {
 
 const ChatLayout = ({ server, channelId }: Props) => {
   const { open } = useDialogGroup();
+  const mutate = useMutation(api.read.read_service.createRead);
+
+  useEffect(() => {
+    void mutate({ channelId });
+  }, [channelId, mutate]);
 
   return (
     <div className="flex size-full flex-col">

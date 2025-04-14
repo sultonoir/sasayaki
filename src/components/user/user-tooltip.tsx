@@ -149,23 +149,29 @@ function Content({ userId, username, image, blur }: ContnetProps) {
         </div>
       )}
 
-      {user.roles.length === 0 ? (
-        <Badge variant="outline" className="mx-4">
-          <PlusIcon className="size-4" />
-          <span className="text-muted-foreground text-[10px]">Add role</span>
-        </Badge>
-      ) : (
-        <div className="flex flex-wrap gap-2">
-          {user.roles.map((role) => (
-            <Badge key={role._id}>
-              <span
-                className="size-4 flex-none rounded-lg"
-                style={{ background: role.color }}
-              />
-              {role.name}
+      {server && (
+        <>
+          {user.roles.length === 0 ? (
+            <Badge variant="outline" className="mx-4">
+              <PlusIcon className="size-4" />
+              <span className="text-muted-foreground text-[10px]">
+                Add role
+              </span>
             </Badge>
-          ))}
-        </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {user.roles.map((role) => (
+                <Badge key={role._id}>
+                  <span
+                    className="size-4 flex-none rounded-lg"
+                    style={{ background: role.color }}
+                  />
+                  {role.name}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {session?._id !== user._id ? (

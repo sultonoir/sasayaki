@@ -32,7 +32,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 }
 
 const Page = async ({ params }: Props) => {
-  const { userId,dmId } = await params;
+  const { userId, dmId } = await params;
   const user = await fetchQuery(
     api.user.user_service.getUserByid,
     {
@@ -45,7 +45,7 @@ const Page = async ({ params }: Props) => {
 
   if (!user) return notFound();
 
-  return <DmLayout user={user} chanelId={dmId} />;
+  return <DmLayout user={user} channelId={dmId} />;
 };
 
 export default Page;

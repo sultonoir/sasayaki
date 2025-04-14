@@ -8,6 +8,7 @@ import { Id } from "../_generated/dataModel";
 import { asyncMap } from "convex-helpers";
 import { v } from "convex/values";
 import { getAccessChannel } from "../channel/channel_service";
+import { internal } from "../_generated/api";
 
 export const getLastread = async (ctx: QueryCtx, channelId: string) => {
   const user = await mustGetCurrentUser(ctx);
@@ -23,26 +24,19 @@ export const getLastread = async (ctx: QueryCtx, channelId: string) => {
 };
 
 export const createRead = mutation({
-  args: { channelId: v.id("channel") },
+  args: { channelId: v.string() },
   async handler(ctx, { channelId }) {
     const user = await mustGetCurrentUser(ctx);
 
-    const read = await ctx.db
-      .query("read")
-      .withIndex("by_read_user_chat", (q) =>
-        q.eq("userId", user._id).eq("channelId", channelId),
-      )
-      .first();
-
-    if (!read) {
-      return await ctx.db.insert("read", {
-        channelId,
+    if (!user) return null;
+    await ctx.scheduler.runAfter(
+      5000,
+      internal.read.read_service.createInternalRead,
+      {
         userId: user._id,
-        readAt: Date.now(),
-      });
-    }
-
-    await ctx.db.patch(read._id, { readAt: Date.now() });
+        channelId,
+      },
+    );
   },
 });
 

@@ -32,6 +32,7 @@ import type * as personal_personal_service from "../personal/personal_service.js
 import type * as read_read_model from "../read/read_model.js";
 import type * as read_read_service from "../read/read_service.js";
 import type * as role_role_model from "../role/role_model.js";
+import type * as role_role_service from "../role/role_service.js";
 import type * as server_server_model from "../server/server_model.js";
 import type * as server_server_service from "../server/server_service.js";
 import type * as todo_todo_model from "../todo/todo_model.js";
@@ -80,6 +81,7 @@ declare const fullApi: ApiFromModules<{
   "read/read_model": typeof read_read_model;
   "read/read_service": typeof read_read_service;
   "role/role_model": typeof role_role_model;
+  "role/role_service": typeof role_role_service;
   "server/server_model": typeof server_server_model;
   "server/server_service": typeof server_server_service;
   "todo/todo_model": typeof todo_todo_model;

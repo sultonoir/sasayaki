@@ -22,8 +22,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useDialogCreateChannel } from "@/hooks/use-dialog-create-channel";
-import { useMutation } from "convex/react";
-import { handleError } from "@/lib/handle-eror";
 import { useDialogRmChannel } from "@/hooks/use-dialog-remove-channel";
 import ServerDropdown from "../server/server-dropdown";
 
@@ -124,17 +122,11 @@ function Channel({
 
   const pathname = `/server/${server}/${ch._id}`;
 
-  const roter = useRouter();
+  const router = useRouter();
 
-  const mutate = useMutation(api.read.read_service.createRead);
   const handleNavigate = async () => {
-    try {
-      await mutate({ channelId: ch._id });
-    } catch (error) {
-      return handleError({ error, message: "Error to navigate channel" });
-    }
-    roter.prefetch(pathname);
-    roter.push(pathname);
+    router.prefetch(pathname);
+    router.push(pathname);
   };
   return (
     <div

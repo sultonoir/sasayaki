@@ -6,6 +6,7 @@ import { getServerMutual } from "../server/server_service";
 import { updateBanner } from "../banner/banner_service";
 import { CreateBannerSchema } from "../banner/banner_model";
 import { getOneFrom } from "convex-helpers/server/relationships";
+import { getRoles } from "../role/role_service";
 
 export async function mustGetCurrentUser(ctx: QueryCtx): Promise<Doc<"users">> {
   const userId = await getAuthUserId(ctx);
@@ -54,7 +55,7 @@ export const getSession = query({
 });
 
 export const getUser = query({
-  args: { id: v.id("users"), serverId: v.id("server") },
+  args: { id: v.id("users"), serverId: v.optional(v.id("server")) },
   handler: async (ctx, { id, serverId }) => {
     const session = await mustGetCurrentUser(ctx);
     const user = await ctx.db.get(id);
@@ -67,12 +68,7 @@ export const getUser = query({
       .unique();
 
     const groups = await getServerMutual(ctx, session._id, user._id);
-    const roles = await ctx.db
-      .query("role")
-      .withIndex("by_role_user", (q) =>
-        q.eq("userId", user._id).eq("serverId", serverId),
-      )
-      .take(4);
+    const roles = await getRoles(ctx, user._id, serverId);
 
     return {
       ...user,

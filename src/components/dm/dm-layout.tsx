@@ -7,14 +7,24 @@ import { DmPage } from "@/types";
 import { Separator } from "../ui/separator";
 import DmUserProfile from "./dm-user-profile";
 import ChatBody from "../chat/chat-body";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useEffect } from "react";
 
 interface DmLayoutProps {
   user: DmPage;
-  chanelId: string;
+  channelId: string;
 }
 
-const DmLayout = ({ user, chanelId }: DmLayoutProps) => {
+const DmLayout = ({ user, channelId }: DmLayoutProps) => {
   const { open } = useDialogGroup();
+
+  const mutate = useMutation(api.read.read_service.createRead);
+
+  useEffect(() => {
+    void mutate({ channelId });
+  }, [channelId, mutate]);
+
   return (
     <>
       <PageHeader
@@ -36,7 +46,7 @@ const DmLayout = ({ user, chanelId }: DmLayoutProps) => {
           data-state={open ? "open" : "close"}
           className="bg-card flex size-full flex-col transition-all duration-300 ease-in-out will-change-transform data-[state=open]:lg:mr-[300px]"
         >
-          <ChatBody channelId={chanelId} />
+          <ChatBody channelId={channelId} />
         </div>
         <DmUserProfile user={user} />
       </div>

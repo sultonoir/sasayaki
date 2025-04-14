@@ -10,6 +10,7 @@ import React, {
   Dispatch,
   useMemo,
 } from "react";
+import { useSession } from "./session-provider";
 
 export type ToastStatus = "initial" | "loading" | "success" | undefined;
 
@@ -86,13 +87,8 @@ const ProfileEditContext = createContext<
   | undefined
 >(undefined);
 
-export const ProfileEditProvider = ({
-  user,
-  children,
-}: {
-  user: Session | null;
-  children: ReactNode;
-}) => {
+export const ProfileEditProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useSession();
   const initialState = useMemo(() => createInitialState(user), [user]);
   const [state, dispatch] = useReducer(profileEditReducer, initialState);
 

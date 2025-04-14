@@ -1,12 +1,9 @@
 import FieldToast from "@/components/form/user/field-toast";
 import { SidebarApp } from "@/components/sidebar/sidebar-app";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { api } from "@/convex/_generated/api";
 import DialogProvider from "@/provider/dialog-provider";
 import { ProfileEditProvider } from "@/provider/profile-edit-provider";
 import { SessionProvider } from "@/provider/session-provider";
-import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { fetchQuery } from "convex/nextjs";
 import React from "react";
 
 export default async function Layout({
@@ -14,17 +11,9 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await fetchQuery(
-    api.user.user_service.getSession,
-    {},
-    {
-      token: await convexAuthNextjsToken(),
-    },
-  );
-
   return (
-    <SessionProvider user={user}>
-      <ProfileEditProvider user={user}>
+    <SessionProvider>
+      <ProfileEditProvider>
         <SidebarProvider
           style={
             {

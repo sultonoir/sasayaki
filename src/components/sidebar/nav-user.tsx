@@ -28,7 +28,6 @@ export function NavUser() {
   const { toggle } = useModal();
   const mutate = useMutation(api.user.user_service.updateOnlineUser);
 
-  console.log({ user });
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

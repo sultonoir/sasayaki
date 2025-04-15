@@ -17,8 +17,11 @@ import { api } from "@/convex/_generated/api";
 import { Skeleton } from "../ui/skeleton";
 import { UserAvatar } from "../user/user-avatar";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const SidebarDm = React.memo(() => {
+  const { toggleSidebar, isMobile } = useSidebar();
+  const router = useRouter();
   return (
     <>
       <SidebarHeader className="px-0">
@@ -30,7 +33,15 @@ const SidebarDm = React.memo(() => {
           </SidebarMenuItem>
           <SidebarSeparator className="mx-0" />
           <SidebarMenuItem className="p-2">
-            <SidebarMenuButton variant="accent">
+            <SidebarMenuButton
+              onClick={() => {
+                if (isMobile) {
+                  toggleSidebar();
+                  router.push("/");
+                }
+                router.push("/");
+              }}
+            >
               <FriendIcon />
               Friends
             </SidebarMenuButton>
@@ -56,16 +67,14 @@ const SidebarDm = React.memo(() => {
 function Content() {
   const { toggleSidebar, isMobile } = useSidebar();
   const { isPending, isError, data } = useQuery(
-    api.personal.personal_service.getDms
+    api.personal.personal_service.getDms,
   );
 
   if (isPending) {
     return (
       <SidebarMenu>
         {Array.from({ length: 20 }).map((_, index) => (
-          <SidebarMenuItem
-            className="flex items-center space-x-4"
-            key={index}>
+          <SidebarMenuItem className="flex items-center space-x-4" key={index}>
             <Skeleton className="h-12 w-12 flex-none rounded-full" />
             <div className="space-y-2">
               <Skeleton className="h-4 w-[100px]" />
@@ -90,15 +99,10 @@ function Content() {
                 toggleSidebar();
               }
             }}
-            asChild>
-            <Link
-              href={`/dm/${pm.id}/${pm.userId}`}
-              prefetch={true}>
-              <UserAvatar
-                src={pm.image}
-                blur={pm.blur}
-                online={pm.online}
-              />
+            asChild
+          >
+            <Link href={`/dm/${pm.id}/${pm.userId}`} prefetch={true}>
+              <UserAvatar src={pm.image} blur={pm.blur} online={pm.online} />
               <p className="text-sm">{pm.name}</p>
             </Link>
           </SidebarMenuButton>

@@ -35,14 +35,17 @@ const HomePage = ({ friends }: Props) => {
     }
 
     if (search.trim() !== "") {
-      return friends.filter((f) => f.name?.includes(search));
+      const keyword = search.trim().toLowerCase();
+
+      return friends.filter((f) => f.name?.toLowerCase().includes(keyword));
     }
+
     return friends;
   }, [friends, search, status]);
 
   return (
     <>
-      <div className="flex items-center gap-2 px-4 py-2">
+      <div className="flex items-center gap-2 overflow-x-auto px-4 py-2">
         <Button
           variant="ghost"
           size="sm"

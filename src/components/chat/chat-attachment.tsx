@@ -40,16 +40,7 @@ const ChatAttachment: React.FC<Props> = ({ attachments }) => {
     return (
       <div className="grid w-full max-w-[448px] grid-cols-3 grid-rows-2 gap-2">
         <div className="col-span-2 row-span-2">
-          <NextImage
-            src={attachments[0].url}
-            blurDataURL={blurhashToDataUri(attachments[0].blur)}
-            placeholder="blur"
-            alt={attachments[0].name}
-            width={400}
-            height={400}
-            quality={90}
-            className="aspect-square size-auto max-w-[300px] rounded-lg object-cover"
-          />
+          <RenderImage item={attachments[0]} width={300} height={300} />
         </div>
         {attachments.slice(1).map((item) => (
           <RenderImage item={item} key={item._id} width={220} height={220} />
@@ -125,6 +116,7 @@ const RenderImage: React.FC<RenderImageProps> = ({ item, width, height }) => (
       alt={item.name}
       width={width}
       height={height}
+      layout="constrained"
       className="object-cover"
     />
   </div>

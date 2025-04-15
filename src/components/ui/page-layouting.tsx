@@ -4,9 +4,6 @@ import { cn } from "@/lib/utils";
 import { Image } from "@unpic/react/nextjs";
 import { blurhashToDataUri } from "@unpic/placeholder";
 import FriendIcon from "./friend-icon";
-import { Button } from "./button";
-import { ArrowLeft } from "lucide-react";
-import { useSidebar } from "./sidebar";
 
 const PageTitle = ({
   className,
@@ -52,34 +49,23 @@ interface PageHeaderProps {
 }
 
 const PageHeader = ({ title, url, blur, type }: PageHeaderProps) => {
-  const { toggleSidebar, isMobile } = useSidebar();
   return (
-    <div className={cn("flex items-center justify-center gap-2 px-4")}>
-      <Button
-        className={cn("size-7 flex-none", { hidden: !isMobile })}
-        size="icon"
-        variant="ghost"
-        onClick={toggleSidebar}
-      >
-        <ArrowLeft />
-      </Button>
-      <PageTitle>
-        {type === "image" ? (
-          <Image
-            width={20}
-            height={20}
-            src={url}
-            alt={title}
-            layout="fixed"
-            background={blurhashToDataUri(blur, 20, 20)}
-            className="rounded-full object-cover"
-          />
-        ) : (
-          <FriendIcon />
-        )}
-        <p className="text-xs">{title}</p>
-      </PageTitle>
-    </div>
+    <PageTitle>
+      {type === "image" ? (
+        <Image
+          width={20}
+          height={20}
+          src={url}
+          alt={title}
+          layout="fixed"
+          background={blurhashToDataUri(blur, 20, 20)}
+          className="rounded-full object-cover"
+        />
+      ) : (
+        <FriendIcon />
+      )}
+      <p className="text-xs">{title}</p>
+    </PageTitle>
   );
 };
 

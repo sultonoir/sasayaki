@@ -2,14 +2,17 @@ import React from "react";
 import { ServerChat } from "@/types";
 import CopyLink from "../ui/copy-link";
 import MemberTrigger from "../member/member-trigger";
-import { Hash } from "lucide-react";
+import { ArrowLeft, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "../ui/sidebar";
+import { Button } from "../ui/button";
 
 interface ChatHeaderProps extends React.ComponentProps<"div"> {
   server: ServerChat;
 }
 
 const ChatHeader = React.memo(({ server, className }: ChatHeaderProps) => {
+  const { toggleSidebar, isMobile } = useSidebar();
   return (
     <div
       className={cn(
@@ -18,6 +21,11 @@ const ChatHeader = React.memo(({ server, className }: ChatHeaderProps) => {
       )}
     >
       <div className="flex items-center gap-4">
+        {isMobile && (
+          <Button onClick={toggleSidebar} variant="ghost" size="icon">
+            <ArrowLeft />
+          </Button>
+        )}
         <Hash />
         <p>{server.channel}</p>
       </div>

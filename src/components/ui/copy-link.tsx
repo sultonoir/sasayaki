@@ -18,7 +18,7 @@ export default function CopyLink({ code }: { code: string }) {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(
-        `https://sasayaki.sultonoir.workers.dev/invite/${code}`,
+        `https://sasayaki-one.vercel.app/invite/${code}`,
       );
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);

@@ -74,10 +74,10 @@ export default function ChatInput({ goingTobotom }: Props) {
           return;
         }
 
-        const data = await result.json<{
+        const data = (await result.json()) as {
           success: boolean;
           results: UploadedFile[];
-        }>();
+        };
 
         uploadImage.push(...data.results);
         if (!data.success || !data.results) {

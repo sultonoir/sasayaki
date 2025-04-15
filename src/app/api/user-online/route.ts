@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json<{ userId: string; timestamp: string }>();
+    const body = (await req.json()) as { userId: string; timestamp: string };
     const { userId, timestamp } = body;
 
     if (!userId) {
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(
-      `User ${userId} is now ONLINE at ${new Date(timestamp).toISOString()}`,
+      `User ${userId} is now ONLINE at ${new Date(timestamp).toISOString()}`
     );
 
     // TODO: Update database status user jadi online
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     console.log(error);
     return NextResponse.json(
       { message: "Failed to mark user online" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

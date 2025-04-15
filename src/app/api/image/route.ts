@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!files || files.length === 0) {
       return NextResponse.json(
         { message: "No files provided" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -64,14 +64,14 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { message: "File upload failed", error: (error as Error).message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(req: NextRequest) {
   try {
-    const body = await req.json<{ fileId: string }>();
+    const body = (await req.json()) as { fileId: string };
     const result = await cloudinary.uploader.destroy(body.fileId);
     return NextResponse.json({ success: true, result }, { status: 200 });
   } catch (error) {

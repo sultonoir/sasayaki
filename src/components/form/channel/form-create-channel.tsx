@@ -26,7 +26,7 @@ import { handleError } from "@/lib/handle-eror";
 import { useParams } from "next/navigation";
 
 const FormSchema = z.object({
-  private: z.boolean().default(false),
+  private: z.boolean(),
   name: z.string(),
 });
 
@@ -97,8 +97,7 @@ export function FormCreateChannel({ className }: ComponentProps<"form">) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("w-full space-y-6", className)}
-      >
+        className={cn("w-full space-y-6", className)}>
         <FormField
           control={form.control}
           name="name"
@@ -150,7 +149,10 @@ export function FormCreateChannel({ className }: ComponentProps<"form">) {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isPending}>
           Submit
         </Button>
       </form>

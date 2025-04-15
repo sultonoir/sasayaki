@@ -67,10 +67,10 @@ export default function FormCreatGroup() {
         toast.error("Failed to upload files");
       }
 
-      const data = await result.json<{
+      const data = (await result.json()) as {
         success: boolean;
         results: UploadedFile[];
-      }>();
+      };
 
       if (!data.success || !data.results) {
         toast.error("Failed to upload files");
@@ -92,7 +92,9 @@ export default function FormCreatGroup() {
   const disable = form.formState.isSubmitting;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}>
       <DialogContent className="bg-card sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create Server</DialogTitle>
@@ -101,7 +103,9 @@ export default function FormCreatGroup() {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6">
             <FormField
               control={form.control}
               name="images"
@@ -124,7 +128,10 @@ export default function FormCreatGroup() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} className="dark:bg-transparent" />
+                    <Input
+                      {...field}
+                      className="dark:bg-transparent"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -134,8 +141,7 @@ export default function FormCreatGroup() {
               loading={disable}
               disabled={disable}
               type="submit"
-              className="w-full"
-            >
+              className="w-full">
               Submit
             </Button>
           </form>

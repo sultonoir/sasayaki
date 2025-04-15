@@ -22,7 +22,7 @@ export const getPm = async (ctx: QueryCtx, otherId: Id<"users">) => {
     const sharedPersonal = await ctx.db
       .query("pm")
       .withIndex("by_pm_user_personal", (q) =>
-        q.eq("userId", otherId).eq("personalId", personals.personalId),
+        q.eq("userId", otherId).eq("personalId", personals.personalId)
       )
       .unique();
 
@@ -100,7 +100,7 @@ export const getNewDms = query({
         const lastMessage = await ctx.db
           .query("message")
           .withIndex("by_message_channel", (q) =>
-            q.eq("channelId", pm.personalId),
+            q.eq("channelId", pm.personalId)
           )
           .filter((q) => q.neq(q.field("userId"), user._id))
           .order("desc")
@@ -115,7 +115,7 @@ export const getNewDms = query({
           "userImage",
           "by_user_image",
           lastMessage.userId,
-          "userId",
+          "userId"
         );
         const count = await getReadChannel(ctx, pm.personalId);
 
@@ -160,7 +160,7 @@ export const getDms = query({
           "userImage",
           "by_user_image",
           otherMember.userId,
-          "userId",
+          "userId"
         );
         const count = await getReadChannel(ctx, pm.personalId);
 
@@ -170,6 +170,7 @@ export const getDms = query({
           userId: other._id,
           name: other.name,
           blur: profile?.blur,
+          online: other.online,
           count,
         };
       });

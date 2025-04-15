@@ -39,10 +39,10 @@ const FieldToast = () => {
         return;
       }
 
-      const data = await result.json<{
+      const data = (await result.json()) as {
         success: boolean;
         results: UploadedFile[];
-      }>();
+      };
 
       if (!data.success || !data.results) {
         toast.error("Failed to upload files");

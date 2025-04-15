@@ -43,10 +43,10 @@ export function ImageUpload({
           toast.error("Failed to upload files");
         }
 
-        const data = await result.json<{
+        const data = (await result.json()) as {
           success: boolean;
           results: UploadedFile[];
-        }>();
+        };
 
         if (!data.success || !data.results) {
           toast.error("Failed to upload files");

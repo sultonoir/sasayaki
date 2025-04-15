@@ -21,7 +21,12 @@ const DmHeader = (props: DmHeaderProps) => {
   return (
     <div className="flex items-center justify-between px-4 py-2">
       <div className="flex items-center gap-2">
-        <UserAvatar {...props} />
+        <UserAvatar
+          online={props.online}
+          blur={props.blur}
+          name={props.blur}
+          src={props.image}
+        />
         <p className="text-sm">{props.name}</p>
       </div>
       <Tooltip>

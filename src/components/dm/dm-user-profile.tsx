@@ -1,5 +1,5 @@
 import { useDialogGroup } from "@/hooks/use-dialog-group";
-import { DmPage } from "@/types";
+import { DmPage, Friend } from "@/types";
 import { blurhashToDataUri } from "@unpic/placeholder";
 import { Image } from "@unpic/react/nextjs";
 import { formatDate } from "date-fns";
@@ -11,6 +11,11 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
+import { Id } from "@/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useRouter } from "next/router";
+import { handleError } from "@/lib/handle-eror";
 
 interface Props {
   user: DmPage;
@@ -26,7 +31,7 @@ const DmUserProfile = ({ user }: Props) => {
       {user.banner ? (
         <Image
           src={user.banner.url}
-          width={300}
+          width={370}
           height={96}
           alt={user.name}
           background={blurhashToDataUri(user.banner.blur, 256, 100)}
@@ -98,41 +103,56 @@ const DmUserProfile = ({ user }: Props) => {
           </div>
         </div>
       )}
-      {user.friends.length > 0 && (
-        <div className="p-4 pt-0">
-          <div className="rounded-xl bg-white/5 p-4">
-            <Collapsible>
-              <CollapsibleTrigger className="flex w-full items-center justify-between text-sm">
-                Mututal Friends - {user.friends.length}
-                <ChevronsUpDown className="size-4" />
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                {user.friends.map((item) => (
-                  <div
-                    key={item._id}
-                    className="mt-4 flex items-center gap-2 rounded-lg px-1 py-2 text-sm hover:bg-white/5"
-                  >
-                    <Image
-                      src={item.profile?.url ?? "/avatar.png"}
-                      className="h-full w-full rounded-full object-cover"
-                      width={40}
-                      height={40}
-                      background={blurhashToDataUri(
-                        item.profile?.blur ??
-                          "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm",
-                      )}
-                      alt="Profile image"
-                    />
-                    <p>{item.name}</p>
-                  </div>
-                ))}
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-        </div>
-      )}
+      {user.friends.length > 0 && <Friends friends={user.friends} />}
     </div>
   );
 };
+
+function Friends({ friends }: { friends: Friend[] }) {
+  const mutate = useMutation(api.personal.personal_service.getDm);
+  const router = useRouter();
+  const handleClick = async (id: Id<"users">) => {
+    try {
+      const result = await mutate({ otherId: id });
+      return router.push(`/dm/${result.personalId}/${result.otherId}`);
+    } catch (error) {
+      return handleError({ error, message: "Error create message" });
+    }
+  };
+  return (
+    <div className="p-4 pt-0">
+      <div className="rounded-xl bg-white/5 p-4">
+        <Collapsible>
+          <CollapsibleTrigger className="flex w-full items-center justify-between text-sm">
+            Mututal Friends - {friends.length}
+            <ChevronsUpDown className="size-4" />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            {friends.map((item) => (
+              <div
+                key={item._id}
+                onClick={() => handleClick(item._id)}
+                className="mt-4 flex items-center gap-2 rounded-lg px-1 py-2 text-sm hover:bg-white/5"
+              >
+                <Image
+                  src={item.profile?.url ?? "/avatar.png"}
+                  className="h-full w-full rounded-full object-cover"
+                  width={40}
+                  height={40}
+                  background={blurhashToDataUri(
+                    item.profile?.blur ??
+                      "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm",
+                  )}
+                  alt="Profile image"
+                />
+                <p>{item.name}</p>
+              </div>
+            ))}
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
+    </div>
+  );
+}
 
 export default DmUserProfile;

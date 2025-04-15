@@ -45,9 +45,10 @@ const ChatAttachment: React.FC<Props> = ({ attachments }) => {
             blurDataURL={blurhashToDataUri(attachments[0].blur)}
             placeholder="blur"
             alt={attachments[0].name}
-            width={300}
+            width={400}
             height={400}
-            className="size-auto max-w-[300px] rounded-lg object-cover"
+            quality={90}
+            className="aspect-square size-auto max-w-[300px] rounded-lg object-cover"
           />
         </div>
         {attachments.slice(1).map((item) => (

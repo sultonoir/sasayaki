@@ -3,6 +3,7 @@ import { Member } from "@/types";
 import React from "react";
 import { UserAvatar } from "../user/user-avatar";
 import UserTooltip from "../user/user-tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MemberContentProps extends React.ComponentProps<"div"> {
   member: Member;
@@ -11,6 +12,7 @@ interface MemberContentProps extends React.ComponentProps<"div"> {
 const MemberContent = ({ member, className, ...props }: MemberContentProps) => {
   const blur = member.profile?.blur || "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm";
   const image = member.profile?.url || member.user.image || "/avatar.png";
+  const isMobile = useIsMobile();
   return (
     <div
       className={cn("flex flex-row gap-4 first:mt-2 last:mb-2", className)}
@@ -21,7 +23,7 @@ const MemberContent = ({ member, className, ...props }: MemberContentProps) => {
         <UserTooltip
           userId={member.userId}
           name={member.username || member.user.name || ""}
-          side="left"
+          side={isMobile ? "bottom" : "left"}
           sideOffset={75}
           image={image}
           blur={blur}

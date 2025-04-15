@@ -14,8 +14,8 @@ import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useRouter } from "next/router";
 import { handleError } from "@/lib/handle-eror";
+import { useRouter } from "next/navigation";
 
 interface Props {
   user: DmPage;

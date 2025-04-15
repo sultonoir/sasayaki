@@ -11,6 +11,7 @@ import { ConvexError } from "convex/values";
 import ErrorToast from "@/components/ui/error-toast";
 import { Input } from "@/components/ui/input";
 import { handleError } from "@/lib/handle-eror";
+import { useRouter } from "next/navigation";
 
 export function SigninForm({
   className,
@@ -25,6 +26,7 @@ export function SigninForm({
    * handle guest
    *
    */
+  const router = useRouter();
   const handleGuest = async () => {
     try {
       setisPending(true);
@@ -37,6 +39,7 @@ export function SigninForm({
       setisPending(false);
       return handleError({ error, message: "signin" });
     }
+    router.push("/");
     setisPending(false);
   };
 
@@ -59,6 +62,8 @@ export function SigninForm({
       setSubmitting(false);
       return toast.custom((t) => <ErrorToast name={toastTitle} t={t} />);
     }
+    setSubmitting(false);
+    router.push("/");
   };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

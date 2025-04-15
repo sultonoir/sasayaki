@@ -40,12 +40,14 @@ const useUserPresence = (userId: string | null) => {
 
 export const SessionProvider = ({
   children,
+  user,
 }: {
   children: React.ReactNode;
+  user: Session | null;
 }) => {
   // Panggil hook walaupun user null (biar nggak conditional)
   const { data } = useQuery(api.user.user_service.getSession);
-  useUserPresence(data?._id ?? null);
+  useUserPresence(user?._id ?? null);
 
   // Kalau user null, jangan render apa-apa
 

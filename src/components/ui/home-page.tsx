@@ -19,21 +19,23 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 import { useRouter } from "next/navigation";
 import { handleError } from "@/lib/handle-eror";
 import { useSidebar } from "./sidebar";
-import { useQuery } from "convex-helpers/react";
 
-const HomePage = () => {
-  const { data: friends } = useQuery(api.friend.friend_service.getAllFriends);
+interface Props {
+  friends: Friend[];
+}
+
+const HomePage = ({ friends }: Props) => {
   const [status, setStatus] = useState<"online" | "all">("all");
   const [search, setSearch] = useState("");
   const { toggleSidebar } = useSidebar();
 
   const FriendMemo = useMemo(() => {
     if (status === "online") {
-      return friends?.filter((f) => f.online === true);
+      return friends.filter((f) => f.online === true);
     }
 
     if (search.trim() !== "") {
-      return friends?.filter((f) => f.name?.includes(search));
+      return friends.filter((f) => f.name?.includes(search));
     }
     return friends;
   }, [friends, search, status]);
@@ -102,7 +104,9 @@ const HomePage = () => {
         </div>
       </div>
       <div className="flex flex-col gap-4 p-4">
-        {FriendMemo?.map((friend) => <Content key={friend._id} {...friend} />)}
+        {FriendMemo.map((friend) => (
+          <Content key={friend._id} {...friend} />
+        ))}
       </div>
     </>
   );

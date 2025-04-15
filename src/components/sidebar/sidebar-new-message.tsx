@@ -66,7 +66,7 @@ const SidebarNewMessage = () => {
             {content.count > 0 && (
               <div className="bg-card absolute right-0 bottom-0 rounded-lg p-1 text-[10px] text-white">
                 <span className="bg-destructive rounded-full px-1.5 py-0.5">
-                  12
+                  {content.count}
                 </span>
               </div>
             )}

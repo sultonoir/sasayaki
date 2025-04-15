@@ -40,7 +40,15 @@ const ChatAttachment: React.FC<Props> = ({ attachments }) => {
     return (
       <div className="grid w-full max-w-[448px] grid-cols-3 grid-rows-2 gap-2">
         <div className="col-span-2 row-span-2">
-          <RenderImage item={attachments[0]} width={300} height={300} />
+          <NextImage
+            src={attachments[0].url}
+            blurDataURL={blurhashToDataUri(attachments[0].blur)}
+            placeholder="blur"
+            alt={attachments[0].name}
+            width={300}
+            height={400}
+            className="size-auto max-w-[300px] rounded-lg object-cover"
+          />
         </div>
         {attachments.slice(1).map((item) => (
           <RenderImage item={item} key={item._id} width={220} height={220} />

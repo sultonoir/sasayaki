@@ -9,12 +9,10 @@ import { useParams, usePathname } from "next/navigation";
 import { useMutation } from "convex/react";
 import { Id } from "@/convex/_generated/dataModel";
 import { api } from "@/convex/_generated/api";
-import { useIsMobile } from "@/hooks/use-mobile";
 import React from "react";
 import { useDialogSearch } from "@/hooks/use-dialog-search";
 
 function DialogSeach() {
-  const isMobile = useIsMobile();
   const [isPending, setIsPending] = React.useState(false);
   const [results, setResults] = React.useState<{
     messages: Messages[];
@@ -52,7 +50,7 @@ function DialogSeach() {
 
   return (
     <AnimatePresence>
-      {isOpen && isMobile && (
+      {isOpen && (
         <motion.div
           initial={{ opacity: 0, y: 80 }}
           animate={{ opacity: 1, y: 0 }}

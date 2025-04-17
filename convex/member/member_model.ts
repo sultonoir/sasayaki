@@ -9,4 +9,8 @@ export const member = defineTable({
 })
   .index("by_member_server", ["serverId"])
   .index("by_member_userid", ["userId"])
-  .index("by_user_member", ["userId", "serverId"]);
+  .index("by_user_member", ["userId", "serverId"])
+  .searchIndex("by_serarch_member_username", {
+    filterFields: ["serverId"],
+    searchField: "username",
+  });

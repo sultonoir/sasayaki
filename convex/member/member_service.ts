@@ -6,6 +6,7 @@ import { Id } from "../_generated/dataModel";
 import { stream } from "convex-helpers/server/stream";
 import schema from "../schema";
 import { getOneFrom } from "convex-helpers/server/relationships";
+import { asyncMap } from "convex-helpers";
 
 export const getMemberByServer = query({
   args: { id: v.id("server"), paginationOpts: paginationOptsValidator },
@@ -84,4 +85,39 @@ export async function getMemberUsername(
     )
     .unique();
   return member?.username;
+}
+
+export async function getSearchMember(
+  ctx: QueryCtx,
+  serverId: Id<"server">,
+  body: string,
+) {
+  if (!serverId) return [];
+
+  const queries = await ctx.db
+    .query("member")
+    .withSearchIndex("by_serarch_member_username", (q) =>
+      q.search("username", body).eq("serverId", serverId),
+    )
+    .collect();
+  const members = await asyncMap(queries, async (q) => {
+    const user = await ctx.db.get(q.userId);
+
+    if (!user) return null;
+    const profile = await getOneFrom(
+      ctx.db,
+      "userImage",
+      "by_user_image",
+      q.userId,
+      "userId",
+    );
+
+    return {
+      ...q,
+      user,
+      profile,
+    };
+  });
+
+  return members.filter((f) => f !== null);
 }

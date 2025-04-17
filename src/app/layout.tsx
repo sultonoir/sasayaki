@@ -80,7 +80,10 @@ export default function RootLayout({
   return (
     <ConvexAuthNextjsServerProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={`${interSans.className} antialiased`}>
+        <body
+          className={`${interSans.className} antialiased`}
+          style={{ overflow: "hidden" }}
+        >
           <Provider>{children}</Provider>
         </body>
       </html>

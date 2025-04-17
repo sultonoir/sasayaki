@@ -6,6 +6,8 @@ import { ArrowLeft, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "../ui/sidebar";
 import { Button } from "../ui/button";
+import SearchDesktop from "../search/search-desktop";
+import { SearchMobile } from "../search/search-mobile";
 
 interface ChatHeaderProps extends React.ComponentProps<"div"> {
   server: ServerChat;
@@ -32,6 +34,8 @@ const ChatHeader = React.memo(({ server, className }: ChatHeaderProps) => {
       <div className="flex items-center gap-2">
         <CopyLink code={server.code} />
         <MemberTrigger />
+        <SearchDesktop />
+        <SearchMobile />
       </div>
     </div>
   );

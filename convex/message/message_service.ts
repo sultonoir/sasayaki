@@ -12,7 +12,8 @@ import { mustGetCurrentUser } from "../user/user_service";
 import { getAccessUpdate } from "../access/access_service";
 import { stream } from "convex-helpers/server/stream";
 import schema from "../schema";
-import { getMemberUsername } from "../member/member_service";
+import { getMemberUsername, getSearchMember } from "../member/member_service";
+import { asyncMap } from "convex-helpers";
 
 /**
  * get message paginations
@@ -171,5 +172,66 @@ export const removeMessage = mutation({
         await ctx.db.delete(atc);
       }
     }
+  },
+});
+
+export const searchMessage = mutation({
+  args: {
+    body: v.string(),
+    channelId: v.string(),
+    serverId: v.optional(v.id("server")),
+  },
+  handler: async (ctx, { body, channelId, serverId }) => {
+    const queries = await ctx.db
+      .query("message")
+      .withSearchIndex("by_message_body", (q) =>
+        q.search("body", body).eq("channelId", channelId),
+      )
+      .collect();
+
+    const messages = await asyncMap(queries, async (q) => {
+      const user = await ctx.db.get(q.userId);
+      if (!user) {
+        return null;
+      }
+      const parent = await getParentMessage({
+        ctx,
+        parentId: q.parentId,
+      });
+
+      const attachment = await getManyFrom(
+        ctx.db,
+        "attachment",
+        "by_attachment_messageid",
+        q._id,
+        "messageId",
+      );
+
+      const profile = await getOneFrom(
+        ctx.db,
+        "userImage",
+        "by_user_image",
+        q.userId,
+        "userId",
+      );
+
+      const memberUsername = await getMemberUsername(ctx, q.userId, serverId);
+      return {
+        ...q,
+        user: {
+          ...user,
+          name: memberUsername || user.name,
+        },
+        parent,
+        attachment,
+        profile,
+        access: false,
+      };
+    });
+
+    return {
+      messages: messages.filter((f) => f !== null),
+      members: serverId ? await getSearchMember(ctx, serverId, body) : [],
+    };
   },
 });

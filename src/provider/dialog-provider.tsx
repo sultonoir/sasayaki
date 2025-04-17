@@ -30,6 +30,13 @@ const DialogEditProfile = dynamic(
   },
 );
 
+const DialogSearch = dynamic(
+  () => import("@/components/search/search-dialog"),
+  {
+    ssr: false,
+  },
+);
+
 const DialogProvider = () => {
   return (
     <>
@@ -37,6 +44,7 @@ const DialogProvider = () => {
       <DialogCreateChannel />
       <DialogRmChannel />
       <DialogEditProfile />
+      <DialogSearch />
     </>
   );
 };

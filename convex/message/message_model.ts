@@ -9,4 +9,8 @@ export const message = defineTable({
   sentAt: v.number(),
 })
   .index("by_message_channel", ["channelId", "sentAt"])
-  .index("parentId", ["parentId"]);
+  .index("parentId", ["parentId"])
+  .searchIndex("by_message_body", {
+    searchField: "body",
+    filterFields: ["channelId"],
+  });

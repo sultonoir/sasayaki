@@ -1,8 +1,7 @@
 import { SigninForm } from "@/components/form/signin/signin-form";
 import { Toaster } from "@/components/ui/sonner";
+import { Image } from "@unpic/react/nextjs";
 import { GalleryVerticalEnd } from "lucide-react";
-
-import Image from "next/image";
 
 export default function LoginPage() {
   return (
@@ -23,15 +22,24 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
-        <div className="bg-muted relative hidden place-items-center lg:grid">
-          <div className="relative aspect-square h-screen w-full">
-            <Image
-              src="https://utfs.io/f/lU4D66pu7X2kNRUb0NCYROzoUNZ6d0PeDCctF43rQvykpA1E"
-              alt="Image"
-              priority
-              fill
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-            />
+        <div className="bg-card relative hidden place-items-center lg:grid lg:grid-cols-2 lg:grid-rows-[1fr_2fr]">
+          <div className="col-span-2 flex size-full flex-col items-center justify-center px-10 text-7xl font-bold">
+            Start chatting with your friends.
+          </div>
+
+          <div className="absolute right-0 bottom-0 h-[700px]">
+            <div className="size-full overflow-hidden rounded-tl-xl">
+              <Image
+                src="/1.png"
+                alt="Image"
+                width={796}
+                height={921}
+                priority={true}
+                loading="eager"
+                layout="constrained"
+                className="size-full object-contain dark:brightness-[0.2] dark:grayscale"
+              />
+            </div>
           </div>
         </div>
       </div>

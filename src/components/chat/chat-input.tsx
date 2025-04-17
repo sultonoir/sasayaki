@@ -210,7 +210,7 @@ export default function ChatInput({ goingTobotom }: Props) {
               className={cn(
                 "rounded-lg p-2 transition-colors",
                 value
-                  ? "bg-sky-500/15 text-sky-500"
+                  ? "text-primary bg-primary/10"
                   : "cursor-pointer bg-black/5 text-black/40 hover:text-black dark:bg-white/5 dark:text-white/40 dark:hover:text-white",
               )}
             >
@@ -258,7 +258,6 @@ const ImageGallery = ({
         "relative flex items-center gap-4 overflow-x-auto border-t p-3 transition-all duration-300 ease-in-out",
         {
           "max-w-[calc(100svw-720px)]": open,
-          "max-w-[calc(100svw-420px)]": !open,
         },
       )}
     >

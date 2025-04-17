@@ -166,13 +166,13 @@ function Channel({
       {/* Conditionally showing buttons and other UI based on the owner's access */}
       <div className="relative h-full w-20 flex-none cursor-pointer">
         {count > 0 && (
-          <div className="absolute inset-0 flex items-center justify-end opacity-100 group-hover/channel:opacity-0">
+          <div className="absolute inset-0 flex items-center justify-end opacity-100 group-hover/channel:opacity-0 group-active/channel:opacity-0">
             <div className="bg-destructive size-fit rounded-lg px-2 py-0.5 text-[10px] text-white">
               {count}
             </div>
           </div>
         )}
-        <div className="absolute inset-0 flex flex-none space-x-3 opacity-0 transition-all ease-in group-hover/channel:opacity-100">
+        <div className="absolute inset-0 flex flex-none space-x-3 opacity-0 transition-all ease-in group-hover/channel:opacity-100 group-active/channel:opacity-100">
           {/* If owner and has create access, display the "Invite Member" button */}
           {access?.create && (
             <button className="btn btn-primary">

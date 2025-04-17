@@ -25,7 +25,7 @@ const ChatContent = ({ message }: Props) => {
     <div
       id={message._id}
       className={cn(
-        "hover:bg-sidebar-accent group/message relative isolate mx-4 flex flex-row gap-4 rounded-lg p-2 first:mt-2 last:mb-2",
+        "hover:bg-sidebar-accent active:bg-sidebar-accent group/message relative isolate mx-4 flex flex-row gap-4 rounded-lg p-2 first:mt-2 last:mb-2",
         {
           "animate-pulse": findMessage === message._id,
         },

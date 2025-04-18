@@ -22,7 +22,7 @@ import React from "react";
 
 export default function DialogRemoveChannel() {
   const [isPending, setIsPending] = React.useState(false);
-  const { isOpen, setIsOpen, channelId } = useDialogRmChannel();
+  const { isOpen, setIsOpen, channelId, closeDialogRm } = useDialogRmChannel();
   const mutate = useMutation(api.channel.channel_service.removeChannel);
 
   const { server } = useParams<{
@@ -41,7 +41,7 @@ export default function DialogRemoveChannel() {
       return handleError({ error, message: "Error remove channel" });
     }
     setIsPending(false);
-    setIsOpen();
+    closeDialogRm();
   };
   return (
     <AlertDialog onOpenChange={setIsOpen} open={isOpen}>

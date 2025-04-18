@@ -58,12 +58,29 @@ const UserTooltip: React.FC<Props> = ({
   const profileImage = image || "/avatar.png";
   const colorname = getRandomColor(name);
   const [open, setOpen] = React.useState(false);
+
+  function changeUsername(username: string): string {
+    // Hilangkan karakter @ di awal, kalau ada
+    const raw = username.startsWith("@") ? username.slice(1) : username;
+
+    // Ganti karakter non-huruf/angka jadi spasi
+    const cleaned = raw.replace(/[^a-zA-Z0-9]/g, " ");
+
+    // Capitalize setiap kata
+    return cleaned
+      .split(" ")
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <div
           style={{ color: colorname }}
           className="cursor-pointer font-semibold hover:underline"
+          onClick={(e) => e.stopPropagation()}
         >
           {name}
         </div>
@@ -76,7 +93,7 @@ const UserTooltip: React.FC<Props> = ({
       >
         <Content
           userId={userId}
-          username={name}
+          username={changeUsername(name)}
           blur={blurImage}
           image={profileImage}
         />

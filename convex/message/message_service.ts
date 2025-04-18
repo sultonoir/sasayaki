@@ -43,6 +43,7 @@ export const getMessages = query({
         const parent = await getParentMessage({
           ctx,
           parentId: message.parentId,
+          serverId,
         });
 
         const attachment = await getManyFrom(
@@ -88,9 +89,11 @@ export const getMessages = query({
 async function getParentMessage({
   ctx,
   parentId,
+  serverId,
 }: {
   ctx: QueryCtx;
   parentId?: Id<"message">;
+  serverId?: Id<"server">;
 }) {
   if (!parentId) return null;
   const message = await getOneFrom(ctx.db, "message", "by_id", parentId, "_id");
@@ -123,9 +126,14 @@ async function getParentMessage({
     "userId",
   );
 
+  const member = await getMemberUsername(ctx, message.userId, serverId);
+
   return {
     ...message,
-    user,
+    user: {
+      ...user,
+      name: member || user.name,
+    },
     attachment,
     profile,
   };

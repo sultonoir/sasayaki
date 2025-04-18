@@ -1,7 +1,7 @@
 import { fromNow } from "@/lib/from-now";
 import { Messages } from "@/types";
 import { Image } from "@unpic/react/nextjs";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ChatAttachment from "./chat-attachment";
 import ChatActions from "./chat-actions";
 import { cn } from "@/lib/utils";
@@ -17,19 +17,48 @@ interface Props {
 }
 
 const ChatContent = ({ message }: Props) => {
+  const [isTouched, setIsTouched] = useState(false);
   const isMobile = useIsMobile();
   const blur = message.profile?.blur || "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm";
   const image = message.profile?.url || message.user.image || "/avatar.png";
 
   const { findMessage } = useChat();
   const parent = message.parent;
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleTouch = () => {
+    setIsTouched(true);
+
+    // Bersihkan timeout sebelumnya kalau ada
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Set timeout baru
+    timeoutRef.current = setTimeout(() => {
+      setIsTouched(false);
+    }, 3000);
+  };
+
+  // Bersihkan timeout saat komponen di-unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div
       id={message._id}
+      onMouseDown={handleTouch}
+      onTouchStart={handleTouch}
       className={cn(
-        "hover:bg-sidebar-accent active:bg-sidebar-accent group/message relative isolate mx-4 flex flex-row gap-4 rounded-lg p-2 first:mt-2 last:mb-2",
+        "hover:bg-sidebar-accent active:bg-sidebar-accent group/message relative isolate mx-4 flex cursor-pointer flex-row gap-4 rounded-lg p-2 first:mt-2 last:mb-2",
         {
-          "animate-pulse": findMessage === message._id,
+          "bg-primary/10": findMessage === message._id,
         },
       )}
     >
@@ -71,7 +100,7 @@ const ChatContent = ({ message }: Props) => {
           <ChatAttachment attachments={message.attachment} />
         )}
       </div>
-      <ChatActions message={message} />
+      <ChatActions message={message} isTouched={isTouched} />
     </div>
   );
 };

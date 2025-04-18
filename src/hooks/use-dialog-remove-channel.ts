@@ -5,6 +5,7 @@ interface DialogRmChannelGroupStore {
   channelId: string;
   setChannelId: (channelId: string) => void;
   setIsOpen: () => void;
+  closeDialogRm: () => void;
 }
 
 export const useDialogRmChannel = create<DialogRmChannelGroupStore>((set) => ({
@@ -12,4 +13,5 @@ export const useDialogRmChannel = create<DialogRmChannelGroupStore>((set) => ({
   channelId: "",
   setChannelId: (channelId) => set({ channelId }),
   setIsOpen: () => set((state) => ({ isOpen: !state.isOpen })),
+  closeDialogRm: () => set({ isOpen: false }),
 }));

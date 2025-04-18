@@ -7,12 +7,14 @@ import { api } from "@/convex/_generated/api";
 import { handleError } from "@/lib/handle-eror";
 import { useChat } from "@/hooks/use-chat";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Props {
   message: Messages;
+  isTouched: boolean;
 }
 
-const ChatActions = ({ message }: Props) => {
+const ChatActions = ({ message, isTouched }: Props) => {
   const { setReply, setShift } = useChat();
 
   //pending
@@ -57,7 +59,14 @@ const ChatActions = ({ message }: Props) => {
     setReply(message);
   };
   return (
-    <div className="group-hover/message:bg-card group-active/message:bg-card bg-card absolute -top-4 right-10 flex translate-y-2 scale-95 items-center gap-1 rounded-lg border p-1 opacity-0 transition-all duration-300 ease-out group-hover/message:translate-y-0 group-hover/message:scale-100 group-hover/message:opacity-100 group-active/message:translate-y-0 group-active/message:scale-100 group-active/message:opacity-100">
+    <div
+      className={cn(
+        "group-hover/message:bg-card bg-card absolute -top-4 right-10 flex translate-y-2 scale-95 items-center gap-1 rounded-lg border p-1 opacity-0 transition-all duration-300 ease-out group-hover/message:translate-y-0 group-hover/message:scale-100 group-hover/message:opacity-100",
+        {
+          "bg-card translate-y-0 scale-100 opacity-100": isTouched,
+        },
+      )}
+    >
       <Button
         variant="ghost"
         size="icon"

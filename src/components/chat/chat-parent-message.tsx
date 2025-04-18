@@ -1,12 +1,23 @@
+import { useChat } from "@/hooks/use-chat";
 import { Reply } from "@/types";
 import { blurhashToDataUri } from "@unpic/placeholder";
 import { Image } from "@unpic/react/nextjs";
 import { ImageIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import UserTooltip from "../user/user-tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const ChatParentMessage = ({ parent }: { parent: Reply }) => {
+  const { setFindMessage } = useChat();
   const blur = parent.profile?.blur || "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm";
+
+  const isMobile = useIsMobile();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleFind = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     // Mencari elemen dengan id berdasarkan parent._id
     const element = document.getElementById(parent._id);
     if (element) {
@@ -14,8 +25,20 @@ const ChatParentMessage = ({ parent }: { parent: Reply }) => {
         behavior: "smooth", // Untuk scroll yang halus
         block: "center", // Posisikan elemen di tengah layar
       });
+      setFindMessage(parent._id);
+      timeoutRef.current = setTimeout(() => {
+        setFindMessage(undefined);
+      }, 3000);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div
@@ -35,7 +58,14 @@ const ChatParentMessage = ({ parent }: { parent: Reply }) => {
         className="rounded-full object-cover"
       />
 
-      <p>{parent.user.username}</p>
+      <UserTooltip
+        userId={parent.user._id}
+        name={parent.user.name ? `@${parent.user.name}` : "unknown name"}
+        side={isMobile ? "bottom" : "right"}
+        image={parent.profile?.url || parent.user.image || "/avatar.png"}
+        blur={blur}
+        sideOffset={10}
+      />
       <p className="line-clamp-1 max-w-md">{parent.body}</p>
       {parent.attachment.length > 0 && <ImageIcon className="size-4" />}
     </div>

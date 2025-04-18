@@ -1,7 +1,7 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { query, QueryCtx } from "../_generated/server";
 import { paginationOptsValidator } from "convex/server";
-import { internalMutation } from "./member_trigger";
+import { internalMutation, mutation } from "./member_trigger";
 import { Id } from "../_generated/dataModel";
 import { stream } from "convex-helpers/server/stream";
 import schema from "../schema";
@@ -121,3 +121,40 @@ export async function getSearchMember(
 
   return members.filter((f) => f !== null);
 }
+
+export const joinServer = mutation({
+  args: {
+    serverId: v.id("server"),
+    userId: v.id("users"),
+    username: v.optional(v.string()),
+  },
+  handler: async (ctx, { serverId, userId, username }) => {
+    const server = await ctx.db.get(serverId);
+
+    if (!server) return;
+
+    const user = await ctx.db.get(userId);
+
+    if (!user) {
+      throw new ConvexError("user not found");
+    }
+
+    const member = ctx.db.insert("member", {
+      serverId,
+      userId,
+      username,
+      joinedAt: Date.now(),
+    });
+
+    const access = ctx.db.insert("access", {
+      serverId,
+      userId,
+      read: false,
+      update: false,
+      create: false,
+      remove: false,
+    });
+
+    Promise.all([access, member]);
+  },
+});

@@ -11,7 +11,7 @@ import { ConvexError } from "convex/values";
 import ErrorToast from "@/components/ui/error-toast";
 import { Input } from "@/components/ui/input";
 import { handleError } from "@/lib/handle-eror";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function SigninForm({
   className,
@@ -21,7 +21,8 @@ export function SigninForm({
   const [submitting, setSubmitting] = useState(false);
   const [isPending, setisPending] = useState(false);
   const { signIn } = useAuthActions();
-
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo") || "/";
   /**
    * handle guest
    *
@@ -39,7 +40,7 @@ export function SigninForm({
       setisPending(false);
       return handleError({ error, message: "signin" });
     }
-    router.push("/");
+    router.push(redirectTo);
     setisPending(false);
   };
 
@@ -63,7 +64,7 @@ export function SigninForm({
       return toast.custom((t) => <ErrorToast name={toastTitle} t={t} />);
     }
     setSubmitting(false);
-    router.push("/");
+    router.push(redirectTo);
   };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -88,7 +89,7 @@ export function SigninForm({
         <Button
           variant="outline"
           type="button"
-          onClick={() => signIn("google")}
+          onClick={() => signIn("google", { redirectTo })}
           className="w-full"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

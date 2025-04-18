@@ -12,7 +12,7 @@ const ErrorToast = ({ t, name }: Props) => {
   return (
     <div className="bg-background text-foreground w-full rounded-md border px-4 py-3 shadow-lg sm:w-[var(--width)]">
       <div className="flex gap-2">
-        <div className="flex grow gap-3">
+        <div className="flex grow items-center gap-3">
           <CircleAlert
             className="mt-0.5 shrink-0 text-red-500"
             size={16}
@@ -26,7 +26,7 @@ const ErrorToast = ({ t, name }: Props) => {
           size="sm"
           onClick={() => toast.dismiss(t)}
           aria-label="Close banner"
-          className="h-7"
+          className="size-fit h-7"
         >
           Close
         </Button>

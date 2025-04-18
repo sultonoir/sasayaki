@@ -5,7 +5,6 @@ import { asyncMap } from "convex-helpers";
 import { getManyFrom, getOneFrom } from "convex-helpers/server/relationships";
 import { getReadChannel, getReadServer } from "../read/read_service";
 import { Id } from "../_generated/dataModel";
-import { memberAggregate } from "../member/member_aggregate";
 
 export const createServer = mutation({
   args: {
@@ -282,13 +281,8 @@ export const getServerByCode = query({
       .query("serverImage")
       .withIndex("by_server_image_Id", (q) => q.eq("serverId", server._id))
       .unique();
-    const members = await memberAggregate.count(ctx, {
-      namespace: server._id,
-      bounds: {
-        lower: undefined,
-        upper: undefined,
-      },
-    });
+
+    if (!image) return null;
 
     const findMembers = getManyFrom(
       ctx.db,
@@ -310,10 +304,10 @@ export const getServerByCode = query({
     return {
       ...server,
       image,
-      allMember: members,
+      allMember: memberOnline.length,
       memebrOnline: memberOnline.filter(
         (item) => item.user !== null && item.user.online === true,
-      ),
+      ).length,
     };
   },
 });

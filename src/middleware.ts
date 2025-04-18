@@ -6,11 +6,15 @@ import {
 
 const isSignInPage = createRouteMatcher(["/signin"]);
 const isProtectedRoute = createRouteMatcher(["/(.*)"]);
+const isPublicRoute = createRouteMatcher(["/invite/(.*)"]);
 
 export default convexAuthNextjsMiddleware(
   async (request, { convexAuth }) => {
     const url = new URL(request.url);
-
+    // Jika termasuk public route, tidak perlu cek autentikasi
+    if (isPublicRoute(request)) {
+      return;
+    }
     // Hindari redirect loop ke "/signin"
     if (
       isProtectedRoute(request) &&

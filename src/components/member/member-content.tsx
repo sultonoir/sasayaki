@@ -24,7 +24,7 @@ const MemberContent = ({ member, className, ...props }: MemberContentProps) => {
           userId={member.userId}
           name={member.username || member.user.name || ""}
           side={isMobile ? "bottom" : "left"}
-          sideOffset={0}
+          sideOffset={isMobile ? 0 : 75}
           image={image}
           blur={blur}
         />

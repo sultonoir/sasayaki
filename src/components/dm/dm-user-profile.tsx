@@ -132,7 +132,7 @@ function Friends({ friends }: { friends: Friend[] }) {
               <div
                 key={item._id}
                 onClick={() => handleClick(item._id)}
-                className="mt-4 flex items-center gap-2 rounded-lg px-1 py-2 text-sm hover:bg-white/5"
+                className="mt-4 flex cursor-pointer items-center gap-2 rounded-lg px-1 py-2 text-sm hover:bg-white/5"
               >
                 <Image
                   src={item.profile?.url ?? "/avatar.png"}

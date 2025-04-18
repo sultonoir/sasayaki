@@ -10,12 +10,14 @@ import Linkify from "../ui/Linkify";
 import UserTooltip from "../user/user-tooltip";
 import { blurhashToDataUri } from "@unpic/placeholder";
 import ChatParentMessage from "./chat-parent-message";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Props {
   message: Messages;
 }
 
 const ChatContent = ({ message }: Props) => {
+  const isMobile = useIsMobile();
   const blur = message.profile?.blur || "UCFgu59^00nj_NELR4wc0cv~Khf#qvw|L0Xm";
   const image = message.profile?.url || message.user.image || "/avatar.png";
 
@@ -50,7 +52,7 @@ const ChatContent = ({ message }: Props) => {
           <UserTooltip
             userId={message.user._id}
             name={message.user.name || "unknown name"}
-            side="right"
+            side={isMobile ? "bottom" : "right"}
             image={image}
             blur={blur}
             sideOffset={10}

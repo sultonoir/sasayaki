@@ -27,7 +27,7 @@ const SidebarDm = React.memo(() => {
       <SidebarHeader className="px-0">
         <SidebarMenu>
           <SidebarMenuItem className="p-2 pt-0">
-            <SidebarMenuButton variant="accent">
+            <SidebarMenuButton variant="accent" className="px-4 text-xs">
               Find or start conversations
             </SidebarMenuButton>
           </SidebarMenuItem>

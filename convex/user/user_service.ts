@@ -9,6 +9,7 @@ import { getOneFrom } from "convex-helpers/server/relationships";
 import { getRoles } from "../role/role_service";
 import { getIsFriend, getMutualFriends } from "../friend/friend_service";
 import { internal } from "../_generated/api";
+import { asyncMap } from "convex-helpers";
 
 export async function mustGetCurrentUser(ctx: QueryCtx): Promise<Doc<"users">> {
   const userId = await getAuthUserId(ctx);
@@ -221,5 +222,36 @@ export const updateOnlineUser = mutation({
         userId,
       },
     );
+  },
+});
+
+export const searchUser = mutation({
+  args: { username: v.string() },
+  handler: async (ctx, { username }) => {
+    const current = await mustGetCurrentUser(ctx);
+    const users = await ctx.db
+      .query("users")
+      .withSearchIndex("by_user_username", (q) =>
+        q.search("username", username),
+      )
+      .collect();
+    const result = await asyncMap(users, async (u) => {
+      const profile = await getOneFrom(
+        ctx.db,
+        "userImage",
+        "by_user_image",
+        u._id,
+        "userId",
+      );
+      const isFriend = await getIsFriend(ctx, u._id);
+
+      return {
+        ...u,
+        image: profile?.url || u.image,
+        isFriend: !!isFriend,
+      };
+    });
+
+    return result.filter((item) => item !== null && item._id !== current._id);
   },
 });

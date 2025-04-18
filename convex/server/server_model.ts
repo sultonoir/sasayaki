@@ -5,7 +5,9 @@ export const server = defineTable({
   name: v.string(),
   ownerId: v.id("users"),
   code: v.string(),
-}).index("by_server_owner", ["ownerId"]);
+})
+  .index("by_server_owner", ["ownerId"])
+  .index("by_server_code", ["code"]);
 
 export const serverImage = defineTable({
   format: v.string(),

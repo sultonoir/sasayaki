@@ -5,6 +5,7 @@ import { asyncMap } from "convex-helpers";
 import { getManyFrom, getOneFrom } from "convex-helpers/server/relationships";
 import { getReadChannel, getReadServer } from "../read/read_service";
 import { Id } from "../_generated/dataModel";
+import { memberAggregate } from "../member/member_aggregate";
 
 export const createServer = mutation({
   args: {
@@ -263,3 +264,56 @@ export const getServerMutual = async (
 
   return results.filter((item) => item !== null);
 };
+
+export const getServerByCode = query({
+  args: { code: v.string() },
+  handler: async (ctx, { code }) => {
+    const server = await getOneFrom(
+      ctx.db,
+      "server",
+      "by_server_code",
+      code,
+      "code",
+    );
+
+    if (!server) return null;
+
+    const image = await ctx.db
+      .query("serverImage")
+      .withIndex("by_server_image_Id", (q) => q.eq("serverId", server._id))
+      .unique();
+    const members = await memberAggregate.count(ctx, {
+      namespace: server._id,
+      bounds: {
+        lower: undefined,
+        upper: undefined,
+      },
+    });
+
+    const findMembers = getManyFrom(
+      ctx.db,
+      "member",
+      "by_member_server",
+      server._id,
+      "serverId",
+    );
+
+    const memberOnline = await asyncMap(findMembers, async (member) => {
+      const user = await ctx.db.get(member.userId);
+
+      return {
+        ...member,
+        user,
+      };
+    });
+
+    return {
+      ...server,
+      image,
+      allMember: members,
+      memebrOnline: memberOnline.filter(
+        (item) => item.user !== null && item.user.online === true,
+      ),
+    };
+  },
+});

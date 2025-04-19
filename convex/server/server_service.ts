@@ -345,3 +345,39 @@ export const getMyServer = query({
     return members.collect();
   },
 });
+
+export const editServer = mutation({
+  args: {
+    serverId: v.id("server"),
+    name: v.string(),
+    imageId: v.id("serverImage"),
+    image: v.optional(
+      v.object({
+        format: v.string(),
+        fileId: v.string(),
+        url: v.string(),
+        name: v.string(),
+        blur: v.string(),
+      }),
+    ),
+  },
+  handler: async (ctx, { serverId, name, image, imageId }) => {
+    const user = await mustGetCurrentUser(ctx);
+    const access = await ctx.db
+      .query("access")
+      .withIndex("by_all_access", (q) =>
+        q.eq("userId", user._id).eq("serverId", serverId),
+      )
+      .first();
+
+    if (!access?.update) {
+      throw new ConvexError("Error edit data");
+    }
+
+    if (image) {
+      await ctx.db.patch(imageId, { ...image });
+    }
+
+    await ctx.db.patch(serverId, { name });
+  },
+});

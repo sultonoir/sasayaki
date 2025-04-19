@@ -118,7 +118,7 @@ const Content = ({ id, children, ...props }: ContentProps) => {
             ease: "circInOut",
             type: "spring",
           }}
-          className={cn("p-1", props.className)}
+          className={cn("max-h-[80%] min-h-[500px] p-1", props.className)}
           {...props}
         >
           {children}

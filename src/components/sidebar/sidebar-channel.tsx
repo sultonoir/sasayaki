@@ -54,7 +54,12 @@ const SidebarChannel = React.memo(() => {
   return (
     <>
       <div className="flex w-full flex-col gap-2 border-b p-2">
-        <ServerDropdown {...data} />
+        <ServerDropdown
+          name={data.name}
+          image={data.image}
+          access={data.access}
+          owner={data.owner}
+        />
       </div>
       {accessCreate && (
         <div className="flex w-full flex-col gap-2 border-b p-2">

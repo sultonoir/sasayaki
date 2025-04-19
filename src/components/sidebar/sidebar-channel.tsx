@@ -121,7 +121,7 @@ function Channel({
   const { setIsOpen, setChannelId } = useDialogRmChannel();
   const { channel, server } = useParams<{ server: string; channel: string }>();
   const containerRef = useRef<HTMLDivElement>(null);
-  const { isMobile, toggleSidebar } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
   const pathname = `/server/${server}/${ch._id}`;
   const isActive = channel === ch._id;
   const router = useRouter();
@@ -154,18 +154,21 @@ function Channel({
     }
 
     if (!hasLongPressed.current && isMobile && isActive) {
-      return toggleSidebar();
+      setOpenMobile(false);
+      return;
     }
 
     if (!hasLongPressed.current && isMobile) {
-      toggleSidebar();
+      setOpenMobile(false);
       router.prefetch(pathname);
-      return router.push(pathname);
+      router.push(pathname);
+      return;
     }
 
     if (!hasLongPressed.current) {
       router.prefetch(pathname);
-      return router.push(pathname);
+      router.push(pathname);
+      return;
     }
   };
 

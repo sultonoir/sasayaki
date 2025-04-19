@@ -48,6 +48,30 @@ function DialogSeach() {
     }
   };
 
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${1024 - 1}px)`);
+
+    const onChange = () => {
+      const isMobile = window.innerWidth < 1024;
+
+      // Jika bukan mobile, tutup dialog
+      if (!isMobile) {
+        close();
+      }
+    };
+
+    mql.addEventListener("change", onChange);
+
+    // Inisialisasi saat komponen mount
+    const initialIsMobile = window.innerWidth < 1024;
+
+    if (!initialIsMobile) {
+      close();
+    }
+
+    return () => mql.removeEventListener("change", onChange);
+  }, [close]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -56,10 +80,10 @@ function DialogSeach() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 80 }}
           transition={{ duration: 0.3 }}
-          className="bg-secondary absolute inset-0 z-50 h-dvh w-full overflow-hidden rounded-lg p-3 shadow-lg"
+          className="bg-card absolute inset-0 z-50 h-dvh w-full overflow-hidden p-3 shadow-lg"
         >
-          <div className="space-y-2">
-            <div className="flex w-full items-center gap-2">
+          <div className="flex size-full flex-col gap-2">
+            <div className="flex w-full flex-none shrink-0 items-center gap-2">
               <Button
                 startContent={<ArrowLeft size={16} />}
                 size="icon"
@@ -103,14 +127,14 @@ function DialogSeach() {
                 </div>
               </div>
             </div>
-            <div className="relative flex h-[90dvh] flex-col overflow-y-auto">
+            <div className="relative flex h-[90dvh] flex-1 flex-col overflow-y-auto rounded-lg">
               {results && (
                 <SearchResults
                   result={results}
                   loading={isPending}
                   close={close}
                   className="max-h-max shadow-none"
-                  container={{ className: "shadow-none" }}
+                  container={{ className: "shadow-none mt-0" }}
                 />
               )}
             </div>

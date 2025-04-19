@@ -39,7 +39,7 @@ const PageClient = ({ server, user }: Props) => {
       await mutate({
         serverId: server._id,
         userId: user._id,
-        username: user.username,
+        username: user.name,
       });
     } catch (error) {
       setIsPending(false);

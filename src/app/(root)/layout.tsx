@@ -1,4 +1,5 @@
 import FieldToast from "@/components/form/user/field-toast";
+import ServerProfileToast from "@/components/server/server-profile-toast";
 import { SidebarApp } from "@/components/sidebar/sidebar-app";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { api } from "@/convex/_generated/api";
@@ -38,6 +39,7 @@ export default async function Layout({
               {children}
             </div>
             <FieldToast />
+            <ServerProfileToast />
           </SidebarInset>
         </SidebarProvider>
         <DialogProvider />

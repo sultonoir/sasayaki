@@ -5,6 +5,8 @@ import { asyncMap } from "convex-helpers";
 import { getManyFrom, getOneFrom } from "convex-helpers/server/relationships";
 import { getReadChannel, getReadServer } from "../read/read_service";
 import { Id } from "../_generated/dataModel";
+import { stream } from "convex-helpers/server/stream";
+import schema from "../schema";
 
 export const createServer = mutation({
   args: {
@@ -309,5 +311,37 @@ export const getServerByCode = query({
         (item) => item.user !== null && item.user.online === true,
       ).length,
     };
+  },
+});
+
+export const getMyServer = query({
+  handler: async (ctx) => {
+    const user = await mustGetCurrentUser(ctx);
+    if (!user) return [];
+
+    const members = stream(ctx.db, schema)
+      .query("member")
+      .withIndex("by_member_userid", (q) => q.eq("userId", user._id))
+      .map(async (member) => {
+        const server = await ctx.db.get(member.serverId);
+        if (!server) return null;
+        const image = await getOneFrom(
+          ctx.db,
+          "serverImage",
+          "by_server_image_Id",
+          server._id,
+          "serverId",
+        );
+
+        if (!image) return null;
+        return {
+          ...server,
+          image,
+          username: member.username,
+          memberId: member._id,
+        };
+      });
+
+    return members.collect();
   },
 });

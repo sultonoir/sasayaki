@@ -1,12 +1,17 @@
 import { ConvexError, v } from "convex/values";
-import { query, QueryCtx } from "../_generated/server";
+import {
+  internalMutation,
+  mutation,
+  query,
+  QueryCtx,
+} from "../_generated/server";
 import { paginationOptsValidator } from "convex/server";
-import { internalMutation, mutation } from "./member_trigger";
 import { Id } from "../_generated/dataModel";
 import { stream } from "convex-helpers/server/stream";
 import schema from "../schema";
 import { getOneFrom } from "convex-helpers/server/relationships";
 import { asyncMap } from "convex-helpers";
+import { mustGetCurrentUser } from "../user/user_service";
 
 export const getMemberByServer = query({
   args: { id: v.id("server"), paginationOpts: paginationOptsValidator },
@@ -156,5 +161,22 @@ export const joinServer = mutation({
     });
 
     Promise.all([access, member]);
+  },
+});
+
+export const updateMember = mutation({
+  args: {
+    memberId: v.id("member"),
+    username: v.string(),
+  },
+  handler: async (ctx, { memberId, username }) => {
+    const user = await mustGetCurrentUser(ctx);
+    const isMember = await ctx.db.get(memberId);
+
+    if (!isMember || !user) {
+      throw new ConvexError("unuthorized");
+    }
+
+    await ctx.db.patch(isMember._id, { username });
   },
 });

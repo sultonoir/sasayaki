@@ -1,13 +1,18 @@
 "use client";
-import { ToastSave } from "@/components/ui/toast-save";
+
 import { api } from "@/convex/_generated/api";
 import { handleError } from "@/lib/handle-eror";
 import { useProfileEdit } from "@/provider/profile-edit-provider";
 import { useSession } from "@/provider/session-provider";
 import { UploadedFile } from "@/types";
 import { useMutation } from "convex/react";
+import dynamic from "next/dynamic";
 import React from "react";
 import { toast } from "sonner";
+
+const SaveToast = dynamic(() => import("@/components/ui/toast-save"), {
+  ssr: false,
+});
 
 const FieldToast = () => {
   const { user } = useSession();
@@ -176,7 +181,7 @@ const FieldToast = () => {
     <>
       {state.toast !== undefined && (
         <div className="w-fullitems-center fixed inset-x-0 bottom-2 z-[100] flex justify-center">
-          <ToastSave
+          <SaveToast
             state={state.toast}
             onSave={handleSave}
             onReset={handleReset}

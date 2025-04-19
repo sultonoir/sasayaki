@@ -52,7 +52,7 @@ const springConfig = {
   mass: 1,
 };
 
-export function ToastSave({
+export default function ToastSave({
   state = "initial",
   onReset,
   onSave,
@@ -140,8 +140,8 @@ export function ToastSave({
                 className={cn(
                   "h-7 rounded-[99px] px-3 py-0 text-[13px] font-medium",
                   "text-white",
-                  "bg-gradient-to-b from-violet-500 to-violet-600",
-                  "hover:from-violet-400 hover:to-violet-500",
+                  "bg-gradient-to-b from-pink-500 to-pink-600",
+                  "hover:from-pink-400 hover:to-pink-500",
                   "dark:shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.2)]",
                   "shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.4)]",
                   "transition-all duration-200",

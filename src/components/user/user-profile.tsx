@@ -15,13 +15,9 @@ const UserProfile = () => {
   useSession();
 
   return (
-    <div className="flex h-[570px] flex-1 flex-col space-y-5 overflow-x-hidden overflow-y-auto p-4">
-      <div className="flex items-center justify-between">
-        <p className="text-lg">Profiles</p>
-      </div>
-
+    <div className="flex flex-1 flex-col space-y-5 overflow-x-hidden overflow-y-auto p-4">
       {/* container */}
-      <div className="grid grid-cols-1 gap-10 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
         {/* form */}
         <div className="order-2 space-y-7 lg:order-1">
           {/* Name */}

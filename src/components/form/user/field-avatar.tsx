@@ -55,7 +55,7 @@ const FieldAvatarPreview = () => {
         selectedFile={previewUrl}
         handleCropComplete={handleCropComplete}
       />
-      <div className="border-background bg-muted group/banner relative flex size-20 items-center justify-center rounded-full border-4 shadow-xs shadow-black/10">
+      <div className="border-background bg-muted group/banner relative isolate flex size-20 items-center justify-center rounded-full border-4 shadow-xs shadow-black/10">
         {shouldShow && (
           <Image
             src={currentImage ?? "/avatar.png"}
@@ -68,7 +68,7 @@ const FieldAvatarPreview = () => {
         <div className="bg-card absolute -right-[10px] bottom-[2px] size-7 rounded-full p-1">
           <div className="size-full rounded-full bg-emerald-500"></div>
         </div>
-        <div className="absolute -right-96 w-fit items-center justify-between gap-1 opacity-0 transition-all duration-300 group-hover/banner:-right-33 group-hover/banner:opacity-100">
+        <div className="pointer-events-none absolute -right-33 w-fit translate-x-full items-center justify-between gap-1 opacity-0 transition-all duration-300 group-hover/banner:pointer-events-auto group-hover/banner:translate-x-0 group-hover/banner:opacity-100">
           <div className="bg-muted flex cursor-pointer flex-col gap-1 rounded-lg border px-2 py-2 text-xs">
             <span
               className="hover:bg-accent hover:text-primary-foreground text-muted-foreground w-full rounded-md px-3 py-1.5 text-center"

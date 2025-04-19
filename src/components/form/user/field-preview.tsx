@@ -6,7 +6,7 @@ import { FieldAvatarPreview } from "./field-avatar";
 const FieldPreview = () => {
   const { state } = useProfileEdit();
   return (
-    <div className="h-fit w-full flex-none shrink-0 overflow-hidden rounded-lg border sm:max-w-[260px]">
+    <div className="h-fit w-full flex-none shrink-0 overflow-hidden rounded-lg border md:max-w-[260px]">
       <FieldBannerPreview />
       <FieldAvatarPreview />
       <div className="p-4">

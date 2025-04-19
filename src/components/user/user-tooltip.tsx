@@ -44,6 +44,7 @@ interface ContnetProps {
   username?: string;
   image: string;
   blur: string;
+  closeDialog: () => void;
 }
 
 const UserTooltip: React.FC<Props> = ({
@@ -93,6 +94,7 @@ const UserTooltip: React.FC<Props> = ({
       >
         <Content
           userId={userId}
+          closeDialog={() => setOpen(false)}
           username={changeUsername(name)}
           blur={blurImage}
           image={profileImage}
@@ -102,7 +104,7 @@ const UserTooltip: React.FC<Props> = ({
   );
 };
 
-function Content({ userId, username, image, blur }: ContnetProps) {
+function Content({ userId, username, image, blur, closeDialog }: ContnetProps) {
   const { toggle } = useModal();
   const { user: session } = useSession();
   const { server } = useParams<{ server: Id<"server"> }>();
@@ -226,7 +228,10 @@ function Content({ userId, username, image, blur }: ContnetProps) {
         <FormSendDm userId={user._id} username={username} />
       ) : (
         <button
-          onClick={toggle}
+          onClick={() => {
+            toggle();
+            closeDialog();
+          }}
           className="bg-accent/80 hover:bg-accent mx-4 inline-flex items-center justify-center gap-2 rounded-md border py-1.5 text-xs outline-none focus:ring-0"
         >
           <Edit2Icon className="size-3" />

@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { XIcon } from "lucide-react";
 import React, { ReactNode, useEffect, useRef } from "react";
 import { Button } from "./button";
+import { useServerProfile } from "@/hooks/use-server-profile";
 
 export const ModalTrigger = ({
   children,
@@ -166,15 +167,17 @@ const Overlay = ({ className }: { className?: string }) => {
 const CloseIcon = () => {
   const { toggle } = useModal();
   const { state } = useProfileEdit();
+  const { status } = useServerProfile();
+  const isDisabled = state.toast !== undefined || status !== undefined;
 
   const handleToggle = () => {
-    if (state.toast !== undefined) return;
     toggle();
   };
   return (
     <Button
       variant="outline"
       size="icon"
+      disabled={isDisabled}
       onClick={handleToggle}
       className="group absolute top-4 right-4 rounded-full"
     >

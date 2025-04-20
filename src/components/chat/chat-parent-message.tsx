@@ -3,7 +3,7 @@ import { Reply } from "@/types";
 import { blurhashToDataUri } from "@unpic/placeholder";
 import { Image } from "@unpic/react/nextjs";
 import { ImageIcon } from "lucide-react";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import UserTooltip from "../user/user-tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -26,19 +26,8 @@ const ChatParentMessage = ({ parent }: { parent: Reply }) => {
         block: "center", // Posisikan elemen di tengah layar
       });
       setFindMessage(parent._id);
-      timeoutRef.current = setTimeout(() => {
-        setFindMessage(undefined);
-      }, 3000);
     }
   };
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <div

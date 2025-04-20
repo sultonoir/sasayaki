@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useMemo,
+} from "react";
 import { HTMLMotionProps, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +16,8 @@ import { cn } from "@/lib/utils";
 interface TabsContextValue {
   activeTab: string;
   setActiveTab: (id: string) => void;
+  hoveredTab: string | null;
+  setHoveredTab: (id: string | null) => void;
 }
 
 const TabsContext = createContext<TabsContextValue | undefined>(undefined);
@@ -32,18 +40,17 @@ interface AnimatedTabsRootProps {
 }
 
 const Root = ({ defaultTab, children, className }: AnimatedTabsRootProps) => {
-  const [activeTab, setActiveTab] = useState<string>(defaultTab);
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+
+  const value = useMemo(
+    () => ({ activeTab, setActiveTab, hoveredTab, setHoveredTab }),
+    [activeTab, hoveredTab],
+  );
 
   return (
-    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
-      <div
-        className={cn(
-          "flex size-full flex-1 flex-col gap-y-4 overflow-y-auto",
-          className,
-        )}
-      >
-        {children}
-      </div>
+    <TabsContext.Provider value={value}>
+      <div className={cn("w-full", className)}>{children}</div>
     </TabsContext.Provider>
   );
 };
@@ -53,7 +60,7 @@ const Root = ({ defaultTab, children, className }: AnimatedTabsRootProps) => {
 // ========================
 const List = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="flex w-fit flex-wrap gap-2 rounded-xl bg-transparent p-1 backdrop-blur-sm">
+    <div className="text-muted-foreground inline-flex rounded-lg px-2">
       {children}
     </div>
   );
@@ -65,26 +72,50 @@ interface TriggerProps extends React.ComponentProps<"button"> {
 }
 
 const Trigger = ({ id, children, className, ...props }: TriggerProps) => {
-  const { activeTab, setActiveTab } = useTabsContext();
+  const { activeTab, setActiveTab, setHoveredTab, hoveredTab } =
+    useTabsContext();
   const isActive = activeTab === id;
+  const isHovered = hoveredTab === id;
 
   return (
     <button
+      onMouseEnter={() => setHoveredTab(id)}
+      onMouseLeave={() => setHoveredTab(null)}
       onClick={() => setActiveTab(id)}
       className={cn(
-        "relative rounded-lg px-3 py-1.5 text-sm font-medium text-white transition-colors outline-none disabled:pointer-events-none disabled:opacity-50",
+        "relative flex h-full items-center justify-center p-2 text-sm font-medium text-white transition-colors outline-none disabled:pointer-events-none disabled:opacity-50",
         className,
       )}
       {...props}
     >
       {isActive && (
         <motion.div
-          layoutId="active-tab"
-          className="bg-opacity-50 bg-accent absolute inset-0 !rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.2)] backdrop-blur-sm"
-          transition={{ type: "spring", duration: 0.6 }}
+          layoutId="isActive"
+          layout
+          className="bg-primary absolute inset-x-0 bottom-0 h-0.5"
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 25,
+            mass: 0.5,
+          }}
         />
       )}
-      <span className="relative z-10">{children}</span>
+      {isHovered && (
+        <motion.div
+          layoutId="shouldShowHighlight"
+          layout
+          className="bg-accent absolute inset-x-0 top-[6px] h-6 rounded-sm contain-strict"
+          style={{ borderRadius: 6 }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 25,
+            mass: 0.5,
+          }}
+        />
+      )}
+      <div className="relative z-10">{children}</div>
     </button>
   );
 };
@@ -118,7 +149,7 @@ const Content = ({ id, children, ...props }: ContentProps) => {
             ease: "circInOut",
             type: "spring",
           }}
-          className={cn("max-h-[80%] min-h-[500px] p-1", props.className)}
+          className={cn("flex-1 p-1 outline-none", props.className)}
           {...props}
         >
           {children}

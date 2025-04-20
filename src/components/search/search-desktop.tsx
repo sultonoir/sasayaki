@@ -43,6 +43,7 @@ const SearchDesktop = () => {
     try {
       const data = await mutate({ channelId, serverId, body });
       setIsPending(false);
+      setIsOpen(true);
       setResults(data);
     } catch (error) {
       setIsPending(false);
@@ -98,7 +99,7 @@ const SearchDesktop = () => {
         </form>
       </div>
       <AnimatePresence>
-        {isOpen && (
+        {isOpen && results && (
           <motion.div
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}

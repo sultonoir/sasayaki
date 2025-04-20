@@ -127,7 +127,7 @@ function DialogSeach() {
                 </div>
               </div>
             </div>
-            <div className="relative flex h-[90dvh] flex-1 flex-col overflow-y-auto rounded-lg">
+            <div className="relative flex h-[90dvh] flex-1 flex-col overflow-y-auto">
               {results && (
                 <SearchResults
                   result={results}

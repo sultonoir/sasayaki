@@ -7,7 +7,7 @@ import React, { useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useClickOutside } from "@/hooks/use-click-outside";
-import { AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { SearchResults } from "./search-result";
 import { useMutation } from "convex/react";
 import { Label } from "../ui/label";
@@ -98,12 +98,23 @@ const SearchDesktop = () => {
         </form>
       </div>
       <AnimatePresence>
-        {isOpen && results && (
-          <SearchResults
-            result={results}
-            loading={isPending}
-            close={() => setIsOpen(false)}
-          />
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 80 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 80 }}
+            transition={{ duration: 0.3 }}
+            className={cn(
+              "bg-secondary absolute z-50 mt-2 w-full overflow-hidden rounded-lg p-2 shadow-lg",
+            )}
+          >
+            <SearchResults
+              key="search-results"
+              result={results}
+              loading={isPending}
+              close={() => setIsOpen(false)}
+            />
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

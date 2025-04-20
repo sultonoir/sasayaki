@@ -3,11 +3,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { MessageCircleMore, Reply } from "lucide-react";
-
 import { Member, Messages } from "@/types";
 import { fromNow } from "@/lib/from-now";
 import { cn } from "@/lib/utils";
-
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import ChatLoader from "../chat/chat-loader";
@@ -30,7 +28,6 @@ interface SearchResultProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const SearchResults = ({
   result,
-  container,
   loading,
   close,
   className,
@@ -40,58 +37,47 @@ export const SearchResults = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 8 }}
-      transition={{ duration: 0.15 }}
+      initial={{ opacity: 0, filter: "blur(10px)" }}
+      animate={{ opacity: 1, filter: "blur(0px)" }}
+      exit={{ opacity: 0, filter: "blur(10px)" }}
+      transition={{ duration: 0.3 }}
       className={cn(
-        "bg-secondary absolute z-50 mt-2 w-full overflow-hidden rounded-lg p-2 shadow-lg",
-        container?.className,
+        "flex max-h-72 w-full flex-col gap-2 overflow-y-auto pr-3",
+        className,
       )}
     >
-      <div
-        className={cn(
-          "flex max-h-72 w-full flex-col gap-2 overflow-y-auto pr-3",
-          className,
-        )}
-      >
-        {loading ? (
-          <ChatLoader />
-        ) : !hasMessages && !hasMembers ? (
-          <div className="text-muted-foreground p-3 text-sm">
-            What you are looking for is not there.
-          </div>
-        ) : (
-          <>
-            {hasMembers && (
-              <>
-                <p className="p-2 text-sm font-medium">Members</p>
-                <Separator className="mx-0" />
-                {result.members.map((member) => (
-                  <SearchMemberCard
-                    key={member._id}
-                    member={member}
-                    close={close}
-                  />
-                ))}
-              </>
-            )}
-            {hasMessages && (
-              <>
-                <p className="p-2 text-sm font-medium">Messages</p>
-                <Separator className="mx-0" />
-                {result.messages.map((message) => (
-                  <SearchCard
-                    key={message._id}
-                    message={message}
-                    close={close}
-                  />
-                ))}
-              </>
-            )}
-          </>
-        )}
-      </div>
+      {loading ? (
+        <ChatLoader />
+      ) : !hasMessages && !hasMembers ? (
+        <div className="text-muted-foreground p-3 text-sm">
+          What you are looking for is not there.
+        </div>
+      ) : (
+        <>
+          {hasMembers && (
+            <>
+              <p className="p-2 text-sm font-medium">Members</p>
+              <Separator className="mx-0" />
+              {result.members.map((member) => (
+                <SearchMemberCard
+                  key={member._id}
+                  member={member}
+                  close={close}
+                />
+              ))}
+            </>
+          )}
+          {hasMessages && (
+            <>
+              <p className="p-2 text-sm font-medium">Messages</p>
+              <Separator className="mx-0" />
+              {result.messages.map((message) => (
+                <SearchCard key={message._id} message={message} close={close} />
+              ))}
+            </>
+          )}
+        </>
+      )}
     </motion.div>
   );
 };
@@ -106,7 +92,9 @@ function SearchCard({ message, close }: SearchCardProps) {
 
   const handleReply = () => {
     setReply(message);
-    close();
+    setTimeout(() => {
+      close(); // panggil setelah 150ms = durasi exit
+    }, 150);
   };
 
   return (

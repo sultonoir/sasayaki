@@ -44,11 +44,7 @@ export default function EditProfileDialog() {
                 <AnimatedTabs.Trigger disabled={isDisabled} id="tab1">
                   Profile
                 </AnimatedTabs.Trigger>
-                <AnimatedTabs.Trigger
-                  disabled={isDisabled}
-                  id="tab2"
-                  className="overflow-auto"
-                >
+                <AnimatedTabs.Trigger disabled={isDisabled} id="tab2">
                   Per-server profiles
                 </AnimatedTabs.Trigger>
               </AnimatedTabs.List>
@@ -61,13 +57,13 @@ export default function EditProfileDialog() {
             </DrawerHeader>
             <AnimatedTabs.Content
               id="tab1"
-              className="flex max-h-[80%] flex-1 flex-col overflow-auto"
+              className="flex max-h-[80%] flex-1 flex-col overflow-y-auto"
             >
               <UserProfile />
             </AnimatedTabs.Content>
             <AnimatedTabs.Content
               id="tab2"
-              className="flex max-h-[80%] min-h-[50rem] flex-1 flex-col overflow-auto"
+              className="flex max-h-[80%] min-h-[50rem] flex-1 flex-col overflow-y-auto"
             >
               <ServerUserProfile servers={data || []} />
             </AnimatedTabs.Content>
@@ -80,7 +76,7 @@ export default function EditProfileDialog() {
   return (
     <ModalBody>
       <ModalContent>
-        <AnimatedTabs.Root defaultTab="tab1" className="flex-1">
+        <AnimatedTabs.Root defaultTab="tab1" className="flex-1 overflow-hidden">
           <AnimatedTabs.List>
             <AnimatedTabs.Trigger disabled={isDisabled} id="tab1">
               Profile

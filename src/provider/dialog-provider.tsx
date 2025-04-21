@@ -37,6 +37,10 @@ const DialogSearch = dynamic(
   },
 );
 
+const Lightbox = dynamic(() => import("@/components/ui/Lightbox"), {
+  ssr: false,
+});
+
 const DialogProvider = () => {
   return (
     <>
@@ -45,6 +49,7 @@ const DialogProvider = () => {
       <DialogRmChannel />
       <DialogEditProfile />
       <DialogSearch />
+      <Lightbox />
     </>
   );
 };

@@ -141,7 +141,10 @@ function Content({ content }: { content: ContentProps }) {
           hidden: false,
         }}
       >
-        <Link href={`/server/${content._id}/${content.channel._id}`}>
+        <Link
+          href={`/server/${content._id}/${content.channel._id}`}
+          prefetch={true}
+        >
           <Image
             alt={content.name}
             src={content.image.url}

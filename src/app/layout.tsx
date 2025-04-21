@@ -82,7 +82,7 @@ export default function RootLayout({
       <html
         lang="en"
         suppressHydrationWarning
-        style={{ overflow: "hidden", pointerEvents: "auto" }}
+        style={{ pointerEvents: "auto" }}
       >
         <body
           className={`${interSans.className} !pointer-events-auto antialiased`}

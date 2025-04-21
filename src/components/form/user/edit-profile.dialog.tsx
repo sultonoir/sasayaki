@@ -84,14 +84,11 @@ export default function EditProfileDialog() {
             <AnimatedTabs.Trigger disabled={isDisabled} id="tab2">
               Per-server profiles
             </AnimatedTabs.Trigger>
-            <AnimatedTabs.Trigger disabled={isDisabled} id="tab3">
-              Per-server profiles
-            </AnimatedTabs.Trigger>
           </AnimatedTabs.List>
           <AnimatedTabs.Content id="tab1">
             <UserProfile />
           </AnimatedTabs.Content>
-          <AnimatedTabs.Content id="tab2" className="">
+          <AnimatedTabs.Content id="tab2">
             <ServerUserProfile servers={data || []} />
           </AnimatedTabs.Content>
         </AnimatedTabs.Root>

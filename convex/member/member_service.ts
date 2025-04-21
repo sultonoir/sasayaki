@@ -144,6 +144,15 @@ export const joinServer = mutation({
       throw new ConvexError("user not found");
     }
 
+    const isMember = await ctx.db
+      .query("member")
+      .withIndex("by_user_member", (q) =>
+        q.eq("userId", user._id).eq("serverId", server._id),
+      )
+      .unique();
+
+    if (isMember) return;
+
     const member = ctx.db.insert("member", {
       serverId,
       userId,
